@@ -31,7 +31,7 @@ app.put('/api/v1/items/:id', (req, res) =>{
     let index = itemList.findIndex(item => item.id === itemId);
 
     if(index !==-1){
-        itemList[index]  updatedItem;
+        itemList[index] = updatedItem;
         res.json(updatedItem);
     }else{
         res.status(404).json({message:"Item not found"});
