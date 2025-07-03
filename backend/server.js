@@ -15,7 +15,9 @@ let itemList = [
 ];
 
 //API routes
-app.get('/api/v1/items', (req, res) =>{});
+app.get('/api/v1/items', (req, res) =>{
+    return res.json(itemList);
+});
 app.post('/api/v1/items', (req, res) =>{});
 app.put('/api/v1/items/:id', (req, res) =>{});
 app.delete('/api/v1/items/:id', (req, res) =>{});
