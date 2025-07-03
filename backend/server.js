@@ -11,3 +11,6 @@ app.use(express.json());
 
 
 //listners
+app.listen(port , ()=>{
+    console.log("listening on port ${port}");
+})
