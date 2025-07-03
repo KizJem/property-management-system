@@ -8,7 +8,9 @@ const port = 3000;
 app.use(express.json());
 
 //API routes
-
+//CRUD Operation
+app.get('/api/v1/items', (req, res) => {});
+app.get('/api/v1/items', (req, res) => {});
 
 //listners
 app.listen(port , ()=>{
