@@ -26,8 +26,11 @@ app.post('/api/v1/items', (req, res) =>{
     res.status(201).json(newItem)
 });
 app.put('/api/v1/items/:id', (req, res) =>{
-    let itemID = req.params.id;
-    let updatedItem = req.body;
+    let itemID = +req.params.id;
+    let updatedItem = {
+        id: itemId,
+        name: req.body.name
+    };
     let index = itemList.findIndex(item => item.id === itemId);
 
     if(index !==-1){
