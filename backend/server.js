@@ -8,9 +8,10 @@ const port = 3000;
 app.use(express.json());
 
 //API routes
-//CRUD Operation
-app.get('/api/v1/items', (req, res) => {});
-app.get('/api/v1/items', (req, res) => {});
+app.get('/api/v1/items', (req, res) =>{});
+app.post('/api/v1/items', (req, res) =>{});
+app.put('/api/v1/items/:id', (req, res) =>{});
+app.delete('/api/v1/items/:id', (req, res) =>{});
 
 //listners
 app.listen(port , ()=>{
