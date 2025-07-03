@@ -7,6 +7,13 @@ const port = 3000;
 //middleware configuration
 app.use(express.json());
 
+//define item list
+
+let itemList = [
+    {id:1, name: "name here"},
+
+];
+
 //API routes
 app.get('/api/v1/items', (req, res) =>{});
 app.post('/api/v1/items', (req, res) =>{});
