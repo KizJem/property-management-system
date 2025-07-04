@@ -1,5 +1,6 @@
 const express = require('express')
-
+require('dotenv').config();         
+require('./db/init');  
 //app configuration
 const app = express();
 const port = 3000;
@@ -53,3 +54,4 @@ app.delete('/api/v1/items/:id', (req, res) =>{
 app.listen(port , ()=>{
     console.log("listening on port ${port}");
 })
+
