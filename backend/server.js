@@ -1,58 +1,107 @@
-const express = require('express')
+const express = require('express');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
-//app configuration
+// App configuration
 const app = express();
 const port = 3000;
+const SECRET_KEY = 'your-secret-key-here'; // Replace with a real secret in production
 
-//middleware configuration
+// Middleware configuration
 app.use(express.json());
 
-//define item list
-let itemList = [
-    {id:1, name: "name here"},
-
+// Mock database of users (in a real app, use a proper database)
+let users = [
+  {
+    id: 1,
+    username: 'student1',
+    password: '$2b$10$examplehashedpassword', // Hashed "password123"
+    name: 'John Doe'
+  }
 ];
 
-//API routes
-app.get('/api/v1/items', (req, res) =>{
-    return res.json(itemList);
-});
-app.post('/api/v1/items', (req, res) =>{
-    let newItem = {
-        id: itemList.length + 1,
-        name: req.body.name,
-    }
-    itemList.push(newItem);
-    res.status(201).json(newItem)
-});
-app.put('/api/v1/items/:id', (req, res) =>{
-    let itemID = +req.params.id;
-    let updatedItem = {
-        id: itemId,
-        name: req.body.name
-    };
-    let index = itemList.findIndex(item => item.id === itemId);
+// API routes
+app.post('/api/v1/login', async (req, res) => {
+  const { username, password, name } = req.body;
 
-    if(index !==-1){
-        itemList[index] = updatedItem;
-        res.json(updatedItem);
-    }else{
-        res.status(404).json({message:"Item not found"});
-    }
-});
-app.delete('/api/v1/items/:id', (req, res) =>{
-    let itemId = req.params.id;
-    let index = itemList.findIndex(item => item.id === itemId);
+  // Input validation
+  if (!username || !password || !name) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
 
-    if(index != -1){
-        let deletedItem = itemList.splice(index,1);
-        res.json(deletedItem[0]);
-    }else{
-        res.status(404).json({message:"Item not found"});
+  try {
+    // In a real app, you would look up the user in the database
+    const user = users.find(u => u.username === username);
+    
+    if (!user) {
+      // Create new user (for demo purposes - in real app, have separate registration)
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = {
+        id: users.length + 1,
+        username,
+        password: hashedPassword,
+        name
+      };
+      users.push(newUser);
+      
+      // Generate token
+      const token = jwt.sign({ userId: newUser.id }, SECRET_KEY, { expiresIn: '1h' });
+      
+      return res.status(201).json({ 
+        message: 'User created and logged in',
+        token,
+        user: { id: newUser.id, name: newUser.name }
+      });
+    } else {
+      // Verify password for existing user
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      
+      if (!passwordMatch) {
+        return res.status(401).json({ message: 'Invalid credentials' });
+      }
+      
+      // Generate token
+      const token = jwt.sign({ userId: user.id }, SECRET_KEY, { expiresIn: '1h' });
+      
+      return res.json({ 
+        message: 'Login successful',
+        token,
+        user: { id: user.id, name: user.name }
+      });
     }
+  } catch (error) {
+    console.error('Login error:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
-//listners
-app.listen(port , ()=>{
-    console.log("listening on port ${port}");
-})
+// Protected route example
+app.get('/api/v1/profile', authenticateToken, (req, res) => {
+  const user = users.find(u => u.id === req.user.userId);
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  
+  res.json({ 
+    id: user.id,
+    username: user.username,
+    name: user.name
+  });
+});
+
+// Middleware to authenticate JWT token
+function authenticateToken(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) return res.sendStatus(401);
+  
+  jwt.verify(token, SECRET_KEY, (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+}
+
+// Listener
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
