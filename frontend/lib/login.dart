@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
         if (!mounted) return;
 
         if (response.statusCode == 200) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(context).pushReplacementNamed('/calendar');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Login failed: ${response.body}')),
