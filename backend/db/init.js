@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS pms_history (
   history_id INT PRIMARY KEY AUTO_INCREMENT,
   booking_id INT NULL,
   user_id INT,
-  action ENUM('Check-in', 'Check-out', 'Reservation', 'Cancel'),
+  action ENUM('Check-in', 'Check-out', 'Reservation', 'Cancel', 'Transfer'),
   time DATETIME,
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id),
   FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
