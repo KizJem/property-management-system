@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class CalendarDashboard extends StatelessWidget {
+class CalendarDashboard extends StatefulWidget {
   final List<String> dates;
   final Map<String, List<String>> rooms;
 
@@ -12,85 +12,174 @@ class CalendarDashboard extends StatelessWidget {
   });
 
   @override
+  State<CalendarDashboard> createState() => _CalendarDashboardState();
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(IterableProperty<String>('dates', dates));
+    properties.add(DiagnosticsProperty<Map<String, List<String>>>('rooms', rooms));
+  }
+}
+
+class _CalendarDashboardState extends State<CalendarDashboard> {
+  bool _sidebarExpanded = true;
+  final double _sidebarWidth = 150;
+  final double _sidebarCollapsedWidth = 48;
+  final Map<String, String> _roomStatus = {}; // Track room statuses
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar Dashboard'),
-        backgroundColor: Colors.black87,
-      ),
-      body: Column(
-        children: [
-          // Date Header Row
-          Container(
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  // Empty cell for room names column
-                  Container(
-                    width: 200,
-                    alignment: Alignment.center,
-                    child: const Text(
-                      '', 
-                      style: TextStyle(color: Colors.white),
+    final mainContent = LayoutBuilder(
+      builder: (context, constraints) {
+        return SizedBox.expand(
+          child: Column(
+            children: [
+              // Sticky date header
+              Container(
+                color: Colors.black,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 200,
+                      alignment: Alignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Icon(Icons.meeting_room, color: Colors.white, size: 20),
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Rooms',
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                        ],
+                      ),
+                    ),
+                    ...widget.dates.map((date) => Container(
+                          width: 100,
+                          alignment: Alignment.center,
+                          child: Text(
+                            date,
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )),
+                  ],
+                ),
+              ),
+              // Scrollable room rows
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: constraints.maxWidth,
+                      minHeight: constraints.maxHeight - 48, // 48 is approx header height
+                    ),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                        children: [
+                          _buildRoomTypeSection('STANDARD SINGLE ROOMS'),
+                          _buildRoomTypeSection('SUPERIOR SINGLE ROOMS'),
+                          _buildRoomTypeSection('STANDARD DOUBLE ROOMS'),
+                        ],
+                      ),
                     ),
                   ),
-                  // Date cells
-                  ...dates.map((date) => Container(
-                    width: 100,
-                    alignment: Alignment.center,
-                    child: Text(
-                      date, 
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  )),
-                ],
+                ),
               ),
-            ),
+            ],
           ),
+        );
+      },
+    );
 
-          // Room Rows
-          Expanded(
-            child: ListView(
-              children: [
-                // STANDARD SINGLE ROOMS
-                _buildRoomTypeSection(
-                  context,
-                  title: 'STANDARD SINGLE ROOMS',
-                  rooms: rooms['STANDARD SINGLE ROOMS'] ?? [],
-                ),
-                
-                // SUPERIOR SINGLE ROOMS
-                _buildRoomTypeSection(
-                  context,
-                  title: 'SUPERIOR SINGLE ROOMS',
-                  rooms: rooms['SUPERIOR SINGLE ROOMS'] ?? [],
-                ),
-                
-                // STANDARD DOUBLE ROOMS
-                _buildRoomTypeSection(
-                  context,
-                  title: 'STANDARD DOUBLE ROOMS',
-                  rooms: rooms['STANDARD DOUBLE ROOMS'] ?? [],
-                ),
-              ],
-            ),
-          ),
-        ],
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.white),
+          onPressed: () => setState(() => _sidebarExpanded = !_sidebarExpanded),
+          tooltip: _sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar',
+        ),
+        title: const Text('System Name'),
+        backgroundColor: Colors.black87,
       ),
+      body: _sidebarExpanded
+          ? Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: _sidebarWidth,
+                  color: Colors.grey[200],
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      _buildSidebarItem(Icons.calendar_today, 'Calendar', isHeader: true, showText: true),
+                      _buildSidebarItem(Icons.login, 'Check-in Logs', showText: true),
+                      _buildSidebarItem(Icons.list_alt, 'Activity Logs', showText: true),
+                    ],
+                  ),
+                ),
+                Expanded(child: mainContent),
+              ],
+            )
+          : mainContent,
     );
   }
 
-  Widget _buildRoomTypeSection(BuildContext context, {
-    required String title,
-    required List<String> rooms,
-  }) {
+  Widget _buildSidebarItem(IconData icon, String title, {bool isHeader = false, bool showText = true, bool centerIcon = false}) {
+  return Tooltip(
+    message: showText ? '' : title,
+    child: InkWell(
+      onTap: isHeader ? null : () {},
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: centerIcon ? 0 : 12,
+          horizontal: showText ? 8 : 0,
+        ),
+        constraints: const BoxConstraints(
+          minHeight: 48,
+          maxHeight: 60,
+        ),
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: Colors.grey.shade400)),
+        ),
+        child: showText
+            ? Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 20),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        title,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+                          fontSize: isHeader ? 16 : 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Center(
+                child: Icon(icon, size: 24),
+              ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildRoomTypeSection(String title) {
+    final roomList = widget.rooms[title] ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Room type header
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Text(
@@ -101,45 +190,49 @@ class CalendarDashboard extends StatelessWidget {
             ),
           ),
         ),
-        
-        // Room rows
-        ...rooms.map((room) => Container(
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade300),
-            ),
-          ),
+        ...roomList.map((room) => Container(
           height: 50,
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+          ),
           child: Row(
             children: [
-              // Room name cell
-              Container(
+              SizedBox(
                 width: 200,
-                padding: const EdgeInsets.only(left: 8),
-                child: Text(
-                  room,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          room,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      _buildStatusDropdown(room),
+                    ],
+                  ),
                 ),
               ),
               // Date cells for this room
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: List.generate(dates.length, (index) {
-                      return Container(
-                        width: 100,
-                        height: 50,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            right: BorderSide(color: Colors.grey.shade300),
-                          ),
-                        ),
-                        child: const Text(''),
-                      );
-                    }),
-                  ),
+              SizedBox(
+                width: widget.dates.length * 100,
+                child: Row(
+                  children: List.generate(widget.dates.length, (index) {
+                    return Container(
+                      width: 100,
+                      height: 50,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Colors.grey.shade300)),
+                      ),
+                      child: const Text(''),
+                    );
+                  }),
                 ),
               ),
             ],
@@ -149,10 +242,139 @@ class CalendarDashboard extends StatelessWidget {
     );
   }
 
+  Widget _buildStatusDropdown(String roomId) {
+  // Define status options with color, label, and section
+  const statusSections = [
+    {
+      'section': 'AVAILABLE',
+      'items': [
+        {
+          'key': 'vacant_clean_inspected',
+          'color': Colors.green,
+          'label': 'Vacant, Clean, Inspected',
+        },
+        {
+          'key': 'vacant_dirty',
+          'color': Colors.yellow,
+          'label': 'Vacant, Dirty',
+        },
+      ],
+    },
+    {
+      'section': 'OCCUPIED',
+      'items': [
+        {
+          'key': 'occupied_clean',
+          'color': Colors.red,
+          'label': 'Occupied, Clean',
+        },
+        {
+          'key': 'occupied_dirty',
+          'color': Colors.orange,
+          'label': 'Occupied, Dirty',
+        },
+      ],
+    },
+    {
+      'section': 'UNAVAILABLE',
+      'items': [
+        {
+          'key': 'out_of_order',
+          'color': Colors.grey,
+          'label': 'Out of Order',
+        },
+        {
+          'key': 'blocked',
+          'color': Colors.black,
+          'label': 'Blocked',
+        },
+        {
+          'key': 'house_use',
+          'color': Colors.purple,
+          'label': 'House Use',
+        },
+      ],
+    },
+  ];
+
+  // Find the current status key
+  String currentStatus = _roomStatus[roomId] ?? 'vacant_clean_inspected';
+  Color currentColor = Colors.green;
+  for (var section in statusSections) {
+    for (var item in section['items'] as List) {
+      if (item['key'] == currentStatus) {
+        currentColor = item['color'] as Color;
+      }
+    }
+  }
+
+  return PopupMenuButton<String>(
+    icon: Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: currentColor,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.black, width: 2),
+      ),
+    ),
+    itemBuilder: (context) {
+      List<PopupMenuEntry<String>> entries = [];
+      for (var section in statusSections) {
+        entries.add(
+          PopupMenuItem<String>(
+            enabled: false,
+            child: Text(
+              section['section'] as String,
+              style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+            ),
+          ),
+        );
+        for (var item in section['items'] as List) {
+          entries.add(
+            PopupMenuItem<String>(
+              value: item['key'] as String,
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: item['color'] as Color,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.black, width: 1),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      item['label'] as String,
+                      style: const TextStyle(fontSize: 15),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+      return entries;
+    },
+    onSelected: (status) {
+      setState(() {
+        _roomStatus[roomId] = status;
+      });
+    },
+    tooltip: 'Housekeeping status',
+  );
+}
+
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(IterableProperty<String>('dates', dates));
-    properties.add(DiagnosticsProperty<Map<String, List<String>>>('rooms', rooms));
+    properties.add(DiagnosticsProperty<bool>('_sidebarExpanded', _sidebarExpanded));
+    properties.add(DoubleProperty('_sidebarWidth', _sidebarWidth));
+    properties.add(DoubleProperty('_sidebarCollapsedWidth', _sidebarCollapsedWidth));
+    properties.add(DiagnosticsProperty<Map<String, String>>('_roomStatus', _roomStatus));
   }
 }
