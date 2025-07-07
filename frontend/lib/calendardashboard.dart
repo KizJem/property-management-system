@@ -34,12 +34,83 @@ class CalendarDashboard extends StatefulWidget {
 }
 
 class _CalendarDashboardState extends State<CalendarDashboard> {
+  // Returns the header date string for the calendar header (e.g., "8 Aug 2021")
+  String _getHeaderDateString() {
+    final day = _currentStartDay;
+    final date = DateTime(_selectedYear, _selectedMonth, day);
+    final monthName = _monthAbbr(date.month);
+    return "$day $monthName ${date.year}";
+  }
+
   bool _sidebarExpanded = true;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
   final Map<String, String> _roomStatus = {}; // Track room statuses
-  int _selectedMonth = 0;
-  int _selectedYear = 0;
+  int _selectedMonth = DateTime.now().month - 1; // 0-based for dropdown
+  int _selectedYear = DateTime.now().year;
+  void _showMonthYearPicker(BuildContext context) async {
+    int tempMonth = _selectedMonth;
+    int tempYear = _selectedYear;
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Select Month and Year'),
+          content: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DropdownButton<int>(
+                value: tempMonth,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                items: List.generate(12, (i) => DropdownMenuItem(
+                  value: i,
+                  child: Text(_monthAbbr(i + 1)),
+                )),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() { tempMonth = val; });
+                  }
+                },
+              ),
+              const SizedBox(width: 12),
+              DropdownButton<int>(
+                value: tempYear,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                items: List.generate(10, (i) {
+                  int year = DateTime.now().year - 5 + i;
+                  return DropdownMenuItem(
+                    value: year,
+                    child: Text(year.toString()),
+                  );
+                }),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() { tempYear = val; });
+                  }
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedMonth = tempMonth;
+                  _selectedYear = tempYear;
+                });
+                Navigator.of(ctx).pop();
+              },
+              child: const Text('Apply'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -71,12 +142,26 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     // Optionally, update dates here if you want to regenerate the grid
   }
 
-  List<Map<String, String>> _generateDatesForMonth(int year, int month) {
+  List<Map<String, String>> _generateDatesForMonth(
+    int year,
+    int month, {
+    int startDay = 1,
+    int daysToShow = 7,
+  }) {
     final daysInMonth = DateTime(year, month + 1, 0).day;
-    return List.generate(daysInMonth, (i) {
-      final date = DateTime(year, month, i + 1);
+    final endDay = (startDay + daysToShow - 1).clamp(1, daysInMonth);
+    return List.generate(endDay - startDay + 1, (i) {
+      final date = DateTime(year, month, startDay + i);
       return {
-        'weekday': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7],
+        'weekday': [
+          'Sun',
+          'Mon',
+          'Tue',
+          'Wed',
+          'Thu',
+          'Fri',
+          'Sat',
+        ][date.weekday % 7],
         'date': "${_monthAbbr(date.month)} ${date.day}",
       };
     });
@@ -84,70 +169,102 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   String _monthAbbr(int month) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return months[month - 1];
   }
 
+  int _currentStartDay = 1;
+  // Remove days to show limit: show all days in the month
+
   @override
   Widget build(BuildContext context) {
-    final dates = _generateDatesForMonth(_selectedYear, _selectedMonth);
+    final daysInMonth = DateTime(_selectedYear, _selectedMonth + 1, 0).day;
+    final dates = _generateDatesForMonth(
+      _selectedYear,
+      _selectedMonth,
+      startDay: 1,
+      daysToShow: daysInMonth,
+    );
     final mainContent = LayoutBuilder(
       builder: (context, constraints) {
         return SizedBox.expand(
           child: Column(
             children: [
-              // Month/Year Selector UI
-              _buildMonthSelector(),
-              // Sticky date header
+              // Calendar header with single filter button
               Container(
-                color: Colors.black,
+                color: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Rooms column header (empty, to align with room cells)
                     Container(
-                      width: 200,
+                      width: 300,
                       alignment: Alignment.center,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.meeting_room,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Rooms',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
+                      decoration: const BoxDecoration(
+                        border: Border(
+                          right: BorderSide(color: Colors.black26, width: 2),
+                        ),
+                      ),
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[100],
+                          foregroundColor: Colors.black87,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        icon: const Icon(Icons.filter_list, color: Colors.black54),
+                        label: Text(
+                          "${_monthAbbr(_selectedMonth + 1)} ${_selectedYear}",
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
+                        onPressed: () => _showMonthYearPicker(context),
                       ),
                     ),
-                    // Date headers
+                    // Date headers (aligned with date cells)
                     ...dates.map((dateMap) {
                       return Container(
-                        width: 80, // Match the width of the date columns in the rows
+                        width: 80,
                         alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            right: BorderSide(color: Colors.grey.shade300),
+                            bottom: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               dateMap['weekday'] ?? '',
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: Colors.black87,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 15,
                               ),
                             ),
+                            const SizedBox(height: 2),
                             Text(
-                              dateMap['date'] ?? '',
-                              style: const TextStyle(color: Colors.white),
+                              dateMap['date']?.split(' ').last ?? '',
+                              style: const TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.normal,
+                                fontSize: 15,
+                              ),
                             ),
                           ],
                         ),
@@ -163,7 +280,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minWidth: constraints.maxWidth,
-                      minHeight: constraints.maxHeight - 48, // 48 is approx header height
+                      minHeight:
+                          constraints.maxHeight -
+                          48, // 48 is approx header height
                     ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
@@ -431,7 +550,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 ),
               ),
             ),
-          ); 
+          );
           for (var item in section['items'] as List) {
             entries.add(
               PopupMenuItem<String>(
@@ -473,8 +592,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   Widget _buildMonthSelector() {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return Container(
       color: const Color(0xFFF3F5F8),
@@ -492,7 +621,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 child: GestureDetector(
                   onTap: () => _changeMonth(i + 1),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 10,
+                    ),
                     decoration: isSelected
                         ? BoxDecoration(
                             color: const Color(0xFF5B3DF5),
@@ -503,7 +635,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       months[i],
                       style: TextStyle(
                         color: isSelected ? Colors.white : Colors.black,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ),
