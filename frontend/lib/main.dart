@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'calendardashboard.dart';
 import 'login.dart';
+import 'actvitylogs.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,7 +28,10 @@ class MyApp extends StatelessWidget {
           final currentMonth = now.month;
           final currentYear = now.year;
           // Generate dates for the current month
-          final daysInMonth = DateUtils.getDaysInMonth(currentYear, currentMonth);
+          final daysInMonth = DateUtils.getDaysInMonth(
+            currentYear,
+            currentMonth,
+          );
           final dates = List.generate(daysInMonth, (index) {
             final date = DateTime(currentYear, currentMonth, index + 1);
             return {
@@ -64,6 +68,7 @@ class MyApp extends StatelessWidget {
             currentYear: currentYear,
           );
         },
+        '/activitylogs': (context) => const ActivityLogsPage(),
       },
     );
   }

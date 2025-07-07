@@ -61,21 +61,32 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             children: [
               DropdownButton<int>(
                 value: tempMonth,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                items: List.generate(12, (i) => DropdownMenuItem(
-                  value: i,
-                  child: Text(_monthAbbr(i + 1)),
-                )),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+                items: List.generate(
+                  12,
+                  (i) => DropdownMenuItem(
+                    value: i,
+                    child: Text(_monthAbbr(i + 1)),
+                  ),
+                ),
                 onChanged: (val) {
                   if (val != null) {
-                    setState(() { tempMonth = val; });
+                    setState(() {
+                      tempMonth = val;
+                    });
                   }
                 },
               ),
               const SizedBox(width: 12),
               DropdownButton<int>(
                 value: tempYear,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
                 items: List.generate(10, (i) {
                   int year = DateTime.now().year - 5 + i;
                   return DropdownMenuItem(
@@ -85,7 +96,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 }),
                 onChanged: (val) {
                   if (val != null) {
-                    setState(() { tempYear = val; });
+                    setState(() {
+                      tempYear = val;
+                    });
                   }
                 },
               ),
@@ -223,13 +236,24 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           backgroundColor: Colors.grey[100],
                           foregroundColor: Colors.black87,
                           elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                        icon: const Icon(Icons.filter_list, color: Colors.black54),
+                        icon: const Icon(
+                          Icons.filter_list,
+                          color: Colors.black54,
+                        ),
                         label: Text(
                           "${_monthAbbr(_selectedMonth + 1)} ${_selectedYear}",
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
                         onPressed: () => _showMonthYearPicker(context),
                       ),
@@ -338,6 +362,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         Icons.list_alt,
                         'Activity Logs',
                         showText: true,
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/activitylogs',
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -355,11 +385,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     bool isHeader = false,
     bool showText = true,
     bool centerIcon = false,
+    VoidCallback? onTap,
   }) {
     return Tooltip(
       message: showText ? '' : title,
       child: InkWell(
-        onTap: isHeader ? null : () {},
+        onTap: isHeader ? null : onTap,
         child: Container(
           padding: EdgeInsets.symmetric(
             vertical: centerIcon ? 0 : 12,
