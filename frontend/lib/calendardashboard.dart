@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import intl package for date formatting
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -39,14 +38,68 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
   final Map<String, String> _roomStatus = {}; // Track room statuses
+  int _selectedMonth = 0;
+  int _selectedYear = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMonth = widget.currentMonth;
+    _selectedYear = widget.currentYear;
+  }
+
+  void _goToToday() {
+    final now = DateTime.now();
+    setState(() {
+      _selectedMonth = now.month;
+      _selectedYear = now.year;
+    });
+    // Optionally, update dates here if you want to regenerate the grid
+  }
+
+  void _changeMonth(int month) {
+    setState(() {
+      _selectedMonth = month;
+    });
+    // Optionally, update dates here if you want to regenerate the grid
+  }
+
+  void _changeYear(int delta) {
+    setState(() {
+      _selectedYear += delta;
+    });
+    // Optionally, update dates here if you want to regenerate the grid
+  }
+
+  List<Map<String, String>> _generateDatesForMonth(int year, int month) {
+    final daysInMonth = DateTime(year, month + 1, 0).day;
+    return List.generate(daysInMonth, (i) {
+      final date = DateTime(year, month, i + 1);
+      return {
+        'weekday': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7],
+        'date': "${_monthAbbr(date.month)} ${date.day}",
+      };
+    });
+  }
+
+  String _monthAbbr(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return months[month - 1];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final dates = _generateDatesForMonth(_selectedYear, _selectedMonth);
     final mainContent = LayoutBuilder(
       builder: (context, constraints) {
         return SizedBox.expand(
           child: Column(
             children: [
+              // Month/Year Selector UI
+              _buildMonthSelector(),
               // Sticky date header
               Container(
                 color: Colors.black,
@@ -78,10 +131,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       ),
                     ),
                     // Date headers
-                    ...widget.dates.map((dateMap) {
+                    ...dates.map((dateMap) {
                       return Container(
-                        width:
-                            80, // Match the width of the date columns in the rows
+                        width: 80, // Match the width of the date columns in the rows
                         alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -111,17 +163,15 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: ConstrainedBox(
                     constraints: BoxConstraints(
                       minWidth: constraints.maxWidth,
-                      minHeight:
-                          constraints.maxHeight -
-                          48, // 48 is approx header height
+                      minHeight: constraints.maxHeight - 48, // 48 is approx header height
                     ),
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child: Column(
                         children: [
-                          _buildRoomTypeSection('STANDARD SINGLE ROOMS'),
-                          _buildRoomTypeSection('SUPERIOR SINGLE ROOMS'),
-                          _buildRoomTypeSection('STANDARD DOUBLE ROOMS'),
+                          _buildRoomTypeSection('STANDARD SINGLE ROOMS', dates),
+                          _buildRoomTypeSection('SUPERIOR SINGLE ROOMS', dates),
+                          _buildRoomTypeSection('STANDARD DOUBLE ROOMS', dates),
                         ],
                       ),
                     ),
@@ -229,7 +279,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-  Widget _buildRoomTypeSection(String title) {
+  Widget _buildRoomTypeSection(String title, List<Map<String, String>> dates) {
     final roomList = widget.rooms[title] ?? [];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,9 +324,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 ),
                 // Date cells for this room
                 SizedBox(
-                  width: widget.dates.length * 80, // Match header width
+                  width: dates.length * 80, // Match header width
                   child: Row(
-                    children: List.generate(widget.dates.length, (index) {
+                    children: List.generate(dates.length, (index) {
                       return Container(
                         width: 80, // Match header width
                         height: 50,
@@ -381,7 +431,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 ),
               ),
             ),
-          ); // <-- moved closing parenthesis here
+          ); 
           for (var item in section['items'] as List) {
             entries.add(
               PopupMenuItem<String>(
@@ -418,6 +468,69 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         });
       },
       tooltip: 'Housekeeping status',
+    );
+  }
+
+  Widget _buildMonthSelector() {
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return Container(
+      color: const Color(0xFFF3F5F8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Removed previous/next month icons
+          ...List.generate(12, (i) {
+            final isSelected = (i + 1) == _selectedMonth;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: GestureDetector(
+                  onTap: () => _changeMonth(i + 1),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+                    decoration: isSelected
+                        ? BoxDecoration(
+                            color: const Color(0xFF5B3DF5),
+                            borderRadius: BorderRadius.circular(16),
+                          )
+                        : null,
+                    child: Text(
+                      months[i],
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }),
+          const SizedBox(width: 16),
+          IconButton(
+            icon: const Icon(Icons.chevron_left, size: 20),
+            onPressed: () => _changeYear(-1),
+            tooltip: 'Previous Year',
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              _selectedYear.toString(),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right, size: 20),
+            onPressed: () => _changeYear(1),
+            tooltip: 'Next Year',
+          ),
+        ],
+      ),
     );
   }
 
