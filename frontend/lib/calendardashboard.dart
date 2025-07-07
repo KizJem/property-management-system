@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'booking.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -88,7 +89,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   fontSize: 18,
                 ),
                 items: List.generate(10, (i) {
-                  int year = DateTime.now().year - 5 + i;
+                  final int year = DateTime.now().year - 5 + i;
                   return DropdownMenuItem(
                     value: year,
                     child: Text(year.toString()),
@@ -198,7 +199,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return months[month - 1];
   }
 
-  int _currentStartDay = 1;
+  final int _currentStartDay = 1;
   // Remove days to show limit: show all days in the month
 
   @override
@@ -207,7 +208,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     final dates = _generateDatesForMonth(
       _selectedYear,
       _selectedMonth,
-      startDay: 1,
       daysToShow: daysInMonth,
     );
     final mainContent = LayoutBuilder(
@@ -249,7 +249,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           color: Colors.black54,
                         ),
                         label: Text(
-                          "${_monthAbbr(_selectedMonth + 1)} ${_selectedYear}",
+                          "${_monthAbbr(_selectedMonth + 1)} $_selectedYear",
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -351,21 +351,27 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         Icons.calendar_today,
                         'Calendar',
                         isHeader: true,
-                        showText: true,
                       ),
-                      _buildSidebarItem(
-                        Icons.login,
-                        'Check-in Logs',
-                        showText: true,
-                      ),
+                      _buildSidebarItem(Icons.login, 'Check-in Logs'),
                       _buildSidebarItem(
                         Icons.list_alt,
                         'Activity Logs',
-                        showText: true,
                         onTap: () {
                           Navigator.pushReplacementNamed(
                             context,
                             '/activitylogs',
+                          );
+                        },
+                      ),
+                      _buildSidebarItem(
+                        Icons.book_online,
+                        'Booking',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BookingPage(),
+                            ),
                           );
                         },
                       ),
@@ -547,7 +553,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     ];
 
     // Find the current status key
-    String currentStatus = _roomStatus[roomId] ?? 'vacant_clean_inspected';
+    final String currentStatus =
+        _roomStatus[roomId] ?? 'vacant_clean_inspected';
     Color currentColor = Colors.green;
     for (var section in statusSections) {
       for (var item in section['items'] as List) {
@@ -568,7 +575,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         ),
       ),
       itemBuilder: (context) {
-        List<PopupMenuEntry<String>> entries = [];
+        final List<PopupMenuEntry<String>> entries = [];
         for (var section in statusSections) {
           entries.add(
             PopupMenuItem<String>(
