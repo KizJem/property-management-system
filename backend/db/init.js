@@ -6,6 +6,8 @@ USE pms;
 
 CREATE TABLE IF NOT EXISTS pms_user (
   user_id INT PRIMARY KEY AUTO_INCREMENT,
+  email VARCHAR(50),
+  password VARCHAR(50),
   name VARCHAR(100)
 );
 
@@ -85,7 +87,7 @@ db.query(schema, (err) => {
   USE pms;
 
   INSERT INTO pms_user (user_id, name)
-  VALUES (1, 'Front Desk Admin')
+  VALUES (1, 'admin', 'admin', 'Front Desk Admin')
   ON DUPLICATE KEY UPDATE name = name;
 
   INSERT INTO pms_guest (guest_id, first_name, last_name, email)
