@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS pms_booking (
   check_out DATE,
   no_days INT,
   additional_guest INT,
+  special_request VARCHAR(250),
   original_bill DECIMAL(10,2),
   total_bill DECIMAL(10,2),
   discount DECIMAL(5,2),
