@@ -31,7 +31,6 @@ CREATE TABLE IF NOT EXISTS pms_room (
   room_id INT PRIMARY KEY AUTO_INCREMENT,
   room_type_id INT,
   room_number VARCHAR(10),
-  housekeeping_status ENUM('Vacant, Clean, Inspected', 'Vacant, Dirty', 'Occupied, Clean', 'Occupied, Dirty', 'Out of Order', 'Blocked', 'House Use'),
   FOREIGN KEY (room_type_id) REFERENCES pms_room_type(room_type_id)
 );
 
@@ -61,6 +60,7 @@ CREATE TABLE IF NOT EXISTS pms_room_status (
   booking_id INT NULL,
   date DATE,
   status ENUM('Available', 'Reserved', 'Occupied'),
+  housekeeping_status ENUM('Vacant, Clean, Inspected', 'Vacant, Dirty', 'Occupied, Clean', 'Occupied, Dirty', 'Out of Order', 'Blocked', 'House Use'),
   FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id)
 );
