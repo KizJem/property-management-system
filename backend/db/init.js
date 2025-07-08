@@ -6,8 +6,8 @@ USE pms;
 
 CREATE TABLE IF NOT EXISTS pms_user (
   user_id INT PRIMARY KEY AUTO_INCREMENT,
-  email VARCHAR(50),
-  password VARCHAR(50),
+  user_email VARCHAR(100),
+  password VARCHAR(100),
   name VARCHAR(100)
 );
 
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS pms_guest (
   guest_id INT PRIMARY KEY AUTO_INCREMENT,
   first_name VARCHAR(50),
   last_name VARCHAR(50),
-  email VARCHAR(100)
+  guest_email VARCHAR(100)
 );
 
 CREATE TABLE IF NOT EXISTS pms_room_type (
@@ -60,7 +60,15 @@ CREATE TABLE IF NOT EXISTS pms_room_status (
   booking_id INT NULL,
   date DATE,
   status ENUM('Available', 'Reserved', 'Occupied'),
-  housekeeping_status ENUM('Vacant, Clean, Inspected', 'Vacant, Dirty', 'Occupied, Clean', 'Occupied, Dirty', 'Out of Order', 'Blocked', 'House Use'),
+  housekeeping_status ENUM(
+    'Vacant, Clean, Inspected',
+    'Vacant, Dirty',
+    'Occupied, Clean',
+    'Occupied, Dirty',
+    'Out of Order',
+    'Blocked',
+    'House Use'
+  ),
   FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id)
 );
@@ -84,28 +92,28 @@ db.query(schema, (err) => {
   console.log('PMS schema initialized');
 
   const seed = `
-  USE pms;
+    USE pms;
 
-  INSERT INTO pms_user (user_id, name)
-  VALUES (1, 'admin', 'admin', 'Front Desk Admin')
-  ON DUPLICATE KEY UPDATE name = name;
+    INSERT INTO pms_user (user_id, user_email, password, name)
+    VALUES (1, 'admin', 'admin', 'Front Desk Admin')
+    ON DUPLICATE KEY UPDATE name = name;
 
-  INSERT INTO pms_guest (guest_id, first_name, last_name, email)
-  VALUES (1, 'John', 'Doe', 'john.doe@example.com')
-  ON DUPLICATE KEY UPDATE email = email;
+    INSERT INTO pms_guest (guest_id, first_name, last_name, guest_email)
+    VALUES (1, 'John', 'Doe', 'john.doe@example.com')
+    ON DUPLICATE KEY UPDATE guest_email = guest_email;
 
-  INSERT INTO pms_room_type (room_type_id, room_category, description, price, no_guest, additional_guest_price)
-  VALUES
-    (1, 'Single', 'Single room with 1 bed', 1000.00, 1, 200.00),
-    (2, 'Double', 'Double room with 2 beds', 1500.00, 2, 300.00)
-  ON DUPLICATE KEY UPDATE room_category = room_category;
+    INSERT INTO pms_room_type (room_type_id, room_category, description, price, no_guest, additional_guest_price)
+    VALUES
+      (1, 'Single', 'Single room with 1 bed', 1000.00, 1, 200.00),
+      (2, 'Double', 'Double room with 2 beds', 1500.00, 2, 300.00)
+    ON DUPLICATE KEY UPDATE room_category = room_category;
 
-  INSERT INTO pms_room (room_id, room_type_id, room_number, housekeeping_status)
-  VALUES
-    (1, 1, '101', 'Clean'),
-    (2, 2, '102', 'Dirty'),
-    (3, 2, '103', 'OOS')
-  ON DUPLICATE KEY UPDATE room_number = room_number;
+    INSERT INTO pms_room (room_id, room_type_id, room_number)
+    VALUES
+      (1, 1, '101'),
+      (2, 2, '102'),
+      (3, 2, '103')
+    ON DUPLICATE KEY UPDATE room_number = room_number;
   `;
 
   db.query(seed, (err) => {
