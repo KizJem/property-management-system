@@ -602,7 +602,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     width: 80,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue.withOpacity(0.3) : null,
+                      color: isSelected ? Colors.green : null,
                       border: Border(
                         right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
                         bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
