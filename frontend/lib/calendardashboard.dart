@@ -594,19 +594,22 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
               final i = dateEntry.key;
               final isLastDate = i == dates.length - 1;
               final isSelected = start != null && ((end != null && i >= start && i <= end) || (end == null && i == start));
-              return GestureDetector(
-                onTap: isBookingActive ? () => _onCellTap(room, i) : null,
-                child: Container(
-                  width: 80,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: isSelected ? Colors.blue.withOpacity(0.3) : null,
-                    border: Border(
-                      right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
-                      bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+              return MouseRegion(
+                cursor: isBookingActive ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                child: GestureDetector(
+                  onTap: isBookingActive ? () => _onCellTap(room, i) : null,
+                  child: Container(
+                    width: 80,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.blue.withOpacity(0.3) : null,
+                      border: Border(
+                        right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                        bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                      ),
                     ),
+                    child: const Text(''),
                   ),
-                  child: const Text(''),
                 ),
               );
             }).toList(),
