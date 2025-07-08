@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'reservecell.dart';
+import 'availablecell.dart';
+import 'occupiedcell.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -43,7 +45,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return "$day $monthName ${date.year}";
   }
 
-  bool _sidebarExpanded = true;
+  bool _sidebarExpanded = false;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
   final Map<String, String> _roomStatus = {}; // Track room statuses
@@ -375,6 +377,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         },
                       ),
                       _buildSidebarItem(
+                        Icons.check_box,
+                        'Available Cell',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AvailableCellPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildSidebarItem(
                         Icons.book_online,
                         'Reserve Cell',
                         onTap: () {
@@ -382,6 +396,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => const ReservecellPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildSidebarItem(
+                        Icons.hotel,
+                        'Occupied Cell',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const OccupiedCellPage(),
                             ),
                           );
                         },
