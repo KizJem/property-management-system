@@ -45,7 +45,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return "$day $monthName ${date.year}";
   }
 
-  bool _sidebarExpanded = true;
+  bool _sidebarExpanded = false;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
   int _selectedMonth = DateTime.now().month; // 1-based for DateTime
@@ -213,6 +213,35 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   final int _currentStartDay = 1;
   // Remove days to show limit: show all days in the month
+
+  // Add state for booking selection
+  Map<String, int?> _selectedStart = {};
+  Map<String, int?> _selectedEnd = {};
+  String? _activeBookingRoom;
+
+  void _onCellTap(String room, int dateIndex) {
+    setState(() {
+      if (_activeBookingRoom != null && _activeBookingRoom != room && _selectedEnd[_activeBookingRoom!] == null) {
+        // Prevent booking another room while previous booking is not done
+        return;
+      }
+      if (_selectedStart[room] == null || (_selectedStart[room] != null && _selectedEnd[room] != null)) {
+        // Start new selection
+        _selectedStart[room] = dateIndex;
+        _selectedEnd[room] = null;
+        _activeBookingRoom = room;
+      } else if (_selectedStart[room] != null && _selectedEnd[room] == null) {
+        // Complete selection
+        if (dateIndex < _selectedStart[room]!) {
+          _selectedEnd[room] = _selectedStart[room];
+          _selectedStart[room] = dateIndex;
+        } else {
+          _selectedEnd[room] = dateIndex;
+        }
+        _activeBookingRoom = null;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -556,19 +585,29 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         ),
         ...roomList.asMap().entries.map((entry) {
           final isLast = entry.key == roomList.length - 1;
+          final room = entry.value;
+          final start = _selectedStart[room];
+          final end = _selectedEnd[room];
+          final isBookingActive = _activeBookingRoom == null || _activeBookingRoom == room || (_selectedEnd[_activeBookingRoom ?? ''] != null);
           return Row(
             children: dates.asMap().entries.map((dateEntry) {
-              final isLastDate = dateEntry.key == dates.length - 1;
-              return Container(
-                width: 80,
-                height: 50,
-                decoration: BoxDecoration(
-                  border: Border(
-                    right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
-                    bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+              final i = dateEntry.key;
+              final isLastDate = i == dates.length - 1;
+              final isSelected = start != null && ((end != null && i >= start && i <= end) || (end == null && i == start));
+              return GestureDetector(
+                onTap: isBookingActive ? () => _onCellTap(room, i) : null,
+                child: Container(
+                  width: 80,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.blue.withOpacity(0.3) : null,
+                    border: Border(
+                      right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                      bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                    ),
                   ),
+                  child: const Text(''),
                 ),
-                child: const Text(''),
               );
             }).toList(),
           );
