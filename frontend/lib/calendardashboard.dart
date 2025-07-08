@@ -505,25 +505,36 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
+        // Room type title with background color separator
+        Container(
+          height: 50, // Match room cell height
+          width: 300,
+          alignment: Alignment.centerLeft,
+          color: Colors.grey.shade300, // Background color for separator
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
             title,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
-        ...roomList.map((room) => Container(
-          height: 50,
-          padding: const EdgeInsets.only(left: 8),
-          decoration: BoxDecoration(
-            color: Colors.grey[100], // background color for room cells
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade300), // horizontal line for each row
+        ...roomList.asMap().entries.map((entry) {
+          final isLast = entry.key == roomList.length - 1;
+          return Container(
+            width: 300, // Match the fixed room column width
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.grey[100],
+              border: Border(
+                bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+              ),
             ),
-          ),
-          alignment: Alignment.centerLeft,
-          child: Text(room),
-        )),
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Text(entry.value),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -532,20 +543,36 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     final roomList = widget.rooms[title] ?? [];
     return Column(
       children: [
-        SizedBox(height: 32), // Spacer for room type title
-        ...roomList.map((room) => Row(
-          children: dates.map((date) => Container(
-            width: 80,
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border(
-                right: BorderSide(color: Colors.grey.shade300),
-                bottom: BorderSide(color: Colors.grey.shade300), // horizontal line for each row
-              ),
+        // Room type title background color separator
+        Row(
+          children: List.generate(
+            dates.length,
+            (index) => Container(
+              width: 80,
+              height: 50,
+              color: Colors.grey.shade300, // Background color for separator
             ),
-            child: const Text(''), // Your date cell content here
-          )).toList(),
-        )),
+          ),
+        ),
+        ...roomList.asMap().entries.map((entry) {
+          final isLast = entry.key == roomList.length - 1;
+          return Row(
+            children: dates.asMap().entries.map((dateEntry) {
+              final isLastDate = dateEntry.key == dates.length - 1;
+              return Container(
+                width: 80,
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                    bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                  ),
+                ),
+                child: const Text(''),
+              );
+            }).toList(),
+          );
+        }),
       ],
     );
   }
