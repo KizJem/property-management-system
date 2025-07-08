@@ -273,7 +273,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             alignment: Alignment.center,
                             decoration: const BoxDecoration(
                               border: Border(
-                                right: BorderSide(color: Colors.black26, width: 2),
+                                right: BorderSide(
+                                  color: Colors.black26,
+                                  width: 2,
+                                ),
                               ),
                             ),
                             child: ElevatedButton.icon(
@@ -311,8 +314,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border(
-                                  right: BorderSide(color: Colors.grey.shade300),
-                                  bottom: BorderSide(color: Colors.grey.shade300),
+                                  right: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
+                                  bottom: BorderSide(
+                                    color: Colors.grey.shade300,
+                                  ),
                                 ),
                               ),
                               child: Column(
@@ -366,9 +373,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                 // Date cells columns
                                 Column(
                                   children: [
-                                    _buildDateRows('STANDARD SINGLE ROOMS', dates),
-                                    _buildDateRows('SUPERIOR SINGLE ROOMS', dates),
-                                    _buildDateRows('STANDARD DOUBLE ROOMS', dates),
+                                    _buildDateRows(
+                                      'STANDARD SINGLE ROOMS',
+                                      dates,
+                                    ),
+                                    _buildDateRows(
+                                      'SUPERIOR SINGLE ROOMS',
+                                      dates,
+                                    ),
+                                    _buildDateRows(
+                                      'STANDARD DOUBLE ROOMS',
+                                      dates,
+                                    ),
                                   ],
                                 ),
                               ],
@@ -554,7 +570,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             decoration: BoxDecoration(
               color: Colors.grey[100],
               border: Border(
-                bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
+                bottom: isLast
+                    ? BorderSide.none
+                    : BorderSide(color: Colors.grey.shade300),
               ),
             ),
             alignment: Alignment.centerLeft,
@@ -591,6 +609,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           final isBookingActive = _activeBookingRoom == null || _activeBookingRoom == room || (_selectedEnd[_activeBookingRoom ?? ''] != null);
           return Row(
             children: dates.asMap().entries.map((dateEntry) {
+<<<<<<< HEAD
               final i = dateEntry.key;
               final isLastDate = i == dates.length - 1;
               final isSelected = start != null && ((end != null && i >= start && i <= end) || (end == null && i == start));
@@ -605,6 +624,20 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       right: isLastDate ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
                       bottom: isLast ? BorderSide.none : BorderSide(color: Colors.grey.shade300),
                     ),
+=======
+              final isLastDate = dateEntry.key == dates.length - 1;
+              return Container(
+                width: 80,
+                height: 50,
+                decoration: BoxDecoration(
+                  border: Border(
+                    right: isLastDate
+                        ? BorderSide.none
+                        : BorderSide(color: Colors.grey.shade300),
+                    bottom: isLast
+                        ? BorderSide.none
+                        : BorderSide(color: Colors.grey.shade300),
+>>>>>>> 0c477c317357e0208c81d3535606f76257a4d06a
                   ),
                   child: const Text(''),
                 ),
@@ -617,73 +650,73 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   }
 
   Widget _buildRoomTypeSection(String title, List<Map<String, String>> dates) {
-  final roomList = widget.rooms[title] ?? [];
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Text(
-          title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
-      ...roomList.map(
-        (room) => Container(
-          height: 50,
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+    final roomList = widget.rooms[title] ?? [];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 300,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          room,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+        ),
+        ...roomList.map(
+          (room) => Container(
+            height: 50,
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
+            ),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 300,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            room,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                      // Removed room status dropdown
-                    ],
+                        // Removed room status dropdown
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              // Date cells for this room
-              SizedBox(
-                width: dates.length * 80, // Match header width
-                child: Row(
-                  children: List.generate(dates.length, (index) {
-                    return Container(
-                      width: 80, // Match header width
-                      height: 50,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          right: BorderSide(color: Colors.grey.shade300),
+                // Date cells for this room
+                SizedBox(
+                  width: dates.length * 80, // Match header width
+                  child: Row(
+                    children: List.generate(dates.length, (index) {
+                      return Container(
+                        width: 80, // Match header width
+                        height: 50,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: BorderSide(color: Colors.grey.shade300),
+                          ),
                         ),
-                      ),
-                      child: const Text(''),
-                    );
-                  }),
+                        child: const Text(''),
+                      );
+                    }),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
   Widget _buildMonthSelector() {
     final months = [
