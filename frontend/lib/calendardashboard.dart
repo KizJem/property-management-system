@@ -298,7 +298,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                 color: Colors.black54,
                               ),
                               label: Text(
-                                "${_monthAbbr(_selectedMonth + 1)} $_selectedYear",
+                                "${_monthAbbr(_selectedMonth)} $_selectedYear",
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 20,
