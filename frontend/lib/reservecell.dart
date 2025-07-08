@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'calendardashboard.dart'; // adjust the path if needed
 
-class BookingPage extends StatelessWidget {
-  const BookingPage({super.key});
+class ReservecellPage extends StatelessWidget {
+  const ReservecellPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,103 +15,127 @@ class BookingPage extends StatelessWidget {
           children: [
             // LEFT SIDE
             Expanded(
-              child: Container(
-                margin: const EdgeInsets.only(left: 5, right: 5),
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 5), // Top spacing above the image
-                    // Room Image Placeholder
-                    Container(
-                      height: 300,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[300],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Back button
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Container(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back, size: 16),
+                        label: const Text('Back'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.black87,
+                          textStyle: const TextStyle(fontSize: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 15,
+                          ),
                         ),
                       ),
-                      child: const Center(child: Text('Room Image')),
                     ),
+                  ),
 
-                    const SizedBox(height: 20),
+                  const SizedBox(height: 18),
 
-                    //ROOM DETAILS start
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text(
-                          'Standard Single Room',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w600, // Medium Bold
-                          ),
-                        ),
-                        Text(
-                          '\$250',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold, // Full Bold
-                          ),
-                        ),
-                      ],
+                  // Room details inside border
+                  Container(
+                    margin: const EdgeInsets.only(left: 5, right: 5),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    const SizedBox(height: 12),
-
-                    const Text(
-                      'The room offers a comfortable single bed, perfect for solo travelers seeking a restful stay. It comes with a private bathroom, air-conditioning, a flat-screen TV, a work desk, and complimentary Wi-Fi.',
-                    ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      'Room Features',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 5),
-                    Row(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text('• Comfortable single bed'),
-                              Text('• Private bathroom'),
-                              Text('• Air-conditioning'),
-                              Text('• Flat-screen TV'),
-                              Text('• Work desk'),
-                            ],
+                        const SizedBox(height: 5),
+                        Container(
+                          height: 300,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
                           ),
+                          child: const Center(child: Text('Room Image')),
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                              Text('• Complimentary Wi-Fi'),
-                              Text('• Minimalist design'),
-                              Text('• Ideal for solo travelers'),
-                              Text('• Perfect for short stays'),
-                            ],
-                          ),
+                        const SizedBox(height: 20),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: const [
+                            Text(
+                              'Standard Single Room',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            Text(
+                              '\$250',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'The room offers a comfortable single bed, perfect for solo travelers seeking a restful stay. It comes with a private bathroom, air-conditioning, a flat-screen TV, a work desk, and complimentary Wi-Fi.',
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Room Features',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text('• Comfortable single bed'),
+                                  Text('• Private bathroom'),
+                                  Text('• Air-conditioning'),
+                                  Text('• Flat-screen TV'),
+                                  Text('• Work desk'),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text('• Complimentary Wi-Fi'),
+                                  Text('• Minimalist design'),
+                                  Text('• Ideal for solo travelers'),
+                                  Text('• Perfect for short stays'),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    // ROOM DETAILS end
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
             // STOP HERE
-            const SizedBox(width: 30),
+            const SizedBox(width: 20),
 
-            // RIGHT SIDE
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,26 +143,40 @@ class BookingPage extends StatelessWidget {
                   // Date and Time
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Booking #0000',
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 28,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
-                        child: Text(
-                          '${now.month}/${now.day}/${now.year} '
-                          '${now.hour.toString().padLeft(2, '0')}:'
-                          '${now.minute.toString().padLeft(2, '0')} '
-                          '${now.hour >= 12 ? 'PM' : 'AM'}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            const Text(
+                              'Booking TimeStamp:',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            // const SizedBox(height: 2),
+                            Text(
+                              '${now.month}/${now.day}/${now.year} '
+                              '${now.hour.toString().padLeft(2, '0')}:'
+                              '${now.minute.toString().padLeft(2, '0')} '
+                              '${now.hour >= 12 ? 'PM' : 'AM'}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

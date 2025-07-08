@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'booking.dart';
+import 'reservecell.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -365,12 +365,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       ),
                       _buildSidebarItem(
                         Icons.book_online,
-                        'Booking',
+                        'Reserve Cell',
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const BookingPage(),
+                              builder: (context) => const ReservecellPage(),
                             ),
                           );
                         },
