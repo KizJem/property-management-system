@@ -1,19 +1,15 @@
-// /backend/db/connection.js
-const mysql = require('mysql2');
-require('dotenv').config();
+// db/connection.js
 
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  multipleStatements: true // so init.js can run multiple CREATEs
-});
+const sqlite3 = require('sqlite3').verbose();
+const path = require('path');
 
-db.connect((err) => {
+// Create or open the SQLite database file at /db/pms.db
+const dbPath = path.resolve(__dirname, 'pms.db');
+const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
-    console.error('MySQL connection error:', err.message);
+    console.error('❌ Failed to connect to SQLite DB:', err.message);
   } else {
-    console.log('Connected to MySQL');
+    console.log('✅ Connected to SQLite database at', dbPath);
   }
 });
 

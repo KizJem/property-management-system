@@ -1,126 +1,113 @@
+// db/init.js
+
 const db = require('./connection');
 
 const schema = `
-CREATE DATABASE IF NOT EXISTS pms;
-USE pms;
-
 CREATE TABLE IF NOT EXISTS pms_user (
-  user_id INT PRIMARY KEY AUTO_INCREMENT,
-  user_email VARCHAR(100),
-  password VARCHAR(100),
-  name VARCHAR(100)
+  user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_email TEXT,
+  password TEXT,
+  name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS pms_guest (
-  guest_id INT PRIMARY KEY AUTO_INCREMENT,
-  first_name VARCHAR(50),
-  last_name VARCHAR(50),
-  guest_email VARCHAR(100)
+  guest_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  first_name TEXT,
+  last_name TEXT,
+  guest_email TEXT
 );
 
 CREATE TABLE IF NOT EXISTS pms_room_type (
-  room_type_id INT PRIMARY KEY AUTO_INCREMENT,
-  room_category VARCHAR(50),
+  room_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_category TEXT,
   description TEXT,
-  price DECIMAL(10,2),
-  no_guest INT,
-  additional_guest_price DECIMAL(10,2)
+  price REAL,
+  no_guest INTEGER,
+  additional_guest_price REAL
 );
 
 CREATE TABLE IF NOT EXISTS pms_room (
-  room_id INT PRIMARY KEY AUTO_INCREMENT,
-  room_type_id INT,
-  room_number VARCHAR(10),
+  room_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_type_id INTEGER,
+  room_number TEXT,
   FOREIGN KEY (room_type_id) REFERENCES pms_room_type(room_type_id)
 );
 
 CREATE TABLE IF NOT EXISTS pms_booking (
-  booking_id INT PRIMARY KEY AUTO_INCREMENT,
-  guest_id INT,
-  room_id INT,
-  user_id INT,
-  status ENUM('Reserved', 'Occupied', 'Checked-out', 'Cancelled'),
-  check_in DATE,
-  check_out DATE,
-  no_days INT,
-  additional_guest INT,
-  special_request VARCHAR(250),
-  original_bill DECIMAL(10,2),
-  total_bill DECIMAL(10,2),
-  discount DECIMAL(5,2),
-  payment_method ENUM('Cash', 'Card'),
+  booking_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  guest_id INTEGER,
+  room_id INTEGER,
+  user_id INTEGER,
+  status TEXT,
+  check_in TEXT,
+  check_out TEXT,
+  no_days INTEGER,
+  additional_guest INTEGER,
+  special_request TEXT,
+  original_bill REAL,
+  total_bill REAL,
+  discount REAL,
+  payment_method TEXT,
   FOREIGN KEY (guest_id) REFERENCES pms_guest(guest_id),
   FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
   FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS pms_room_status (
-  status_id INT PRIMARY KEY AUTO_INCREMENT,
-  room_id INT,
-  booking_id INT NULL,
-  date DATE,
-  status ENUM('Available', 'Reserved', 'Occupied'),
-  housekeeping_status ENUM(
-    'Vacant, Clean, Inspected',
-    'Vacant, Dirty',
-    'Occupied, Clean',
-    'Occupied, Dirty',
-    'Out of Order',
-    'Blocked',
-    'House Use'
-  ),
+  status_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  room_id INTEGER,
+  booking_id INTEGER,
+  date TEXT,
+  status TEXT,
+  housekeeping_status TEXT,
   FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id)
 );
 
 CREATE TABLE IF NOT EXISTS pms_history (
-  history_id INT PRIMARY KEY AUTO_INCREMENT,
-  booking_id INT NULL,
-  user_id INT,
-  action ENUM('Check-in', 'Check-out', 'Reservation', 'Cancel', 'Transfer'),
-  time DATETIME,
+  history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  booking_id INTEGER,
+  user_id INTEGER,
+  action TEXT,
+  time TEXT,
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id),
   FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
 );
 `;
 
-db.query(schema, (err) => {
-  if (err) {
-    console.error('Schema initialization failed:', err.message);
-    return;
-  }
-  console.log('PMS schema initialized');
+const seed = `
+INSERT INTO pms_user (user_email, password, name)
+VALUES ('admin@example.com', 'admin', 'Front Desk Admin');
 
-  const seed = `
-    USE pms;
+INSERT INTO pms_guest (first_name, last_name, guest_email)
+VALUES ('John', 'Doe', 'john.doe@example.com');
 
-    INSERT INTO pms_user (user_id, user_email, password, name)
-    VALUES (1, 'admin', 'admin', 'Front Desk Admin')
-    ON DUPLICATE KEY UPDATE name = name;
+INSERT INTO pms_room_type (room_category, description, price, no_guest, additional_guest_price)
+VALUES
+  ('Single', 'Single room with 1 bed', 1000.00, 1, 200.00),
+  ('Double', 'Double room with 2 beds', 1500.00, 2, 300.00);
 
-    INSERT INTO pms_guest (guest_id, first_name, last_name, guest_email)
-    VALUES (1, 'John', 'Doe', 'john.doe@example.com')
-    ON DUPLICATE KEY UPDATE guest_email = guest_email;
+INSERT INTO pms_room (room_type_id, room_number)
+VALUES
+  (1, '101'),
+  (2, '102'),
+  (2, '103');
+`;
 
-    INSERT INTO pms_room_type (room_type_id, room_category, description, price, no_guest, additional_guest_price)
-    VALUES
-      (1, 'Single', 'Single room with 1 bed', 1000.00, 1, 200.00),
-      (2, 'Double', 'Double room with 2 beds', 1500.00, 2, 300.00)
-    ON DUPLICATE KEY UPDATE room_category = room_category;
-
-    INSERT INTO pms_room (room_id, room_type_id, room_number)
-    VALUES
-      (1, 1, '101'),
-      (2, 2, '102'),
-      (3, 2, '103')
-    ON DUPLICATE KEY UPDATE room_number = room_number;
-  `;
-
-  db.query(seed, (err) => {
+db.serialize(() => {
+  db.exec(schema, (err) => {
     if (err) {
-      console.error('Sample data insert failed:', err.message);
+      console.error('❌ Schema initialization failed:', err.message);
     } else {
-      console.log('Sample data inserted');
+      console.log('✅ Schema created');
+
+      db.exec(seed, (err) => {
+        if (err) {
+          console.error('⚠️ Seeding failed (possibly due to duplicates):', err.message);
+        } else {
+          console.log('✅ Sample data inserted');
+        }
+      });
     }
   });
 });
