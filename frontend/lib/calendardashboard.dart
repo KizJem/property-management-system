@@ -337,6 +337,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         title: const Text('System Name'),
         backgroundColor: Colors.black87,
       ),
+
+      // inside Scaffold → body: _sidebarExpanded ? Row(children: [...]) : mainContent,
       body: _sidebarExpanded
           ? Row(
               children: [
@@ -352,7 +354,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         'Calendar',
                         isHeader: true,
                       ),
-                      _buildSidebarItem(Icons.login, 'Check-in Logs'),
+                      _buildSidebarItem(
+                        Icons.login,
+                        'Check-in Logs',
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/checkinlogs',
+                          );
+                        },
+                      ),
                       _buildSidebarItem(
                         Icons.list_alt,
                         'Activity Logs',

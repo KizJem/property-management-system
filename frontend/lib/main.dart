@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'actvitylogs.dart';
 import 'calendardashboard.dart';
+import 'checkinlogs.dart'; // ✅ NEW: Add this import
 import 'login.dart';
 
 void main() {
@@ -23,12 +24,14 @@ class MyApp extends StatelessWidget {
       home: const LoginPage(),
       routes: {
         '/home': (context) => const HomePage(),
+        '/checkinlogs': (context) =>
+            const CheckInLogsPage(), // ✅ NEW: Add route
+        '/activitylogs': (context) => const ActivityLogsPage(),
         '/calendar': (context) {
-          // Get current date
           final now = DateTime.now();
           final currentMonth = now.month;
           final currentYear = now.year;
-          // Generate dates for the current month
+
           final daysInMonth = DateUtils.getDaysInMonth(
             currentYear,
             currentMonth,
@@ -40,6 +43,7 @@ class MyApp extends StatelessWidget {
               'date': DateFormat('MMM d').format(date),
             };
           });
+
           return CalendarDashboard(
             dates: dates,
             rooms: {
@@ -69,7 +73,6 @@ class MyApp extends StatelessWidget {
             currentYear: currentYear,
           );
         },
-        '/activitylogs': (context) => const ActivityLogsPage(),
       },
     );
   }
@@ -82,7 +85,29 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      body: const Center(child: Text('Welcome! Login Successful')),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Welcome! Login Successful'),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/calendar'),
+              child: const Text('Go to Calendar'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/checkinlogs'),
+              child: const Text('Go to Check-In Logs'),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, '/activitylogs'),
+              child: const Text('Go to Activity Logs'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

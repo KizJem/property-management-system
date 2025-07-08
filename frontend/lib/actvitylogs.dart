@@ -119,7 +119,9 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                           Expanded(
                             flex: 2,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                // Future: Add detailed modal here
+                              },
                               child: const Text('[View]'),
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.zero,
@@ -162,20 +164,36 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                       _buildSidebarItem(
                         Icons.calendar_today,
                         'Calendar',
-                        onTap: () => Navigator.pushNamed(context, '/calendar'),
+                        onTap: () {
+                          if (ModalRoute.of(context)?.settings.name !=
+                              '/calendar') {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/calendar',
+                            );
+                          }
+                        },
                       ),
                       _buildSidebarItem(
                         Icons.login,
                         'Check-in Logs',
                         onTap: () {
-                          // Implement check-in logs navigation
+                          if (ModalRoute.of(context)?.settings.name !=
+                              '/checkinlogs') {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/checkinlogs',
+                            );
+                          }
                         },
                       ),
                       _buildSidebarItem(
                         Icons.list_alt,
                         'Activity Logs',
+                        isHeader:
+                            ModalRoute.of(context)?.settings.name ==
+                            '/activitylogs',
                         onTap: () {
-                          // Only navigate if not already on Activity Logs
                           if (ModalRoute.of(context)?.settings.name !=
                               '/activitylogs') {
                             Navigator.pushReplacementNamed(
@@ -184,9 +202,6 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                             );
                           }
                         },
-                        isHeader:
-                            ModalRoute.of(context)?.settings.name ==
-                            '/activitylogs',
                       ),
                     ],
                   ),
