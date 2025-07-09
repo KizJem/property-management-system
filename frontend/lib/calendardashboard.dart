@@ -611,6 +611,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
               _activeBookingRoom == null ||
               _activeBookingRoom == room ||
               (_selectedEnd[_activeBookingRoom ?? ''] != null);
+
           return Row(
             children: dates.asMap().entries.map((dateEntry) {
               final i = dateEntry.key;
@@ -619,6 +620,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   start != null &&
                   ((end != null && i >= start && i <= end) ||
                       (end == null && i == start));
+              final isStart = start != null && i == start;
+              final isEnd = end != null && i == end;
+              final isMiddle = isSelected && !isStart && !isEnd;
+
               return MouseRegion(
                 cursor: isBookingActive
                     ? SystemMouseCursors.click
@@ -630,16 +635,49 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     height: 50,
                     decoration: BoxDecoration(
                       color: isSelected ? Colors.green : null,
-                      border: Border(
-                        right: isLastDate
-                            ? BorderSide.none
-                            : BorderSide(color: Colors.grey.shade300),
-                        bottom: isLast
-                            ? BorderSide.none
-                            : BorderSide(color: Colors.grey.shade300),
-                      ),
+                      border: isSelected
+                          ? null // Remove borders for selected cells
+                          : Border(
+                              right: isLastDate
+                                  ? BorderSide.none
+                                  : BorderSide(color: Colors.grey.shade300),
+                              bottom: isLast
+                                  ? BorderSide.none
+                                  : BorderSide(color: Colors.grey.shade300),
+                            ),
+                      borderRadius: isSelected
+                          ? BorderRadius.horizontal(
+                              left: isStart ? Radius.circular(8) : Radius.zero,
+                              right: isEnd ? Radius.circular(8) : Radius.zero,
+                            )
+                          : null,
                     ),
-                    child: const Text(''),
+                    child: Stack(
+                      children: [
+                        // Left border for the first selected cell
+                        if (isStart)
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 1,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                        // Right border for the last selected cell
+                        if (isEnd)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 1,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               );
