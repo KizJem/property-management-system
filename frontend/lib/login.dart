@@ -139,17 +139,26 @@ class _LoginPageState extends State<LoginPage> {
                           ? const CircularProgressIndicator()
                           : SizedBox(
                               width: 300,
+                              height: 50, // set height to 12px
                               child: ElevatedButton(
                                 onPressed: _login,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFD50B01),
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 16,
+                                  backgroundColor: const Color(0xFFFDD41A),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      10,
+                                    ), // 10px border radius
                                   ),
+                                  padding: EdgeInsets
+                                      .zero, // ensure padding doesn't affect height
                                 ),
                                 child: const Text(
                                   'Login',
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: Color(0xFF171300),
+                                    fontSize:
+                                        16, // optionally reduce font size to fit 12px height
+                                  ),
                                 ),
                               ),
                             ),
