@@ -65,7 +65,18 @@ class OccupiedCellPage extends StatelessWidget {
                               topRight: Radius.circular(20),
                             ),
                           ),
-                          child: const Center(child: Text('Room Image')),
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                            child: Image.asset(
+                              'assets/image/single-standard-room-1.jpg',
+                              width: double.infinity,
+                              height: 300,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Row(
