@@ -17,9 +17,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Route imports
 const userRoutes = require('./routes/users');
-
+const guestRoutes = require('./routes/guests');
+const roomTypeRoutes = require('./routes/roomtypes');
+const roomRoutes = require('./routes/rooms');
 // Route usage
 app.use('/api/users', userRoutes);
+app.use('/api/guests', guestRoutes);
+app.use('/api/roomtypes',roomTypeRoutes);
+app.use('/api/rooms',roomRoutes);
 
 // Default route
 app.get('/', (req, res) => {

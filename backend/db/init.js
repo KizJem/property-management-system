@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS pms_user (
   user_id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_email TEXT,
   password TEXT,
-  name TEXT
+  name TEXT UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS pms_guest (

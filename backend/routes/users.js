@@ -1,5 +1,3 @@
-// routes/users.js
-
 const express = require('express');
 const router = express.Router();
 const db = require('../db/connection');
@@ -8,9 +6,7 @@ const db = require('../db/connection');
 router.get('/', (req, res) => {
   const sql = 'SELECT * FROM pms_user';
   db.all(sql, [], (err, rows) => {
-    if (err) {
-      return res.status(500).json({ error: err.message });
-    }
+    if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
 });
