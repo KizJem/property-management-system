@@ -240,6 +240,51 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           _selectedEnd[room] = dateIndex;
         }
         _activeBookingRoom = null;
+        // Show dialog with date range and continue button
+        final startIdx = _selectedStart[room]!;
+        final endIdx = _selectedEnd[room]!;
+        final dates = _generateDatesForMonth(
+          _selectedYear,
+          _selectedMonth,
+          daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
+        );
+        final startDate = dates[startIdx]['date'] ?? '';
+        final endDate = dates[endIdx]['date'] ?? '';
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Confirm Booking'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Room: $room'),
+                  const SizedBox(height: 8),
+                  Text('Date Range: $startDate - $endDate'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AvailableCellPage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Continue'),
+                ),
+              ],
+            );
+          },
+        );
       }
     });
   }
