@@ -10,7 +10,6 @@ class ActivityLogsPage extends StatefulWidget {
 class _ActivityLogsPageState extends State<ActivityLogsPage> {
   bool _sidebarExpanded = true;
   final double _sidebarWidth = 150;
-  final double _sidebarCollapsedWidth = 48;
 
   final List<Map<String, String>> logs = [
     {
@@ -41,183 +40,201 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final contentHeader = Container(
-      color: Colors.black,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      alignment: Alignment.centerLeft,
-      child: const Text(
-        '  Activity Logs',
-        style: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
-      ),
-    );
-
-    final mainContent = Column(
-      children: [
-        contentHeader,
-        Expanded(
-          child: Container(
-            color: const Color(0xFFF5F0F5),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-            child: Column(
-              children: [
-                Row(
-                  children: const [
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        'DATE & TIME',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        'STAFF NAME',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        'ACTION TYPE',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        'ROOM NO.',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        'DETAILS',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                const Divider(),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: logs.length,
-                    separatorBuilder: (_, __) => const Divider(),
-                    itemBuilder: (context, index) {
-                      final log = logs[index];
-                      return Row(
-                        children: [
-                          Expanded(flex: 3, child: Text(log['dateTime'] ?? '')),
-                          Expanded(flex: 3, child: Text(log['staff'] ?? '')),
-                          Expanded(flex: 3, child: Text(log['action'] ?? '')),
-                          Expanded(flex: 2, child: Text(log['room'] ?? '')),
-                          Expanded(
-                            flex: 2,
-                            child: TextButton(
-                              onPressed: () {
-                                // Future: Add detailed modal here
-                              },
-                              child: const Text('[View]'),
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                alignment: Alignment.centerLeft,
-                                minimumSize: const Size(40, 20),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.black87,
         leading: IconButton(
           icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () => setState(() => _sidebarExpanded = !_sidebarExpanded),
           tooltip: _sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar',
         ),
         title: const Text('System Name'),
-        backgroundColor: Colors.black87,
       ),
-      body: _sidebarExpanded
-          ? Row(
-              children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+      body: Row(
+        children: [
+          _sidebarExpanded
+              ? Container(
                   width: _sidebarWidth,
                   color: Colors.grey[200],
                   child: Column(
                     children: [
                       _buildSidebarItem(
-                        Icons.calendar_today,
-                        'Calendar',
-                        onTap: () {
-                          if (ModalRoute.of(context)?.settings.name !=
-                              '/calendar') {
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/calendar',
-                            );
-                          }
-                        },
+                        icon: Icons.calendar_today,
+                        title: 'Calendar',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/calendar',
+                        ),
                       ),
                       _buildSidebarItem(
-                        Icons.login,
-                        'Check-in Logs',
-                        onTap: () {
-                          if (ModalRoute.of(context)?.settings.name !=
-                              '/checkinlogs') {
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/checkinlogs',
-                            );
-                          }
-                        },
+                        icon: Icons.login,
+                        title: 'Check-in Logs',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/checkinlogs',
+                        ),
                       ),
                       _buildSidebarItem(
-                        Icons.list_alt,
-                        'Activity Logs',
-                        isHeader:
-                            ModalRoute.of(context)?.settings.name ==
-                            '/activitylogs',
-                        onTap: () {
-                          if (ModalRoute.of(context)?.settings.name !=
-                              '/activitylogs') {
-                            Navigator.pushReplacementNamed(
-                              context,
-                              '/activitylogs',
-                            );
-                          }
-                        },
+                        icon: Icons.list_alt,
+                        title: 'Activity Logs',
+                        isHeader: true,
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.check_box,
+                        title: 'Available Cell',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/availablecell',
+                        ),
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.table_rows,
+                        title: 'Reserve Cell',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/reservecell',
+                        ),
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.bed,
+                        title: 'Occupied Cell',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/occupiedcell',
+                        ),
                       ),
                     ],
                   ),
+                )
+              : const SizedBox.shrink(),
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  color: const Color.fromARGB(255, 255, 255, 255),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                    horizontal: 16,
+                  ),
+                  alignment: Alignment.center,
+                  child: const Text(
+                    '  Activity Logs',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 26,
+                    ),
+                  ),
                 ),
-                Expanded(child: mainContent),
+                Expanded(
+                  child: Container(
+                    color: const Color.fromARGB(255, 255, 255, 255),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 16,
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: const [
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'DATE & TIME',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'STAFF NAME',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 3,
+                              child: Text(
+                                'ACTION TYPE',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'ROOM NO.',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                'DETAILS',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const Divider(),
+                        Expanded(
+                          child: ListView.separated(
+                            itemCount: logs.length,
+                            separatorBuilder: (_, __) => const Divider(),
+                            itemBuilder: (context, index) {
+                              final log = logs[index];
+                              return Row(
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(log['dateTime'] ?? ''),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(log['staff'] ?? ''),
+                                  ),
+                                  Expanded(
+                                    flex: 3,
+                                    child: Text(log['action'] ?? ''),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(log['room'] ?? ''),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: TextButton(
+                                      onPressed: () => _showLogDetails(log),
+                                      child: const Text('[View]'),
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        alignment: Alignment.centerLeft,
+                                        minimumSize: const Size(40, 20),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
-            )
-          : mainContent,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildSidebarItem(
-    IconData icon,
-    String title, {
-    bool isHeader = false,
+  /// Sidebar item builder with icons (same style as Calendar page)
+  Widget _buildSidebarItem({
+    required IconData icon,
+    required String title,
     VoidCallback? onTap,
+    bool isHeader = false,
   }) {
     return Material(
       color: isHeader ? Colors.grey[300] : Colors.transparent,
@@ -246,6 +263,28 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  /// Placeholder modal for viewing detailed log info
+  void _showLogDetails(Map<String, String> log) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Activity Log Details'),
+        content: Text(
+          'Date & Time: ${log['dateTime']}\n'
+          'Staff: ${log['staff']}\n'
+          'Action: ${log['action']}\n'
+          'Room: ${log['room']}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
       ),
     );
   }

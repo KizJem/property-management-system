@@ -464,7 +464,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           ? Row(
               children: [
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 1),
                   width: _sidebarWidth,
                   color: Colors.grey[200],
                   child: Column(

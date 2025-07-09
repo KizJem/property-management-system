@@ -10,7 +10,6 @@ class CheckInLogsPage extends StatefulWidget {
 class _CheckInLogsPageState extends State<CheckInLogsPage> {
   bool _sidebarExpanded = true;
   final double _sidebarWidth = 150;
-  final double _sidebarCollapsedWidth = 48;
 
   final List<Map<String, String>> guests = [
     {'guest': 'Juan Dela Cruz', 'bookings': '4', 'nights': '5', 'room': '101'},
@@ -32,52 +31,84 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
       ),
       body: Row(
         children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: _sidebarExpanded ? _sidebarWidth : _sidebarCollapsedWidth,
-            color: Colors.grey[200],
-            child: Column(
-              children: [
-                _buildSidebarItem(
-                  icon: Icons.calendar_today,
-                  title: 'Calendar',
-                  onTap: () => Navigator.pushNamed(context, '/calendar'),
-                ),
-                _buildSidebarItem(
-                  icon: Icons.login,
-                  title: 'Check-in Logs',
-                  isHeader: true,
-                ),
-                _buildSidebarItem(
-                  icon: Icons.list_alt,
-                  title: 'Activity Logs',
-                  onTap: () => Navigator.pushNamed(context, '/activitylogs'),
-                ),
-              ],
-            ),
-          ),
+          _sidebarExpanded
+              ? Container(
+                  width: _sidebarWidth,
+                  color: Colors.grey[200],
+                  child: Column(
+                    children: [
+                      _buildSidebarItem(
+                        icon: Icons.calendar_today,
+                        title: 'Calendar',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/calendar',
+                        ),
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.login,
+                        title: 'Check-in Logs',
+                        isHeader: true,
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.list_alt,
+                        title: 'Activity Logs',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/activitylogs',
+                        ),
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.check_box,
+                        title: 'Available Cell',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/availablecell',
+                        ),
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.table_rows,
+                        title: 'Reserve Cell',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/reservecell',
+                        ),
+                      ),
+                      _buildSidebarItem(
+                        icon: Icons.bed,
+                        title: 'Occupied Cell',
+                        onTap: () => Navigator.pushReplacementNamed(
+                          context,
+                          '/occupiedcell',
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
           Expanded(
             child: Column(
               children: [
                 Container(
                   width: double.infinity,
-                  color: Colors.black,
+                  color: const Color.fromARGB(255, 255, 255, 255),
                   padding: const EdgeInsets.symmetric(
                     vertical: 10,
                     horizontal: 16,
                   ),
+                  alignment: Alignment.center,
                   child: const Text(
                     '  Check-In Logs',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
+                      fontSize: 26,
                     ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    color: const Color(0xFFF5F0F5),
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 16,
@@ -177,6 +208,7 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
     );
   }
 
+  /// Sidebar item builder with icon (matches CalendarDashboard)
   Widget _buildSidebarItem({
     required IconData icon,
     required String title,
@@ -196,20 +228,17 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
           child: Row(
             children: [
               Icon(icon, size: 20, color: isHeader ? Colors.black : null),
-              if (_sidebarExpanded) const SizedBox(width: 8),
-              if (_sidebarExpanded)
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      fontWeight: isHeader
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                      fontSize: isHeader ? 16 : 14,
-                      color: isHeader ? Colors.black : null,
-                    ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+                    fontSize: isHeader ? 16 : 14,
+                    color: isHeader ? Colors.black : null,
                   ),
                 ),
+              ),
             ],
           ),
         ),
