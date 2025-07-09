@@ -267,24 +267,109 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
     );
   }
 
-  /// Placeholder modal for viewing detailed log info
+  /// Shows pop-up with detailed log
   void _showLogDetails(Map<String, String> log) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Activity Log Details'),
-        content: Text(
-          'Date & Time: ${log['dateTime']}\n'
-          'Staff: ${log['staff']}\n'
-          'Action: ${log['action']}\n'
-          'Room: ${log['room']}',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+      builder: (_) => Dialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          width: 400,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: const [
+                  Text(
+                    'Action Details',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Log Timestamp:\nMMM DD, YYYY - 00:00 AM',
+                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.end,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text.rich(
+                TextSpan(
+                  text: 'Action Type: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: log['action'])],
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text.rich(
+                TextSpan(
+                  text: 'Staff Name: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: log['staff'])],
+                ),
+              ),
+              Text.rich(
+                TextSpan(
+                  text: 'Room Number: ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: log['room'])],
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text.rich(
+                TextSpan(
+                  text: 'No. of Guests: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: '1')],
+                ),
+              ),
+              const Text.rich(
+                TextSpan(
+                  text: 'Stay Duration: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: 'JUN 5, 2025 - JUN 9, 2025')],
+                ),
+              ),
+              const SizedBox(height: 10),
+              const Text.rich(
+                TextSpan(
+                  text: 'Guest Name: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: 'Juan Dela Cruz')],
+                ),
+              ),
+              const Text.rich(
+                TextSpan(
+                  text: 'Phone Number: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: '09774567453')],
+                ),
+              ),
+              const Text.rich(
+                TextSpan(
+                  text: 'Email: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: 'None')],
+                ),
+              ),
+              const Text.rich(
+                TextSpan(
+                  text: 'Special Requests: ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: [TextSpan(text: 'None')],
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                '🔒 Logs are read-only and cannot be edited or deleted.',
+                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

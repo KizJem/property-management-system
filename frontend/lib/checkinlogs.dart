@@ -249,19 +249,35 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
   void _showGuestDialog(Map<String, String> guest) {
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: Text('Booking History - ${guest['guest']}'),
-        content: Text(
-          'Total Bookings: ${guest['bookings']}\n'
-          'Total Nights: ${guest['nights']}\n'
-          'Most Used Room: ${guest['room']}',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+      builder: (_) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Container(
+          width: 360,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.blueAccent),
+            borderRadius: BorderRadius.circular(12),
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              Text(
+                'Booking History',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 20),
+              Text("Booking 1: 101 (Jul 15–18)"),
+              SizedBox(height: 8),
+              Text("Booking 2: 101 (Jul 1–3)"),
+              SizedBox(height: 8),
+              Text("Booking 3: 105 (Jun 21–23)"),
+              SizedBox(height: 8),
+              Text("Booking 4: 101 (May 6–9)"),
+            ],
+          ),
+        ),
       ),
     );
   }
