@@ -306,8 +306,8 @@ class BillingForm extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               SizedBox(
-                                width: 350,
-                                height: 50,
+                                width: 300,
+                                height: 40,
                                 child: OutlinedButton(
                                   onPressed: () {},
                                   child: const Text(
@@ -318,8 +318,8 @@ class BillingForm extends StatelessWidget {
                               ),
                               const SizedBox(width: 20),
                               SizedBox(
-                                width: 350,
-                                height: 50,
+                                width: 300,
+                                height: 40,
                                 child: ElevatedButton(
                                   onPressed: () {},
                                   style: ElevatedButton.styleFrom(
