@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'calendardashboard.dart'; // adjust the path if needed
+import 'billingform.dart';
 
 class OccupiedCellPage extends StatelessWidget {
   const OccupiedCellPage({super.key});
@@ -445,7 +446,14 @@ class OccupiedCellPage extends StatelessWidget {
                       const SizedBox(width: 10),
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const BillingForm(),
+                              ),
+                            );
+                          },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(
                               255,
