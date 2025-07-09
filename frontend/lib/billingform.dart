@@ -16,28 +16,46 @@ class BillingForm extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // HEADER
-            const Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: Column(
+            // Back Button + Header
+            Padding(
+              padding: const EdgeInsets.only(left: 0),
+              child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Billing Statement',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                  SizedBox(height: 4),
-                  Text(
-                    'Hotel Name',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  const SizedBox(width: 8),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Billing Statement',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Hotel Name',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text('Hotel Address', style: TextStyle(fontSize: 12)),
+                    ],
                   ),
-                  SizedBox(height: 2),
-                  Text('Hotel Address', style: TextStyle(fontSize: 12)),
                 ],
               ),
             ),
+            const SizedBox(height: 20),
 
             // const SizedBox(height: 20),
 

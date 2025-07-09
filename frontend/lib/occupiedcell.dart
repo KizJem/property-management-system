@@ -21,28 +21,16 @@ class OccupiedCellPage extends StatelessWidget {
                 children: [
                   // Back button
                   Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back, size: 16),
-                        label: const Text('Back'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.black87,
-                          textStyle: const TextStyle(fontSize: 14),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                      ),
+                    padding: const EdgeInsets.only(left: 0),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
 
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 10),
 
                   // Room details inside border
                   Container(
