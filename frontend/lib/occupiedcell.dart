@@ -2,6 +2,27 @@ import 'package:flutter/material.dart';
 import 'calendardashboard.dart'; // adjust the path if needed
 import 'billingform.dart';
 
+class RoomFeature extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const RoomFeature({super.key, required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.black54),
+          const SizedBox(width: 8),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
+        ],
+      ),
+    );
+  }
+}
+
 class OccupiedCellPage extends StatelessWidget {
   const OccupiedCellPage({super.key});
 
@@ -46,7 +67,7 @@ class OccupiedCellPage extends StatelessWidget {
                       children: [
                         const SizedBox(height: 5),
                         Container(
-                          height: 300,
+                          height: 250,
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
                             borderRadius: const BorderRadius.only(
@@ -79,7 +100,7 @@ class OccupiedCellPage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '\$250',
+                              '\₱ 4,000',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -99,33 +120,62 @@ class OccupiedCellPage extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('• Comfortable single bed'),
-                                  Text('• Private bathroom'),
-                                  Text('• Air-conditioning'),
-                                  Text('• Flat-screen TV'),
-                                  Text('• Work desk'),
+                                children: [
+                                  RoomFeature(
+                                    icon: Icons.bed,
+                                    label: 'Comfortable single bed',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.bathtub,
+                                    label: 'Private bathroom',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.ac_unit,
+                                    label: 'Air-conditioning',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.tv,
+                                    label: 'Flat-screen TV',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.desk,
+                                    label: 'Work desk',
+                                  ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: 16),
+                            const SizedBox(height: 10),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('• Complimentary Wi-Fi'),
-                                  Text('• Minimalist design'),
-                                  Text('• Ideal for solo travelers'),
-                                  Text('• Perfect for short stays'),
+                                children: [
+                                  RoomFeature(
+                                    icon: Icons.wifi,
+                                    label: 'Complimentary Wi-Fi',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.style,
+                                    label: 'Minimalist design',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.person,
+                                    label: 'Ideal for solo travelers',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.night_shelter,
+                                    label: 'Perfect for short stays',
+                                  ),
                                 ],
                               ),
                             ),
                           ],
                         ),
+                        const SizedBox(height: 5),
                       ],
                     ),
                   ),
@@ -423,12 +473,25 @@ class OccupiedCellPage extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
+                        child: ElevatedButton(
                           onPressed: () {
-                            _showExtendStayDialog(
-                              context,
-                            ); // 💡 Trigger the modal dialog
+                            _showExtendStayDialog(context);
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              255,
+                              255,
+                              255,
+                            ),
+                            foregroundColor: const Color.fromARGB(
+                              255,
+                              15,
+                              15,
+                              15,
+                            ),
+                            minimumSize: const Size.fromHeight(50),
+                          ),
                           child: const Text('Extend Stay'),
                         ),
                       ),
@@ -444,13 +507,13 @@ class OccupiedCellPage extends StatelessWidget {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
+                            backgroundColor: const Color(0xFFFDD41A),
+                            foregroundColor: const Color.fromARGB(
                               255,
-                              109,
-                              7,
-                              92,
+                              15,
+                              15,
+                              15,
                             ),
-                            foregroundColor: Colors.white,
                             minimumSize: const Size.fromHeight(50),
                           ),
                           child: const Text('Generate Bill'),
