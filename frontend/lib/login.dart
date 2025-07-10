@@ -63,106 +63,193 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Row(
         children: [
-          // Left half (blank)
-          Expanded(child: Container(color: Colors.grey[100])),
-          // Right half (login form)
+          // LEFT COL (Image)
+          // LEFT COL (Image)
+          Expanded(
+            child: Container(
+              margin: const EdgeInsets.only(left: 30.0),
+              alignment: Alignment.center,
+              child: Container(
+                width: 650,
+                height: 650,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Stack(
+                    children: [
+                      // Background image
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/sign-in-left.jpg',
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      // Top (CBA logo)
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/cba-logo.png',
+                            width: 200,
+                          ),
+                        ),
+                      ),
+                      // Center (PMS white logo)
+                      Center(
+                        child: Image.asset(
+                          'assets/images/PMS-white-logo.png',
+                          width: 250,
+                        ),
+                      ),
+                      // Bottom (Tagline)
+                      Positioned(
+                        bottom: 20,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/tagline.png',
+                            width: 250,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // RIGHT COL (Sign In Form)
           Expanded(
             child: Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(32.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 90.0,
+                    right: 60.0,
+                    top: 40.0,
+                    bottom: 40.0,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Logo
+                        Image.asset(
+                          'assets/images/PMS-logo.png',
+                          width: 100,
+                          height: 100,
                         ),
-                      ),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: 300,
-                        child: TextFormField(
-                          controller: _usernameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Username',
-                            border: OutlineInputBorder(),
+
+                        // Title
+                        const Text(
+                          'Sign In',
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.bold,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter username';
-                            }
-                            return null;
-                          },
+                          textAlign: TextAlign.left,
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: 300,
-                        child: TextFormField(
-                          controller: _passwordController,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            border: OutlineInputBorder(),
+                        const SizedBox(height: 12),
+
+                        // Subtitle
+                        const Text(
+                          'Your training in hotel operations begins here. Simulate real front desk operations and guest experiences.',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Username Field
+                        SizedBox(
+                          width: 500,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _usernameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Username',
+                              prefixIcon: Icon(Icons.person),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Please enter username'
+                                : null,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter password';
-                            }
-                            return null;
-                          },
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: 300,
-                        child: TextFormField(
-                          controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Student\'s Name',
-                            border: OutlineInputBorder(),
+                        const SizedBox(height: 5),
+
+                        // Password Field
+                        SizedBox(
+                          width: 500,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              labelText: 'Password',
+                              prefixIcon: Icon(Icons.lock),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Please enter password'
+                                : null,
                           ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your name';
-                            }
-                            return null;
-                          },
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      _isLoading
-                          ? const CircularProgressIndicator()
-                          : SizedBox(
-                              width: 300,
-                              height: 50, // set height to 12px
-                              child: ElevatedButton(
-                                onPressed: _login,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFFDD41A),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      10,
-                                    ), // 10px border radius
+                        const SizedBox(height: 5),
+
+                        // Name Field
+                        SizedBox(
+                          width: 500,
+                          height: 60,
+                          child: TextFormField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Student\'s Name',
+                              prefixIcon: Icon(Icons.badge),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (value) => value == null || value.isEmpty
+                                ? 'Please enter your name'
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+
+                        // Sign In Button
+                        _isLoading
+                            ? const CircularProgressIndicator()
+                            : SizedBox(
+                                width: 500,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed: _login,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFDD41A),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    padding: EdgeInsets.zero,
                                   ),
-                                  padding: EdgeInsets
-                                      .zero, // ensure padding doesn't affect height
-                                ),
-                                child: const Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    color: Color(0xFF171300),
-                                    fontSize:
-                                        16, // optionally reduce font size to fit 12px height
+                                  child: const Text(
+                                    'Sign In',
+                                    style: TextStyle(
+                                      color: Color(0xFF171300),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

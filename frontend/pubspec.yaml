@@ -59,6 +59,11 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/single-standard-room-1.jpg
+    - assets/images/sign-in-left.jpg
+    - assets/images/PMS-logo.png
+    - assets/images/tagline.png
+    - assets/images/PMS-white-logo.png
+    - assets/images/cba-logo.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
