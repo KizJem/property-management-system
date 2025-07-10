@@ -424,10 +424,11 @@ class OccupiedCellPage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: OutlinedButton(
-                          onPressed: () {},
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(50),
-                          ),
+                          onPressed: () {
+                            _showExtendStayDialog(
+                              context,
+                            ); // 💡 Trigger the modal dialog
+                          },
                           child: const Text('Extend Stay'),
                         ),
                       ),
@@ -463,6 +464,229 @@ class OccupiedCellPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  // EXTEND STAY DIALOG
+  void _showExtendStayDialog(BuildContext context) async {
+    DateTime selectedDate = DateTime(2025, 6, 9);
+    final TextEditingController dateController = TextEditingController(
+      text: "${selectedDate.month}/${selectedDate.day}/${selectedDate.year}",
+    );
+
+    String currentStay = '6/5/2025 - 6/6/2025';
+    String roomNumber = 'Room 101';
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFFF6EDF9),
+
+              // 🔽 Remove default paddings so we can fully control layout
+              titlePadding: EdgeInsets.zero,
+              contentPadding: EdgeInsets.zero,
+              insetPadding: const EdgeInsets.all(
+                40,
+              ), // Controls the dialog's outer size
+
+              content: SizedBox(
+                width: 600,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    50,
+                    50,
+                    50,
+                    50,
+                  ), // Uniform inner padding
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 🔽 Booking title (moved here to align with content)
+                      // Booking title (aligned top)
+                      const Text(
+                        'Booking #0000',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 25,
+                        ),
+                      ),
+
+                      // No spacing in between
+                      const Text(
+                        'Extend Stay',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight:
+                              FontWeight.w600, // ✅ Valid bold-ish weight
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Current stay and room number
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Current Stay',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 5),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(currentStay),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Room Number',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                                const SizedBox(height: 5),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    border: Border.all(
+                                      color: Colors.grey.shade300,
+                                    ),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(roomNumber),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // New departure date
+                      const Text(
+                        'New Departure Date',
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 5),
+                      GestureDetector(
+                        onTap: () async {
+                          final DateTime? picked = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime(2025, 6, 6),
+                            lastDate: DateTime(2030),
+                          );
+                          if (picked != null) {
+                            setState(() {
+                              selectedDate = picked;
+                              dateController.text =
+                                  "${picked.month}/${picked.day}/${picked.year}";
+                            });
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: TextFormField(
+                            controller: dateController,
+                            decoration: const InputDecoration(
+                              prefixIcon: Icon(Icons.calendar_today),
+                              border: OutlineInputBorder(),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Conflict warning
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFEAF4FE),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.blue.shade100),
+                        ),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.info_outline, color: Colors.blue),
+                            SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Conflict detected: Room 101 is already booked starting June 9, 2025. '
+                                'Please manually reassign the upcoming reservation to accommodate the guest\'s extended stay.',
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 30),
+
+                      // 🔽 Aligned buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                minimumSize: const Size.fromHeight(50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Cancel'),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size.fromHeight(50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                              ),
+                              onPressed: () {
+                                // TODO: Handle extend logic here
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Confirm Extend'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
