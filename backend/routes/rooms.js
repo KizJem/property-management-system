@@ -5,7 +5,7 @@ const db = require('../db/connection');
 // GET all rooms with room type name
 router.get('/', (req, res) => {
   const sql = `
-    SELECT r.room_id, r.room_number, rt.room_category, rt.price
+    SELECT *
     FROM pms_room r
     JOIN pms_room_type rt ON r.room_type_id = rt.room_type_id`;
   db.all(sql, [], (err, rows) => {

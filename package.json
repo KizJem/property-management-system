@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "dayjs": "^1.11.13",
     "dotenv": "^17.1.0",
     "sqlite3": "^5.1.7"
   }

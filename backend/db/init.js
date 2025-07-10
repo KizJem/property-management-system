@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS pms_room_type (
   room_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
   room_category TEXT,
   description TEXT,
-  price REAL,
+  price INTEGER,
   no_guest INTEGER,
-  additional_guest_price REAL
+  additional_guest_price INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS pms_room (
@@ -39,14 +39,15 @@ CREATE TABLE IF NOT EXISTS pms_booking (
   room_id INTEGER,
   user_id INTEGER,
   status TEXT,
-  check_in TEXT,
-  check_out TEXT,
+  check_in DATE,
+  check_out DATE,
   no_days INTEGER,
+  guest_count INTEGER,
   additional_guest INTEGER,
   special_request TEXT,
-  original_bill REAL,
-  total_bill REAL,
-  discount REAL,
+  original_bill INTEGER,
+  total_bill INTEGER,
+  discount INTEGER,
   payment_method TEXT,
   FOREIGN KEY (guest_id) REFERENCES pms_guest(guest_id),
   FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
@@ -57,7 +58,7 @@ CREATE TABLE IF NOT EXISTS pms_room_status (
   status_id INTEGER PRIMARY KEY AUTOINCREMENT,
   room_id INTEGER,
   booking_id INTEGER,
-  date TEXT,
+  date DATE,
   status TEXT,
   housekeeping_status TEXT,
   FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
@@ -69,7 +70,7 @@ CREATE TABLE IF NOT EXISTS pms_history (
   booking_id INTEGER,
   user_id INTEGER,
   action TEXT,
-  time TEXT,
+  time DATETIME,
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id),
   FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
 );

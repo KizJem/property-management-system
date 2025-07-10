@@ -1,6 +1,5 @@
 // server.js
 
-require('dotenv').config();
 const express = require('express');
 const path = require('path');
 
@@ -20,11 +19,20 @@ const userRoutes = require('./routes/users');
 const guestRoutes = require('./routes/guests');
 const roomTypeRoutes = require('./routes/roomtypes');
 const roomRoutes = require('./routes/rooms');
+const bookingRoutes = require('./routes/bookings');
+const roomStatusRoutes = require('./routes/roomstatus');
+const historyRoutes = require('./routes/history');
+const guestStay = require('./routes/gueststay');
+
 // Route usage
 app.use('/api/users', userRoutes);
 app.use('/api/guests', guestRoutes);
 app.use('/api/roomtypes',roomTypeRoutes);
 app.use('/api/rooms',roomRoutes);
+app.use('/api/bookings', bookingRoutes);
+app.use('/api/roomstatus', roomStatusRoutes);
+app.use('/api/history', historyRoutes);
+app.use('/api/gueststay', guestStay);
 
 // Default route
 app.get('/', (req, res) => {
