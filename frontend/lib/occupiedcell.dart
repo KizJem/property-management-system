@@ -60,7 +60,7 @@ class OccupiedCellPage extends StatelessWidget {
                               topRight: Radius.circular(20),
                             ),
                             child: Image.asset(
-                              'assets/image/single-standard-room-1.jpg',
+                              'assets/images/single-standard-room-1.jpg',
                               width: double.infinity,
                               height: 300,
                               fit: BoxFit.cover,
