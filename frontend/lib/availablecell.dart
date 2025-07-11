@@ -1,5 +1,25 @@
 import 'package:flutter/material.dart';
-import 'calendardashboard.dart'; // adjust the path if needed
+
+class RoomFeature extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const RoomFeature({super.key, required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.black54),
+          const SizedBox(width: 8),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
+        ],
+      ),
+    );
+  }
+}
 
 class AvailableCellPage extends StatelessWidget {
   const AvailableCellPage({super.key});
@@ -20,30 +40,17 @@ class AvailableCellPage extends StatelessWidget {
                 children: [
                   // Back button
                   Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.arrow_back, size: 16),
-                        label: const Text('Back'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: Colors.black87,
-                          textStyle: const TextStyle(fontSize: 14),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 15,
-                          ),
-                        ),
-                      ),
+                    padding: const EdgeInsets.only(left: 0),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ),
+                  const SizedBox(height: 10),
 
-                  const SizedBox(height: 18),
-
-                  // Room details inside border
+                  // Room Preview
                   Container(
                     margin: const EdgeInsets.only(left: 5, right: 5),
                     padding: const EdgeInsets.all(20),
@@ -55,9 +62,8 @@ class AvailableCellPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 5),
                         Container(
-                          height: 300,
+                          height: 250,
                           decoration: BoxDecoration(
                             color: Colors.grey[300],
                             borderRadius: const BorderRadius.only(
@@ -65,7 +71,18 @@ class AvailableCellPage extends StatelessWidget {
                               topRight: Radius.circular(20),
                             ),
                           ),
-                          child: const Center(child: Text('Room Image')),
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(20),
+                              topRight: Radius.circular(20),
+                            ),
+                            child: Image.asset(
+                              'assets/images/single-standard-room-1.jpg',
+                              width: double.infinity,
+                              height: 300,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Row(
@@ -79,7 +96,7 @@ class AvailableCellPage extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              '\$250',
+                              '₱ 4,000',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
@@ -99,28 +116,55 @@ class AvailableCellPage extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                          children: const [
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('• Comfortable single bed'),
-                                  Text('• Private bathroom'),
-                                  Text('• Air-conditioning'),
-                                  Text('• Flat-screen TV'),
-                                  Text('• Work desk'),
+                                children: [
+                                  RoomFeature(
+                                    icon: Icons.bed,
+                                    label: 'Comfortable single bed',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.bathtub,
+                                    label: 'Private bathroom',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.ac_unit,
+                                    label: 'Air-conditioning',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.tv,
+                                    label: 'Flat-screen TV',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.desk,
+                                    label: 'Work desk',
+                                  ),
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            SizedBox(width: 16),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                children: const [
-                                  Text('• Complimentary Wi-Fi'),
-                                  Text('• Minimalist design'),
-                                  Text('• Ideal for solo travelers'),
-                                  Text('• Perfect for short stays'),
+                                children: [
+                                  RoomFeature(
+                                    icon: Icons.wifi,
+                                    label: 'Complimentary Wi-Fi',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.style,
+                                    label: 'Minimalist design',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.person,
+                                    label: 'Ideal for solo travelers',
+                                  ),
+                                  RoomFeature(
+                                    icon: Icons.night_shelter,
+                                    label: 'Perfect for short stays',
+                                  ),
                                 ],
                               ),
                             ),
@@ -133,17 +177,15 @@ class AvailableCellPage extends StatelessWidget {
               ),
             ),
 
-            // STOP HERE
+            // RIGHT SIDE
             const SizedBox(width: 20),
-
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Date and Time
+                  // Header
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
                         'Booking #0000',
@@ -152,46 +194,37 @@ class AvailableCellPage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            const Text(
-                              'Booking TimeStamp:',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black54,
-                              ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          const Text(
+                            'Booking TimeStamp:',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black54,
                             ),
-                            // const SizedBox(height: 2),
-                            Text(
-                              '${now.month}/${now.day}/${now.year} '
-                              '${now.hour.toString().padLeft(2, '0')}:'
-                              '${now.minute.toString().padLeft(2, '0')} '
-                              '${now.hour >= 12 ? 'PM' : 'AM'}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey,
-                              ),
+                          ),
+                          Text(
+                            '${now.month}/${now.day}/${now.year} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} ${now.hour >= 12 ? 'PM' : 'AM'}',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
 
-                  // CONTACT DETAILS
+                  // Contact Details
                   Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-                    margin: const EdgeInsets.only(top: 10, bottom: 10),
+                    margin: const EdgeInsets.symmetric(vertical: 10),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.grey.shade300),
                     ),
-
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -218,14 +251,12 @@ class AvailableCellPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 10),
-
                         Row(
                           children: [
                             Expanded(
                               child: TextField(
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'First Name *',
                                 ),
                               ),
@@ -233,21 +264,19 @@ class AvailableCellPage extends StatelessWidget {
                             const SizedBox(width: 10),
                             Expanded(
                               child: TextField(
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'Last Name *',
                                 ),
                               ),
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 10),
-
                         Row(
                           children: [
                             Expanded(
                               child: TextField(
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'Phone Number *',
                                 ),
                               ),
@@ -255,7 +284,7 @@ class AvailableCellPage extends StatelessWidget {
                             const SizedBox(width: 10),
                             Expanded(
                               child: TextField(
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: 'Email (Optional)',
                                 ),
                               ),
@@ -266,8 +295,7 @@ class AvailableCellPage extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(height: 10),
-                  // BOOKING DETAILS
+                  // Booking Details
                   Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                     margin: const EdgeInsets.only(bottom: 30),
@@ -276,12 +304,10 @@ class AvailableCellPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: Colors.grey.shade300),
                     ),
-
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const Text(
                               'Booking Details',
@@ -306,7 +332,6 @@ class AvailableCellPage extends StatelessWidget {
                             const Text('Check-In'),
                           ],
                         ),
-
                         const Text(
                           'Arrival and Departure Date',
                           style: TextStyle(
@@ -316,7 +341,6 @@ class AvailableCellPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-
                         Row(
                           children: [
                             const Icon(Icons.calendar_month),
@@ -332,7 +356,7 @@ class AvailableCellPage extends StatelessWidget {
                                   FocusScope.of(
                                     context,
                                   ).requestFocus(FocusNode());
-                                  DateTime? picked = await showDatePicker(
+                                  await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now(),
                                     firstDate: DateTime(2020),
@@ -341,9 +365,7 @@ class AvailableCellPage extends StatelessWidget {
                                 },
                               ),
                             ),
-
                             const SizedBox(width: 5),
-
                             Expanded(
                               child: TextFormField(
                                 decoration: const InputDecoration(
@@ -355,7 +377,7 @@ class AvailableCellPage extends StatelessWidget {
                                   FocusScope.of(
                                     context,
                                   ).requestFocus(FocusNode());
-                                  DateTime? picked = await showDatePicker(
+                                  await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now().add(
                                       const Duration(days: 1),
@@ -368,17 +390,14 @@ class AvailableCellPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
-
                         Row(
                           children: [
                             Expanded(
                               child: DropdownButtonFormField<String>(
                                 decoration: const InputDecoration(
                                   labelText: 'Room Number',
-                                  border:
-                                      OutlineInputBorder(), // <-- added this line
+                                  border: OutlineInputBorder(),
                                 ),
                                 items: const [
                                   DropdownMenuItem(
@@ -389,15 +408,12 @@ class AvailableCellPage extends StatelessWidget {
                                 onChanged: (value) {},
                               ),
                             ),
-
                             const SizedBox(width: 10),
-
                             Expanded(
                               child: DropdownButtonFormField<int>(
                                 decoration: const InputDecoration(
                                   labelText: 'No. of Guest',
-                                  border:
-                                      OutlineInputBorder(), // <-- visible border on all sides
+                                  border: OutlineInputBorder(),
                                 ),
                                 items: List.generate(
                                   5,
@@ -411,25 +427,20 @@ class AvailableCellPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         const SizedBox(height: 20),
-
                         TextField(
                           decoration: const InputDecoration(
                             labelText: 'Special Requests (Optional)',
                             border: OutlineInputBorder(),
-                            alignLabelWithHint:
-                                true, // <-- This aligns the label to the top-left
+                            alignLabelWithHint: true,
                           ),
                           maxLines: 3,
                         ),
-
-                        const SizedBox(height: 10),
                       ],
                     ),
                   ),
 
-                  //CANCEL & CONTINUE BUTTONS
+                  // Buttons
                   Row(
                     children: [
                       Expanded(
@@ -446,13 +457,8 @@ class AvailableCellPage extends StatelessWidget {
                         child: ElevatedButton(
                           onPressed: () {},
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              109,
-                              7,
-                              92,
-                            ),
-                            foregroundColor: Colors.white,
+                            backgroundColor: const Color(0xFFFDD41A),
+                            foregroundColor: const Color(0xFF0F0F0F),
                             minimumSize: const Size.fromHeight(50),
                           ),
                           child: const Text('Continue'),
