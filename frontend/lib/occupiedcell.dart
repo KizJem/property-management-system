@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'calendardashboard.dart'; // adjust the path if needed
+// import 'calendardashboard.dart';
 import 'billingform.dart';
 
 class RoomFeature extends StatelessWidget {
@@ -379,7 +379,7 @@ class OccupiedCellPage extends StatelessWidget {
                                   FocusScope.of(
                                     context,
                                   ).requestFocus(FocusNode());
-                                  DateTime? picked = await showDatePicker(
+                                  await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now(),
                                     firstDate: DateTime(2020),
@@ -402,7 +402,7 @@ class OccupiedCellPage extends StatelessWidget {
                                   FocusScope.of(
                                     context,
                                   ).requestFocus(FocusNode());
-                                  DateTime? picked = await showDatePicker(
+                                  await showDatePicker(
                                     context: context,
                                     initialDate: DateTime.now().add(
                                       const Duration(days: 1),
@@ -473,11 +473,11 @@ class OccupiedCellPage extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: ElevatedButton(
+                        child: OutlinedButton(
                           onPressed: () {
                             _showExtendStayDialog(context);
                           },
-                          style: ElevatedButton.styleFrom(
+                          style: OutlinedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(
                               255,
                               255,
@@ -491,6 +491,9 @@ class OccupiedCellPage extends StatelessWidget {
                               15,
                             ),
                             minimumSize: const Size.fromHeight(50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           child: const Text('Extend Stay'),
                         ),
@@ -515,6 +518,9 @@ class OccupiedCellPage extends StatelessWidget {
                               15,
                             ),
                             minimumSize: const Size.fromHeight(50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           child: const Text('Generate Bill'),
                         ),
