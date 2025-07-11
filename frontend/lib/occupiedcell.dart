@@ -316,7 +316,7 @@ class OccupiedCellPage extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 10),
+                    // const SizedBox(height: 10),
                     // BOOKING DETAILS
                     Container(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -481,18 +481,8 @@ class OccupiedCellPage extends StatelessWidget {
                               _showExtendStayDialog(context);
                             },
                             style: OutlinedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                255,
-                                255,
-                                255,
-                              ),
-                              foregroundColor: const Color.fromARGB(
-                                255,
-                                15,
-                                15,
-                                15,
-                              ),
+                              backgroundColor: const Color(0xFFFFFBF1),
+                              foregroundColor: const Color(0xFF0F0F0F),
                               minimumSize: const Size.fromHeight(50),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),

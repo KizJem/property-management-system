@@ -438,6 +438,7 @@ class ReservecellPage extends StatelessWidget {
                             ),
                             maxLines: 3,
                           ),
+                          const SizedBox(height: 10),
                         ],
                       ),
                     ),
@@ -449,6 +450,7 @@ class ReservecellPage extends StatelessWidget {
                           child: OutlinedButton(
                             onPressed: () {},
                             style: OutlinedButton.styleFrom(
+                              backgroundColor: const Color(0xFFFFFBF1),
                               foregroundColor: const Color(0xFF0F0F0F),
                               minimumSize: const Size.fromHeight(50),
                               shape: RoundedRectangleBorder(
