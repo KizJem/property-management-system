@@ -267,16 +267,66 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
     );
   }
 
+  //ALIGNED ROW WIDGET
+  /// Helper widget to align label and value in a row
+  Widget _buildAlignedRow(String label, String? value, {bool isEmail = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Label Column
+          SizedBox(
+            width: 120,
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          // Colon Column (fixed width for perfect vertical alignment)
+          const SizedBox(
+            width: 15,
+            child: Text(
+              ':',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+                color: Colors.black,
+              ),
+            ),
+          ),
+          // Value Column
+          Expanded(
+            child: Text(
+              value ?? '',
+              style: TextStyle(
+                fontSize: 14,
+                color: isEmail ? Colors.blue : Colors.black,
+                decoration: isEmail
+                    ? TextDecoration.underline
+                    : TextDecoration.none,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   /// Shows pop-up with detailed log
-  void _showLogDetails(Map<String, String> log) {
+  _showLogDetails(Map<String, String> log) {
     showDialog(
       context: context,
       builder: (_) => Dialog(
         backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         child: Container(
-          padding: const EdgeInsets.all(20),
-          width: 400,
+          padding: const EdgeInsets.all(35),
+          width: 460,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,74 +345,36 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Text.rich(
-                TextSpan(
-                  text: 'Action Type: ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: log['action'])],
-                ),
+              const SizedBox(height: 24),
+
+              // Block 1: Action Info
+              _buildAlignedRow('Action Type', log['action']),
+              const SizedBox(height: 24),
+
+              // Block 2: Stay Info
+              _buildAlignedRow('Staff Name', log['staff']),
+              const SizedBox(height: 1),
+              _buildAlignedRow('Room Number', log['room']),
+              const SizedBox(height: 1),
+              _buildAlignedRow('No. of Guests', '1'),
+              const SizedBox(height: 1),
+              _buildAlignedRow(
+                'Stay Duration',
+                'June 05, 2025 – June 09, 2025',
               ),
-              const SizedBox(height: 10),
-              Text.rich(
-                TextSpan(
-                  text: 'Staff Name: ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: log['staff'])],
-                ),
-              ),
-              Text.rich(
-                TextSpan(
-                  text: 'Room Number: ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: log['room'])],
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text.rich(
-                TextSpan(
-                  text: 'No. of Guests: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: '1')],
-                ),
-              ),
-              const Text.rich(
-                TextSpan(
-                  text: 'Stay Duration: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: 'JUN 5, 2025 - JUN 9, 2025')],
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text.rich(
-                TextSpan(
-                  text: 'Guest Name: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: 'Juan Dela Cruz')],
-                ),
-              ),
-              const Text.rich(
-                TextSpan(
-                  text: 'Phone Number: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: '09774567453')],
-                ),
-              ),
-              const Text.rich(
-                TextSpan(
-                  text: 'Email: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: 'None')],
-                ),
-              ),
-              const Text.rich(
-                TextSpan(
-                  text: 'Special Requests: ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: [TextSpan(text: 'None')],
-                ),
-              ),
-              const SizedBox(height: 20),
+
+              const SizedBox(height: 24),
+
+              // Block 3: Guest Info
+              _buildAlignedRow('Guest Name', 'Juan Dela Cruz'),
+              const SizedBox(height: 1),
+              _buildAlignedRow('Phone No.', '0997 – 456 – 7453'),
+              const SizedBox(height: 1),
+              _buildAlignedRow('Email', 'jdcruz@gmail.com'),
+              const SizedBox(height: 1),
+              _buildAlignedRow('Special Requests', 'None'),
+
+              const SizedBox(height: 24),
               const Text(
                 '🔒 Logs are read-only and cannot be edited or deleted.',
                 style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
