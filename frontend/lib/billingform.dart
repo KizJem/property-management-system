@@ -321,33 +321,35 @@ class BillingForm extends StatelessWidget {
 
                           // Buttons
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(
-                                width: 300,
-                                height: 40,
+                              Expanded(
                                 child: OutlinedButton(
-                                  onPressed: () {},
-                                  child: const Text(
-                                    'Cancel',
-                                    style: TextStyle(fontSize: 16),
+                                  style: OutlinedButton.styleFrom(
+                                    minimumSize: const Size.fromHeight(50),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cancel'),
                                 ),
                               ),
-                              const SizedBox(width: 20),
-                              SizedBox(
-                                width: 300,
-                                height: 40,
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
-                                    foregroundColor: Colors.white,
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: OutlinedButton(
+                                  style: OutlinedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFFDD41A),
+                                    foregroundColor: const Color(0xFF0F0F0F),
+                                    minimumSize: const Size.fromHeight(50),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
                                   ),
-                                  child: const Text(
-                                    'Check-Out',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
+                                  onPressed: () {
+                                    // TODO: Handle extend logic here
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Check-Out'),
                                 ),
                               ),
                             ],
