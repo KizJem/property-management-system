@@ -713,6 +713,8 @@ class OccupiedCellPage extends StatelessWidget {
                           Expanded(
                             child: OutlinedButton(
                               style: OutlinedButton.styleFrom(
+                                backgroundColor: const Color(0xFFFFFBF1),
+                                foregroundColor: const Color(0xFF0F0F0F),
                                 minimumSize: const Size.fromHeight(50),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
