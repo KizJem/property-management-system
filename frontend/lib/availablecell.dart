@@ -448,18 +448,25 @@ class AvailableCellPage extends StatelessWidget {
                           onPressed: () {},
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size.fromHeight(50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           child: const Text('Cancel'),
                         ),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
-                        child: ElevatedButton(
+                        child: OutlinedButton(
                           onPressed: () {},
-                          style: ElevatedButton.styleFrom(
+                          style: OutlinedButton.styleFrom(
                             backgroundColor: const Color(0xFFFDD41A),
                             foregroundColor: const Color(0xFF0F0F0F),
                             minimumSize: const Size.fromHeight(50),
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                           ),
                           child: const Text('Continue'),
                         ),
