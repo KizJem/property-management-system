@@ -16,11 +16,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _nameController = TextEditingController();
 
   bool _isLoading = false;
+  bool _invalidUsername = false;
+  bool _invalidPassword = false;
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
+      // Client-side validation for default credentials
+      if (_usernameController.text != 'admin@example.com') {
+        setState(() {
+          _invalidUsername = true;
+          _invalidPassword = false;
+        });
+        return;
+      }
+
+      if (_passwordController.text != 'admin') {
+        setState(() {
+          _invalidUsername = false;
+          _invalidPassword = true;
+        });
+        return;
+      }
+
       setState(() {
         _isLoading = true;
+        _invalidUsername = false;
+        _invalidPassword = false;
       });
 
       try {
@@ -36,18 +57,20 @@ class _LoginPageState extends State<LoginPage> {
 
         if (!mounted) return;
 
+        final responseData = jsonDecode(response.body);
+
         if (response.statusCode == 200) {
           Navigator.of(context).pushReplacementNamed('/calendar');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Login failed: ${response.body}')),
+            SnackBar(content: Text('Login failed: ${responseData['message']}')),
           );
         }
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       } finally {
         if (mounted) {
           setState(() {
@@ -63,7 +86,6 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Row(
         children: [
-          // LEFT COL (Image)
           // LEFT COL (Image)
           Expanded(
             child: Container(
@@ -171,36 +193,94 @@ class _LoginPageState extends State<LoginPage> {
                         // Username Field
                         SizedBox(
                           width: 500,
-                          height: 60,
-                          child: TextFormField(
-                            controller: _usernameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Username',
-                              prefixIcon: Icon(Icons.person),
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Please enter username'
-                                : null,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                height: 60,
+                                child: TextFormField(
+                                  controller: _usernameController,
+                                  decoration: InputDecoration(
+                                    labelText: 'Username',
+                                    prefixIcon: Icon(Icons.person),
+                                    border: OutlineInputBorder(),
+                                    errorText: null,
+                                    errorStyle: TextStyle(color: Colors.red),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter username';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              if (_invalidUsername)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    'Invalid username',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 5),
 
-                        // Password Field
+                        // Password Section
                         SizedBox(
                           width: 500,
-                          height: 60,
-                          child: TextFormField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              prefixIcon: Icon(Icons.lock),
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Please enter password'
-                                : null,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                height: 60,
+                                child: TextFormField(
+                                  controller: _passwordController,
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    labelText: 'Password',
+                                    prefixIcon: Icon(Icons.lock),
+                                    border: OutlineInputBorder(),
+                                    errorText: null,
+                                    errorStyle: TextStyle(color: Colors.red),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.red),
+                                    ),
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter password';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              if (_invalidPassword)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    'Invalid password',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -216,9 +296,12 @@ class _LoginPageState extends State<LoginPage> {
                               prefixIcon: Icon(Icons.badge),
                               border: OutlineInputBorder(),
                             ),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Please enter your name'
-                                : null,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter your name';
+                              }
+                              return null;
+                            },
                           ),
                         ),
                         const SizedBox(height: 15),
