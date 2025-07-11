@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 import 'actvitylogs.dart';
 import 'calendardashboard.dart';
-import 'checkinlogs.dart'; // ✅ NEW: Add this import
+import 'guestrecords.dart'; // ✅ NEW: Add this import
 import 'login.dart';
 
 void main() {
@@ -24,8 +24,8 @@ class MyApp extends StatelessWidget {
       home: const LoginPage(),
       routes: {
         '/home': (context) => const HomePage(),
-        '/checkinlogs': (context) =>
-            const CheckInLogsPage(), // ✅ NEW: Add route
+        '/guestrecords': (context) =>
+            const GuestRecordsPage(), // ✅ NEW: Add route
         '/activitylogs': (context) => const ActivityLogsPage(),
         '/calendar': (context) {
           final now = DateTime.now();
@@ -97,8 +97,8 @@ class HomePage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/checkinlogs'),
-              child: const Text('Go to Check-In Logs'),
+              onPressed: () => Navigator.pushNamed(context, '/guestrecords'),
+              child: const Text('Go to Guest Records'),
             ),
             const SizedBox(height: 12),
             ElevatedButton(

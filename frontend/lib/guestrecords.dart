@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class CheckInLogsPage extends StatefulWidget {
-  const CheckInLogsPage({super.key});
+class GuestRecordsPage extends StatefulWidget {
+  const GuestRecordsPage({super.key});
 
   @override
-  State<CheckInLogsPage> createState() => _CheckInLogsPageState();
+  State<GuestRecordsPage> createState() => _CheckInLogsPageState();
 }
 
-class _CheckInLogsPageState extends State<CheckInLogsPage> {
+class _CheckInLogsPageState extends State<GuestRecordsPage> {
   bool _sidebarExpanded = true;
   final double _sidebarWidth = 150;
 
@@ -47,7 +47,7 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
                       ),
                       _buildSidebarItem(
                         icon: Icons.login,
-                        title: 'Check-in Logs',
+                        title: 'Guest Records',
                         isHeader: true,
                       ),
                       _buildSidebarItem(
@@ -98,7 +98,7 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
                   ),
                   alignment: Alignment.center,
                   child: const Text(
-                    '  Check-In Logs',
+                    '  Guest Records',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -183,7 +183,7 @@ class _CheckInLogsPageState extends State<CheckInLogsPage> {
                                     flex: 2,
                                     child: TextButton(
                                       onPressed: () => _showGuestDialog(guest),
-                                      child: const Text('[View]'),
+                                      child: const Text('View'),
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,
                                         alignment: Alignment.centerLeft,

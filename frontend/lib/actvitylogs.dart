@@ -68,10 +68,10 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                       ),
                       _buildSidebarItem(
                         icon: Icons.login,
-                        title: 'Check-in Logs',
+                        title: 'Guest Records',
                         onTap: () => Navigator.pushReplacementNamed(
                           context,
-                          '/checkinlogs',
+                          '/guestrecords',
                         ),
                       ),
                       _buildSidebarItem(
@@ -204,7 +204,7 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                                     flex: 2,
                                     child: TextButton(
                                       onPressed: () => _showLogDetails(log),
-                                      child: const Text('[View]'),
+                                      child: const Text('View'),
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,
                                         alignment: Alignment.centerLeft,

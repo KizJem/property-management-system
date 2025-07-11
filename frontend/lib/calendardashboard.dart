@@ -456,7 +456,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           tooltip: _sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar',
         ),
         title: const Text('System Name'),
-        backgroundColor: Colors.black87,
+        backgroundColor: Colors.black,
       ),
 
       // inside Scaffold → body: _sidebarExpanded ? Row(children: [...]) : mainContent,
@@ -477,11 +477,11 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       ),
                       _buildSidebarItem(
                         Icons.login,
-                        'Check-in Logs',
+                        'Guest Records',
                         onTap: () {
                           Navigator.pushReplacementNamed(
                             context,
-                            '/checkinlogs',
+                            '/guestrecords',
                           );
                         },
                       ),
