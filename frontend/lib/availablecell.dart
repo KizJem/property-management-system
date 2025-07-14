@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'roomdetails.dart';
 
 class RoomFeature extends StatelessWidget {
   final IconData icon;
@@ -22,11 +23,14 @@ class RoomFeature extends StatelessWidget {
 }
 
 class AvailableCellPage extends StatelessWidget {
-  const AvailableCellPage({super.key});
+  final String roomType;
+
+  const AvailableCellPage({super.key, required this.roomType});
 
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
+    final details = roomDetails[roomType]!;
+    final now = DateTime.now();
 
     return Scaffold(
       body: Container(
@@ -35,7 +39,7 @@ class AvailableCellPage extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           child: Row(
             children: [
-              // LEFT SIDE
+              // LEFT SIDE - DYNAMIC ROOM DETAILS
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,9 +56,9 @@ class AvailableCellPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 10),
 
-                    // Room Preview
+                    // Room Preview Section
                     Container(
-                      margin: const EdgeInsets.only(left: 5, right: 5),
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -68,20 +72,13 @@ class AvailableCellPage extends StatelessWidget {
                             height: 250,
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20),
-                              ),
+                              borderRadius: BorderRadius.circular(20),
                             ),
                             child: ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20),
-                              ),
+                              borderRadius: BorderRadius.circular(20),
                               child: Image.asset(
-                                'assets/images/single-standard-room-1.jpg',
+                                details.imageAsset,
                                 width: double.infinity,
-                                height: 300,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -89,17 +86,17 @@ class AvailableCellPage extends StatelessWidget {
                           const SizedBox(height: 20),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               Text(
-                                'Standard Single Room',
-                                style: TextStyle(
+                                details.name,
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               Text(
-                                '₱ 4,000',
-                                style: TextStyle(
+                                details.price,
+                                style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -107,9 +104,7 @@ class AvailableCellPage extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          const Text(
-                            'The room offers a comfortable single bed, perfect for solo travelers seeking a restful stay. It comes with a private bathroom, air-conditioning, a flat-screen TV, a work desk, and complimentary Wi-Fi.',
-                          ),
+                          Text(details.description),
                           const SizedBox(height: 10),
                           const Text(
                             'Room Features',
@@ -118,57 +113,13 @@ class AvailableCellPage extends StatelessWidget {
                           const SizedBox(height: 5),
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    RoomFeature(
-                                      icon: Icons.bed,
-                                      label: 'Comfortable single bed',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.bathtub,
-                                      label: 'Private bathroom',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.ac_unit,
-                                      label: 'Air-conditioning',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.tv,
-                                      label: 'Flat-screen TV',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.desk,
-                                      label: 'Work desk',
-                                    ),
-                                  ],
-                                ),
+                                child: Column(children: details.featuresLeft),
                               ),
-                              SizedBox(width: 16),
+                              const SizedBox(width: 16),
                               Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    RoomFeature(
-                                      icon: Icons.wifi,
-                                      label: 'Complimentary Wi-Fi',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.style,
-                                      label: 'Minimalist design',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.person,
-                                      label: 'Ideal for solo travelers',
-                                    ),
-                                    RoomFeature(
-                                      icon: Icons.night_shelter,
-                                      label: 'Perfect for short stays',
-                                    ),
-                                  ],
-                                ),
+                                child: Column(children: details.featuresRight),
                               ),
                             ],
                           ),
@@ -179,13 +130,14 @@ class AvailableCellPage extends StatelessWidget {
                 ),
               ),
 
-              // RIGHT SIDE
               const SizedBox(width: 20),
+
+              // RIGHT SIDE - UNCHANGED BOOKING FORM
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
+                    // Booking # and Timestamp
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -443,7 +395,7 @@ class AvailableCellPage extends StatelessWidget {
                       ),
                     ),
 
-                    // Buttons
+                    // Action Buttons
                     Row(
                       children: [
                         Expanded(
@@ -468,7 +420,6 @@ class AvailableCellPage extends StatelessWidget {
                               backgroundColor: const Color(0xFFFDD41A),
                               foregroundColor: const Color(0xFF0F0F0F),
                               minimumSize: const Size.fromHeight(50),
-
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

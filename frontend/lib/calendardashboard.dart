@@ -217,7 +217,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   Map<String, int?> _selectedEnd = {};
   String? _activeBookingRoom;
 
-  void _onCellTap(String room, int dateIndex) {
+  void _onCellTap(String roomType, String room, int dateIndex) {
     setState(() {
       if (_activeBookingRoom != null &&
           _activeBookingRoom != room &&
@@ -271,11 +271,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.of(context).pop(); // Close dialog
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AvailableCellPage(),
+                        builder: (context) =>
+                            AvailableCellPage(roomType: roomType),
                       ),
                     );
                   },
@@ -519,7 +520,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const AvailableCellPage(),
+                              builder: (context) => const AvailableCellPage(
+                                roomType: 'STANDARD SINGLE ROOMS',
+                              ),
                             ),
                           );
                         },
@@ -708,7 +711,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     ? SystemMouseCursors.click
                     : SystemMouseCursors.basic,
                 child: GestureDetector(
-                  onTap: isBookingActive ? () => _onCellTap(room, i) : null,
+                  onTap: isBookingActive
+                      ? () => _onCellTap(title, room, i)
+                      : null,
+
                   child: Container(
                     width: 80,
                     height: 50,
