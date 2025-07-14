@@ -66,6 +66,7 @@ flutter:
     - assets/images/PMS-white-logo.png
     - assets/images/cba-logo.png
     - assets/images/single-standard-room(acv).jpg
+    - assets/images/PMS-logo-2.png
   fonts:
     - family: Poppins
       fonts:

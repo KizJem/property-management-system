@@ -166,11 +166,11 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         // Logo
                         Image.asset(
-                          'assets/images/PMS-logo.png',
+                          'assets/images/PMS-logo-2.png',
                           width: 100,
                           height: 100,
                         ),
-
+                        const SizedBox(height: 10),
                         // Title
                         const Text(
                           'Sign In',
