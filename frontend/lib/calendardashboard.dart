@@ -57,8 +57,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   Mode _selectedMode = Mode.bookRooms; // 🔹 Add this here
   void _showMonthYearPicker(BuildContext context) async {
-    final int tempMonth = _selectedMonth;
-    final int tempYear = _selectedYear;
+    //final int tempMonth = _selectedMonth;
+    //final int tempYear = _selectedYear;
     await showDialog(
       context: context,
       builder: (ctx) {
@@ -131,7 +131,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-  final List<String> roomStatusCodes = [
+  /*final List<String> roomStatusCodes = [
     'OCC — Occupied',
     'VC — Vacant & Clean',
     'VD — Vacant & Dirty',
@@ -151,7 +151,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     'V — Vacant Room',
     'MUR — Make Up Room',
     'VR — Vacant & Ready',
-  ];
+  ];*/
 
   // 🔹 List of room status codes
   final Map<String, Color> roomStatusColors = {
@@ -905,121 +905,97 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           final roomStatuses = _housekeepingStatusPerCell[room] ?? {};
 
           List<Widget> mergedCells = [];
-
-          for (int i = 0; i < dates.length; i++) {
+          for (int i = 0; i < dates.length;) {
             final currentStatus = roomStatuses[i];
-            final isBookSelected =
-                start != null &&
-                ((end != null && i >= start && i <= end) ||
-                    (end == null && i == start));
-            final isHousekeepingSelected = selectedHousekeepingIndex == i;
-            final statusColor = roomStatusColors[currentStatus] ?? Colors.white;
-            final hasHousekeepingStatus =
-                currentStatus != null && currentStatus.isNotEmpty;
+            final selectedIndex = _selectedHousekeepingCell[room];
 
-            // 🔁 Merge logic — span across identical housekeeping statuses
-            int span = 1;
-            /*while (i + span < dates.length &&
-                roomStatuses[i + span] == currentStatus &&
-                currentStatus != null &&
-                (currentStatus.startsWith('VO') ||
-                    currentStatus.startsWith('DND'))) {
-              span++;
-            }*/
+            if (currentStatus != null && currentStatus.isNotEmpty) {
+              // Find merge span
+              int span = 1;
+              while (i + span < dates.length &&
+                  roomStatuses[i + span] == currentStatus) {
+                span++;
+              }
 
-            // Generate spanned cells — clickable per cell
-            for (int j = 0; j < span; j++) {
-              final index = i + j;
-              final isLastDate = index == dates.length - 1;
-              final showBorder = !(isBookSelected || isHousekeepingSelected);
+              // Is one of these spanned cells selected?
+              bool isSelected =
+                  selectedIndex != null &&
+                  selectedIndex >= i &&
+                  selectedIndex < i + span;
 
               mergedCells.add(
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: () {
-                      if (_selectedMode == Mode.bookRooms) {
-                        if (_activeBookingRoom == null ||
-                            _activeBookingRoom == room ||
-                            (_selectedEnd[_activeBookingRoom ?? ''] != null)) {
-                          _onCellTap(room, index);
-                        }
-                      } else {
-                        setState(() {
-                          _selectedHousekeepingCell[room] = index;
-                        });
-                        _handleHousekeeping(room, index);
-                      }
+                      setState(() {
+                        // Set selected cell to the first index of merged block (or customize)
+                        _selectedHousekeepingCell[room] = i;
+                      });
+                      _handleHousekeeping(room, i);
                     },
                     child: Container(
-                      width: 80,
+                      width: 80.0 * span,
                       height: 50,
                       decoration: BoxDecoration(
-                        color: j == 0 ? statusColor : Colors.transparent,
-                        border: showBorder
-                            ? Border(
-                                top: BorderSide(color: Colors.grey.shade300),
-                                right: isLastDate
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
-                                bottom: isLast
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
-                              )
-                            : null,
+                        color: isSelected
+                            ? Colors.orange[400]
+                            : roomStatusColors[currentStatus] ?? Colors.grey,
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade300),
+                          right: BorderSide(color: Colors.grey.shade300),
+                          bottom: isLast
+                              ? BorderSide.none
+                              : BorderSide(color: Colors.grey.shade300),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          if (j == 0 && hasHousekeepingStatus)
-                            Text(
-                              currentStatus!.split(' ').first,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          if (isBookSelected &&
-                              !hasHousekeepingStatus &&
-                              j == 0)
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.green[400],
-                                borderRadius: _getBorderRadiusForCell(
-                                  i,
-                                  start,
-                                  end,
-                                ),
-                              ),
-                            ),
-                          if (isHousekeepingSelected &&
-                              !hasHousekeepingStatus &&
-                              j == 0)
-                            Container(
-                              width: double.infinity,
-                              height: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.orange[400],
-                                borderRadius: _getBorderRadiusForCell(
-                                  i,
-                                  start,
-                                  end,
-                                ),
-                              ),
-                            ),
-                        ],
+                      child: Center(
+                        child: Text(
+                          currentStatus,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               );
+              i += span;
+            } else {
+              bool isSelected = selectedIndex == i;
+              mergedCells.add(
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedHousekeepingCell[room] = i;
+                      });
+                      _handleHousekeeping(room, i);
+                    },
+                    child: Container(
+                      width: 80,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.orange[400] : Colors.white,
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade300),
+                          right: BorderSide(color: Colors.grey.shade300),
+                          bottom: isLast
+                              ? BorderSide.none
+                              : BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: null,
+                    ),
+                  ),
+                ),
+              );
             }
-
-            // Skip over spanned cells
-            i += span - 1;
           }
 
           return Row(children: mergedCells);
