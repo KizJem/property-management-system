@@ -59,13 +59,13 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/single-standard-room-1.jpg
+    - assets/images/single-standard-room.jpg
+    - assets/images/superior-single-room.jpg
     - assets/images/sign-in-left.jpg
     - assets/images/PMS-logo.png
     - assets/images/tagline.png
     - assets/images/PMS-white-logo.png
     - assets/images/cba-logo.png
-    - assets/images/single-standard-room(acv).jpg
     - assets/images/PMS-logo-2.png
   fonts:
     - family: Poppins
