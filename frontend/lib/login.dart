@@ -22,15 +22,26 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       // Client-side validation for default credentials
-      if (_usernameController.text != 'admin@example.com') {
+      final usernameCorrect = _usernameController.text == 'admin@example.com';
+      final passwordCorrect = _passwordController.text == 'admin';
+
+      // Check all possible cases
+      if (!usernameCorrect && !passwordCorrect) {
+        // Both are incorrect
+        setState(() {
+          _invalidUsername = true;
+          _invalidPassword = true;
+        });
+        return;
+      } else if (!usernameCorrect) {
+        // Only username is incorrect
         setState(() {
           _invalidUsername = true;
           _invalidPassword = false;
         });
         return;
-      }
-
-      if (_passwordController.text != 'admin') {
+      } else if (!passwordCorrect) {
+        // Only password is incorrect
         setState(() {
           _invalidUsername = false;
           _invalidPassword = true;
@@ -38,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
+      // If we get here, both are correct
       setState(() {
         _isLoading = true;
         _invalidUsername = false;
@@ -191,99 +203,161 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 32),
 
                         // Username Field
-                        SizedBox(
-                          width: 500,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                height: 60,
-                                child: TextFormField(
-                                  controller: _usernameController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Username',
-                                    prefixIcon: Icon(Icons.person),
-                                    border: OutlineInputBorder(),
-                                    errorText: null,
-                                    errorStyle: TextStyle(color: Colors.red),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.red),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.red),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: 500,
+                              height: 60,
+                              child: TextFormField(
+                                controller: _usernameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Username',
+                                  labelStyle: TextStyle(
+                                    color: _invalidUsername ? Colors.red : null,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.person,
+                                    color: _invalidUsername ? Colors.red : null,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : Colors.grey,
                                     ),
                                   ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter username';
-                                    }
-                                    return null;
-                                  },
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : Colors.blue,
+                                    ),
+                                  ),
+                                  errorText: null,
+                                  errorStyle: TextStyle(color: Colors.red),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
                                 ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter username';
+                                  }
+                                  return null;
+                                },
                               ),
-                              if (_invalidUsername)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
+                            ),
+                            if (_invalidUsername)
+                              Transform.translate(
+                                offset: Offset(
+                                  0,
+                                  -8,
+                                ), // Move message 8 pixels up
+                                child: Container(
+                                  width: 500,
                                   child: Text(
                                     'Invalid username',
+                                    textAlign: TextAlign.end,
                                     style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 12,
                                     ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-
-                        // Password Section
-                        SizedBox(
-                          width: 500,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              SizedBox(
-                                height: 60,
-                                child: TextFormField(
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    prefixIcon: Icon(Icons.lock),
-                                    border: OutlineInputBorder(),
-                                    errorText: null,
-                                    errorStyle: TextStyle(color: Colors.red),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.red),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(color: Colors.red),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Please enter password';
-                                    }
-                                    return null;
-                                  },
                                 ),
                               ),
-                              if (_invalidPassword)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+
+                        // Password Section
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: 500,
+                              height: 60,
+                              child: TextFormField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  labelStyle: TextStyle(
+                                    color: _invalidPassword ? Colors.red : null,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.lock,
+                                    color: _invalidPassword ? Colors.red : null,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : Colors.grey,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : Colors.blue,
+                                    ),
+                                  ),
+                                  errorText: null,
+                                  errorStyle: TextStyle(color: Colors.red),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.red),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter password';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            if (_invalidPassword)
+                              Transform.translate(
+                                offset: Offset(
+                                  0,
+                                  -8,
+                                ), // Move message 8 pixels up
+                                child: Container(
+                                  width: 500,
                                   child: Text(
                                     'Invalid password',
+                                    textAlign: TextAlign.end,
                                     style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 12,
                                     ),
                                   ),
                                 ),
-                            ],
-                          ),
+                              ),
+                          ],
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
 
                         // Name Field
                         SizedBox(
