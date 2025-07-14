@@ -9,7 +9,7 @@ const SECRET_KEY = 'your-secret-key-here';
 
 app.use(express.json());
 
-// Login endpoint
+// Updated login endpoint
 app.post('/api/v1/login', async (req, res) => {
   const { username, password, name } = req.body;
 
@@ -23,29 +23,42 @@ app.post('/api/v1/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Check if user exists in database
+    // Check if user with this name already exists
     db.get(
-      'SELECT * FROM pms_user WHERE user_email = ?',
-      [username],
-      async (err, user) => {
+      'SELECT * FROM pms_user WHERE name = ?',
+      [name],
+      async (err, existingUser) => {
         if (err) {
           return res.status(500).json({ message: 'Database error' });
         }
 
-        // Update name if changed (only for the admin account)
-        if (user && user.name !== name) {
-          db.run(
-            'UPDATE pms_user SET name = ? WHERE user_email = ?',
-            [name, username]
-          );
+        let userId;
+        
+        if (existingUser) {
+          // User exists, use existing ID
+          userId = existingUser.user_id;
+        } else {
+          // Insert new user with default credentials but new name
+          const result = await new Promise((resolve, reject) => {
+            db.run(
+              'INSERT INTO pms_user (user_email, password, name) VALUES (?, ?, ?)',
+              [username, password, name],
+              function(err) {
+                if (err) reject(err);
+                else resolve(this.lastID);
+              }
+            );
+          });
+          userId = result;
         }
 
-        const token = jwt.sign({ userId: user ? user.user_id : 1 }, SECRET_KEY, { expiresIn: '1h' });
+        // Generate token
+        const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
         
         return res.json({ 
           message: 'Login successful',
           token,
-          user: { id: user ? user.user_id : 1, name: name }
+          user: { id: userId, name }
         });
       }
     );

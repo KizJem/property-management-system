@@ -27,21 +27,18 @@ class _LoginPageState extends State<LoginPage> {
 
       // Check all possible cases
       if (!usernameCorrect && !passwordCorrect) {
-        // Both are incorrect
         setState(() {
           _invalidUsername = true;
           _invalidPassword = true;
         });
         return;
       } else if (!usernameCorrect) {
-        // Only username is incorrect
         setState(() {
           _invalidUsername = true;
           _invalidPassword = false;
         });
         return;
       } else if (!passwordCorrect) {
-        // Only password is incorrect
         setState(() {
           _invalidUsername = false;
           _invalidPassword = true;
@@ -49,7 +46,6 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      // If we get here, both are correct
       setState(() {
         _isLoading = true;
         _invalidUsername = false;
@@ -72,6 +68,7 @@ class _LoginPageState extends State<LoginPage> {
         final responseData = jsonDecode(response.body);
 
         if (response.statusCode == 200) {
+          // Store user info if needed
           Navigator.of(context).pushReplacementNamed('/calendar');
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
