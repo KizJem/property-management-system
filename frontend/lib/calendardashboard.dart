@@ -4,8 +4,6 @@ import 'availablecell.dart';
 import 'occupiedcell.dart';
 import 'reservecell.dart';
 
-enum Mode { bookRooms, setHousekeeping }
-
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
   final Map<String, List<String>> rooms;
@@ -47,18 +45,14 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return "$day $monthName ${date.year}";
   }
 
-  bool get _isBookingMode => _selectedMode == Mode.bookRooms;
-  Map<String, Map<int, String>> _housekeepingStatusPerCell = {};
   bool _sidebarExpanded = false;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
   int _selectedMonth = DateTime.now().month; // 1-based for DateTime
   int _selectedYear = DateTime.now().year;
-
-  Mode _selectedMode = Mode.bookRooms; // 🔹 Add this here
   void _showMonthYearPicker(BuildContext context) async {
-    //final int tempMonth = _selectedMonth;
-    //final int tempYear = _selectedYear;
+    int tempMonth = _selectedMonth;
+    int tempYear = _selectedYear;
     await showDialog(
       context: context,
       builder: (ctx) {
@@ -129,237 +123,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         );
       },
     );
-  }
-
-  /*final List<String> roomStatusCodes = [
-    'OCC — Occupied',
-    'VC — Vacant & Clean',
-    'VD — Vacant & Dirty',
-    'OR — Occupied & Ready',
-    'OC — Occupied & Clean',
-    'OD — Occupied & Dirty',
-    'CO — Check Out',
-    'OOO — Out of Order',
-    'DND — Do Not Disturb',
-    'V/O or O/V — Status Unclear',
-    'LO — Lock Out Room',
-    'DO — Due Out Room',
-    'DNCO — Did Not Check Out',
-    'NS — No Show',
-    'SO — Slept Out',
-    'BLO — Blocked',
-    'V — Vacant Room',
-    'MUR — Make Up Room',
-    'VR — Vacant & Ready',
-  ];*/
-
-  // 🔹 List of room status codes
-  final Map<String, Color> roomStatusColors = {
-    'OCC — Occupied': Colors.red.shade700,
-    'VC — Vacant & Clean': Colors.green.shade400,
-    'VD — Vacant & Dirty': Colors.orange.shade400,
-    'OR — Occupied & Ready': Colors.blue.shade400,
-    'OC — Occupied & Clean': Colors.green.shade600,
-    'OD — Occupied & Dirty': Colors.deepOrange.shade600,
-    'CO — Check Out': Colors.purple.shade400,
-    'OOO — Out of Order': Colors.grey.shade600,
-    'DND — Do Not Disturb': Colors.brown.shade400,
-    'V/O or O/V — Status Unclear': Colors.teal.shade400,
-    'LO — Lock Out Room': Colors.indigo.shade400,
-    'DO — Due Out Room': Colors.cyan.shade400,
-    'DNCO — Did Not Check Out': Colors.deepPurple.shade400,
-    'NS — No Show': Colors.pink.shade300,
-    'SO — Slept Out': Colors.amber.shade400,
-    'BLO — Blocked': Colors.black54,
-    'V — Vacant Room': Colors.lightGreen.shade400,
-    'MUR — Make Up Room': Colors.yellow.shade600,
-    'VR — Vacant & Ready': Colors.lightBlue.shade400,
-  };
-
-  void _handleBooking(String room, int dateIndex) {
-    setState(() {
-      if (_activeBookingRoom != null &&
-          _activeBookingRoom != room &&
-          _selectedEnd[_activeBookingRoom!] == null) {
-        return;
-      }
-
-      if (_selectedStart[room] == null ||
-          (_selectedStart[room] != null && _selectedEnd[room] != null)) {
-        _selectedStart[room] = dateIndex;
-        _selectedEnd[room] = null;
-        _activeBookingRoom = room;
-      } else if (_selectedStart[room] != null && _selectedEnd[room] == null) {
-        if (dateIndex < _selectedStart[room]!) {
-          _selectedEnd[room] = _selectedStart[room];
-          _selectedStart[room] = dateIndex;
-        } else {
-          _selectedEnd[room] = dateIndex;
-        }
-        _activeBookingRoom = null;
-
-        final dates = _generateDatesForMonth(
-          _selectedYear,
-          _selectedMonth,
-          daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
-        );
-        final startDate = dates[_selectedStart[room]!]['date'] ?? '';
-        final endDate = dates[_selectedEnd[room]!]['date'] ?? '';
-
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('Confirm Booking'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Room: $room'),
-                const SizedBox(height: 8),
-                Text('Date Range: $startDate - $endDate'),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const AvailableCellPage(),
-                    ),
-                  );
-                },
-                child: const Text('Continue'),
-              ),
-            ],
-          ),
-        );
-      }
-    });
-  }
-
-  void _handleHousekeeping(String room, int dateIndex) {
-    setState(() {
-      if (_activeBookingRoom != null &&
-          _activeBookingRoom != room &&
-          _selectedEnd[_activeBookingRoom!] == null) {
-        return;
-      }
-
-      if (_selectedStart[room] == null ||
-          (_selectedStart[room] != null && _selectedEnd[room] != null)) {
-        _selectedStart[room] = dateIndex;
-        _selectedEnd[room] = null;
-        _activeBookingRoom = room;
-      } else if (_selectedStart[room] != null && _selectedEnd[room] == null) {
-        if (dateIndex < _selectedStart[room]!) {
-          _selectedEnd[room] = _selectedStart[room];
-          _selectedStart[room] = dateIndex;
-        } else {
-          _selectedEnd[room] = dateIndex;
-        }
-
-        _activeBookingRoom = null;
-
-        final dates = _generateDatesForMonth(
-          _selectedYear,
-          _selectedMonth,
-          daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
-        );
-        final startDate = dates[_selectedStart[room]!]['date'] ?? '';
-        final endDate = dates[_selectedEnd[room]!]['date'] ?? '';
-
-        String? selectedStatus;
-
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Set Housekeeping Status'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Room: $room'),
-                  const SizedBox(height: 8),
-                  Text('Date Range: $startDate - $endDate'),
-                  const SizedBox(height: 16),
-                  const Text('Select Status:'),
-                  DropdownButtonFormField<String>(
-                    value: selectedStatus,
-                    onChanged: (value) {
-                      selectedStatus = value;
-                    },
-                    items:
-                        [
-                              'OCC — Occupied',
-                              'VC — Vacant & Clean',
-                              'VD — Vacant & Dirty',
-                              'OR — Occupied & Ready',
-                              'OC — Occupied & Clean',
-                              'OD — Occupied & Dirty',
-                              'CO — Check Out',
-                              'OOO — Out of Order',
-                              'DND — Do Not Disturb',
-                              'V/O or O/V — Status Unclear',
-                              'LO — Lock Out Room',
-                              'DO — Due Out Room',
-                              'DNCO — Did Not Check Out',
-                              'NS — No Show',
-                              'SO — Slept Out',
-                              'BLO — Blocked',
-                              'V — Vacant Room',
-                              'MUR — Make Up Room',
-                              'VR — Vacant & Ready',
-                            ]
-                            .map(
-                              (status) => DropdownMenuItem<String>(
-                                value: status,
-                                child: Text(status),
-                              ),
-                            )
-                            .toList(),
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    if (selectedStatus != null) {
-                      setState(() {
-                        for (
-                          int i = _selectedStart[room]!;
-                          i <= _selectedEnd[room]!;
-                          i++
-                        ) {
-                          _housekeepingStatusPerCell[room] ??= {};
-                          _housekeepingStatusPerCell[room]![i] =
-                              selectedStatus!;
-                        }
-                      });
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-    });
   }
 
   // Add these scroll controllers
@@ -453,16 +216,77 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   Map<String, int?> _selectedStart = {};
   Map<String, int?> _selectedEnd = {};
   String? _activeBookingRoom;
-  Map<String, int?> _housekeepingSelectedCell = {};
-  Map<String, int> _selectedHousekeepingCell =
-      {}; // roomName -> selected date index
 
   void _onCellTap(String room, int dateIndex) {
-    if (_selectedMode == Mode.bookRooms) {
-      _handleBooking(room, dateIndex); // ✅ Booking with confirm dialog
-    } else if (_selectedMode == Mode.setHousekeeping) {
-      _handleHousekeeping(room, dateIndex); // ✅ Housekeeping without confirm
-    }
+    setState(() {
+      if (_activeBookingRoom != null &&
+          _activeBookingRoom != room &&
+          _selectedEnd[_activeBookingRoom!] == null) {
+        // Prevent booking another room while previous booking is not done
+        return;
+      }
+      if (_selectedStart[room] == null ||
+          (_selectedStart[room] != null && _selectedEnd[room] != null)) {
+        // Start new selection
+        _selectedStart[room] = dateIndex;
+        _selectedEnd[room] = null;
+        _activeBookingRoom = room;
+      } else if (_selectedStart[room] != null && _selectedEnd[room] == null) {
+        // Complete selection
+        if (dateIndex < _selectedStart[room]!) {
+          _selectedEnd[room] = _selectedStart[room];
+          _selectedStart[room] = dateIndex;
+        } else {
+          _selectedEnd[room] = dateIndex;
+        }
+        _activeBookingRoom = null;
+        // Show dialog with date range and continue button
+        final startIdx = _selectedStart[room]!;
+        final endIdx = _selectedEnd[room]!;
+        final dates = _generateDatesForMonth(
+          _selectedYear,
+          _selectedMonth,
+          daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
+        );
+        final startDate = dates[startIdx]['date'] ?? '';
+        final endDate = dates[endIdx]['date'] ?? '';
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('Confirm Booking'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Room: $room'),
+                  const SizedBox(height: 8),
+                  Text('Date Range: $startDate - $endDate'),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AvailableCellPage(),
+                      ),
+                    );
+                  },
+                  child: const Text('Continue'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    });
   }
 
   @override
@@ -625,97 +449,61 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => setState(() => _sidebarExpanded = !_sidebarExpanded),
-          tooltip: _sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar',
-        ),
-        title: const Text(
-          'System Name',
-          style: TextStyle(
-            color: Colors.white, // 🔹 Make text white
-            fontWeight:
-                FontWeight.bold, // (Optional) Bold for better visibility
-            fontSize: 18, // (Optional) Adjust size
-          ),
-        ),
-        backgroundColor: const Color.fromARGB(221, 0, 0, 0),
-        actions: [
-          Row(
-            children: [
-              Row(
-                children: [
-                  Radio<Mode>(
-                    value: Mode.bookRooms,
-                    groupValue: _selectedMode,
-                    onChanged: (Mode? value) {
-                      setState(() {
-                        _selectedMode = value!;
-                      });
-                    },
-                    activeColor: Colors.white,
-                    fillColor: MaterialStateProperty.all(Colors.white),
-                  ),
-                  const Text(
-                    'Book Rooms',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Radio<Mode>(
-                    value: Mode.setHousekeeping,
-                    groupValue: _selectedMode,
-                    onChanged: (Mode? value) {
-                      setState(() {
-                        _selectedMode = value!;
-                      });
-                    },
-                    activeColor: Colors.white,
-                    fillColor: MaterialStateProperty.all(Colors.white),
-                  ),
-                  const Text(
-                    'Set Housekeeping',
-                    style: TextStyle(color: Colors.white, fontSize: 12),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-        ],
-      ),
-
-      // inside Scaffold → body: _sidebarExpanded ? Row(children: [...]) : mainContent,
-      body: _sidebarExpanded
-          ? Row(
+      body: Row(
+        children: [
+          Container(
+            width: _sidebarExpanded ? 180 : 60,
+            color: const Color(0xFF291F16),
+            child: Column(
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 1),
-                  width: _sidebarWidth,
-                  color: Colors.grey[200],
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                // Top: Logo & Toggle
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildSidebarItem(
-                        Icons.calendar_today,
-                        'Calendar',
-                        isHeader: true,
+                      if (_sidebarExpanded)
+                        Image.asset(
+                          'assets/images/PMS-logo-2.png',
+                          width: 30,
+                          height: 30,
+                        ),
+                      IconButton(
+                        icon: Icon(
+                          _sidebarExpanded
+                              ? Icons.chevron_left
+                              : Icons.chevron_right,
+                          size: 20,
+                          color: Color(0xFF897249),
+                        ),
+                        onPressed: () => setState(
+                          () => _sidebarExpanded = !_sidebarExpanded,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+
+                // Middle: Menu Items (takes all remaining space)
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildSidebarItem(Icons.calendar_today, 'Calendar'),
                       _buildSidebarItem(
-                        Icons.login,
-                        'Check-in Logs',
+                        Icons.bed,
+                        'Guest Records',
                         onTap: () {
                           Navigator.pushReplacementNamed(
                             context,
-                            '/checkinlogs',
+                            '/guestrecords',
                           );
                         },
                       ),
                       _buildSidebarItem(
-                        Icons.list_alt,
+                        Icons.access_time,
                         'Activity Logs',
                         onTap: () {
                           Navigator.pushReplacementNamed(
@@ -763,58 +551,75 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     ],
                   ),
                 ),
-                Expanded(child: mainContent),
+
+                // Bottom: User Info
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: _sidebarExpanded
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.account_circle,
+                        color: Color(0xFFFFFBF2),
+                        size: 20,
+                      ),
+                      if (_sidebarExpanded) ...[
+                        const SizedBox(width: 6),
+                        const Expanded(
+                          child: Text(
+                            'Lilo Cruz',
+                            style: TextStyle(
+                              color: Color(0xFFFFFBF2),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.logout, size: 18, color: Color(0xFF897249)),
+                      ],
+                    ],
+                  ),
+                ),
               ],
-            )
-          : mainContent,
+            ),
+          ),
+
+          Expanded(child: mainContent),
+        ],
+      ),
     );
   }
 
-  Widget _buildSidebarItem(
-    IconData icon,
-    String title, {
-    bool isHeader = false,
-    bool showText = true,
-    bool centerIcon = false,
-    VoidCallback? onTap,
-  }) {
-    return Tooltip(
-      message: showText ? '' : title,
-      child: InkWell(
-        onTap: isHeader ? null : onTap,
-        child: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: centerIcon ? 0 : 12,
-            horizontal: showText ? 8 : 0,
-          ),
-          constraints: const BoxConstraints(minHeight: 48, maxHeight: 60),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade400)),
-          ),
-          child: showText
-              ? Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(icon, size: 20),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          title,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: isHeader
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                            fontSize: isHeader ? 16 : 14,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Center(child: Icon(icon, size: 24)),
+  Widget _buildSidebarItem(IconData icon, String title, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: 20,
+              color: const Color(0xFF897249), // <- Correct icon color
+            ),
+            if (_sidebarExpanded) ...[
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Color(0xFFFFFBF2), // <- Correct text color
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -861,39 +666,19 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-  // Returns the border radius for a cell based on its index and selected range
   Widget _buildDateRows(String title, List<Map<String, String>> dates) {
     final roomList = widget.rooms[title] ?? [];
-
-    BorderRadius? _getBorderRadiusForCell(int index, int? start, int? end) {
-      if (start != null) {
-        if (start == index && (end == null || start == end)) {
-          return BorderRadius.circular(8);
-        } else if (start == index) {
-          return const BorderRadius.only(
-            topLeft: Radius.circular(8),
-            bottomLeft: Radius.circular(8),
-          );
-        } else if (end == index) {
-          return const BorderRadius.only(
-            topRight: Radius.circular(8),
-            bottomRight: Radius.circular(8),
-          );
-        } else if (index > start && end != null && index < end) {
-          return BorderRadius.zero;
-        }
-      }
-      return null;
-    }
-
     return Column(
       children: [
-        // Header row for dates
+        // Room type title background color separator
         Row(
           children: List.generate(
             dates.length,
-            (index) =>
-                Container(width: 80, height: 50, color: Colors.grey.shade300),
+            (index) => Container(
+              width: 80,
+              height: 50,
+              color: Colors.grey.shade300, // Background color for separator
+            ),
           ),
         ),
         ...roomList.asMap().entries.map((entry) {
@@ -901,104 +686,82 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           final room = entry.value;
           final start = _selectedStart[room];
           final end = _selectedEnd[room];
-          final selectedHousekeepingIndex = _selectedHousekeepingCell[room];
-          final roomStatuses = _housekeepingStatusPerCell[room] ?? {};
+          final isBookingActive =
+              _activeBookingRoom == null ||
+              _activeBookingRoom == room ||
+              (_selectedEnd[_activeBookingRoom ?? ''] != null);
 
-          List<Widget> mergedCells = [];
-          for (int i = 0; i < dates.length;) {
-            final currentStatus = roomStatuses[i];
-            final selectedIndex = _selectedHousekeepingCell[room];
+          return Row(
+            children: dates.asMap().entries.map((dateEntry) {
+              final i = dateEntry.key;
+              final isLastDate = i == dates.length - 1;
+              final isSelected =
+                  start != null &&
+                  ((end != null && i >= start && i <= end) ||
+                      (end == null && i == start));
+              final isStart = start != null && i == start;
+              final isEnd = end != null && i == end;
+              final isMiddle = isSelected && !isStart && !isEnd;
 
-            if (currentStatus != null && currentStatus.isNotEmpty) {
-              // Find merge span
-              int span = 1;
-              while (i + span < dates.length &&
-                  roomStatuses[i + span] == currentStatus) {
-                span++;
-              }
-
-              // Is one of these spanned cells selected?
-              bool isSelected =
-                  selectedIndex != null &&
-                  selectedIndex >= i &&
-                  selectedIndex < i + span;
-
-              mergedCells.add(
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        // Set selected cell to the first index of merged block (or customize)
-                        _selectedHousekeepingCell[room] = i;
-                      });
-                      _handleHousekeeping(room, i);
-                    },
-                    child: Container(
-                      width: 80.0 * span,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? Colors.orange[400]
-                            : roomStatusColors[currentStatus] ?? Colors.grey,
-                        border: Border(
-                          top: BorderSide(color: Colors.grey.shade300),
-                          right: BorderSide(color: Colors.grey.shade300),
-                          bottom: isLast
-                              ? BorderSide.none
-                              : BorderSide(color: Colors.grey.shade300),
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Center(
-                        child: Text(
-                          currentStatus,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+              return MouseRegion(
+                cursor: isBookingActive
+                    ? SystemMouseCursors.click
+                    : SystemMouseCursors.basic,
+                child: GestureDetector(
+                  onTap: isBookingActive ? () => _onCellTap(room, i) : null,
+                  child: Container(
+                    width: 80,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: isSelected ? Colors.green : null,
+                      border: isSelected
+                          ? null // Remove borders for selected cells
+                          : Border(
+                              right: isLastDate
+                                  ? BorderSide.none
+                                  : BorderSide(color: Colors.grey.shade300),
+                              bottom: isLast
+                                  ? BorderSide.none
+                                  : BorderSide(color: Colors.grey.shade300),
+                            ),
+                      borderRadius: isSelected
+                          ? BorderRadius.horizontal(
+                              left: isStart ? Radius.circular(8) : Radius.zero,
+                              right: isEnd ? Radius.circular(8) : Radius.zero,
+                            )
+                          : null,
+                    ),
+                    child: Stack(
+                      children: [
+                        // Left border for the first selected cell
+                        if (isStart)
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 1,
+                              color: Colors.green[700],
+                            ),
                           ),
-                        ),
-                      ),
+                        // Right border for the last selected cell
+                        if (isEnd)
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
+                              width: 1,
+                              color: Colors.green[700],
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ),
               );
-              i += span;
-            } else {
-              bool isSelected = selectedIndex == i;
-              mergedCells.add(
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedHousekeepingCell[room] = i;
-                      });
-                      _handleHousekeeping(room, i);
-                    },
-                    child: Container(
-                      width: 80,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: isSelected ? Colors.orange[400] : Colors.white,
-                        border: Border(
-                          top: BorderSide(color: Colors.grey.shade300),
-                          right: BorderSide(color: Colors.grey.shade300),
-                          bottom: isLast
-                              ? BorderSide.none
-                              : BorderSide(color: Colors.grey.shade300),
-                        ),
-                      ),
-                      child: null,
-                    ),
-                  ),
-                ),
-              );
-            }
-          }
-
-          return Row(children: mergedCells);
+            }).toList(),
+          );
         }),
       ],
     );
