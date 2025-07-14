@@ -22,15 +22,26 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       // Client-side validation for default credentials
-      if (_usernameController.text != 'admin@example.com') {
+      final usernameCorrect = _usernameController.text == 'admin@example.com';
+      final passwordCorrect = _passwordController.text == 'admin';
+
+      // Check all possible cases
+      if (!usernameCorrect && !passwordCorrect) {
+        // Both are incorrect
+        setState(() {
+          _invalidUsername = true;
+          _invalidPassword = true;
+        });
+        return;
+      } else if (!usernameCorrect) {
+        // Only username is incorrect
         setState(() {
           _invalidUsername = true;
           _invalidPassword = false;
         });
         return;
-      }
-
-      if (_passwordController.text != 'admin') {
+      } else if (!passwordCorrect) {
+        // Only password is incorrect
         setState(() {
           _invalidUsername = false;
           _invalidPassword = true;
@@ -38,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
+      // If we get here, both are correct
       setState(() {
         _isLoading = true;
         _invalidUsername = false;
@@ -194,7 +206,8 @@ class _LoginPageState extends State<LoginPage> {
                         SizedBox(
                           width: 500,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end, // Keep it on the right
                             children: [
                               SizedBox(
                                 height: 60,
@@ -202,8 +215,38 @@ class _LoginPageState extends State<LoginPage> {
                                   controller: _usernameController,
                                   decoration: InputDecoration(
                                     labelText: 'Username',
-                                    prefixIcon: Icon(Icons.person),
-                                    border: OutlineInputBorder(),
+                                    labelStyle: TextStyle(
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : null,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.person,
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : null,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: _invalidUsername
+                                            ? Colors.red
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: _invalidUsername
+                                            ? Colors.red
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: _invalidUsername
+                                            ? Colors.red
+                                            : Colors.blue,
+                                      ),
+                                    ),
                                     errorText: null,
                                     errorStyle: TextStyle(color: Colors.red),
                                     focusedErrorBorder: OutlineInputBorder(
@@ -223,7 +266,9 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               if (_invalidUsername)
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
+                                  padding: const EdgeInsets.only(
+                                    top: 1.0,
+                                  ), // Reduced to minimum space
                                   child: Text(
                                     'Invalid username',
                                     style: TextStyle(
@@ -235,13 +280,15 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 5),
-
+                        const SizedBox(
+                          height: 2,
+                        ), // Reduced spacing between fields
                         // Password Section
                         SizedBox(
                           width: 500,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.end, // Keep it on the right
                             children: [
                               SizedBox(
                                 height: 60,
@@ -250,8 +297,38 @@ class _LoginPageState extends State<LoginPage> {
                                   obscureText: true,
                                   decoration: InputDecoration(
                                     labelText: 'Password',
-                                    prefixIcon: Icon(Icons.lock),
-                                    border: OutlineInputBorder(),
+                                    labelStyle: TextStyle(
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : null,
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.lock,
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : null,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: _invalidPassword
+                                            ? Colors.red
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: _invalidPassword
+                                            ? Colors.red
+                                            : Colors.grey,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: _invalidPassword
+                                            ? Colors.red
+                                            : Colors.blue,
+                                      ),
+                                    ),
                                     errorText: null,
                                     errorStyle: TextStyle(color: Colors.red),
                                     focusedErrorBorder: OutlineInputBorder(
@@ -271,7 +348,9 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               if (_invalidPassword)
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
+                                  padding: const EdgeInsets.only(
+                                    top: 1.0,
+                                  ), // Reduced to minimum space
                                   child: Text(
                                     'Invalid password',
                                     style: TextStyle(
@@ -283,7 +362,7 @@ class _LoginPageState extends State<LoginPage> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 2),
 
                         // Name Field
                         SizedBox(
