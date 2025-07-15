@@ -305,45 +305,74 @@ class AvailableCellPage extends StatelessWidget {
                               color: Colors.black87,
                             ),
                           ),
-                          // const SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Row(
                             children: [
                               const Icon(Icons.calendar_month),
                               const SizedBox(width: 10),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                    horizontal: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
+
+                              // Check-in Date
+                              Container(
+                                width: 150,
+                                height: 36,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                alignment: Alignment.center,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
                                   child: Text(
                                     DateFormat(
-                                      'MMM d, yyyy',
-                                    ).format(checkInDate),
-                                    style: const TextStyle(fontSize: 14),
+                                      'MMMM d, yyyy',
+                                    ).format(checkInDate).toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 5),
-                              Expanded(
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 14,
-                                    horizontal: 12,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
+
+                              const SizedBox(width: 8),
+
+                              // Dash separator
+                              const Text(
+                                '-',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              // Check-out Date
+                              Container(
+                                width: 150,
+                                height: 36,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                alignment: Alignment.center,
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
                                   child: Text(
                                     DateFormat(
-                                      'MMM d, yyyy',
-                                    ).format(checkOutDate),
-                                    style: const TextStyle(fontSize: 14),
+                                      'MMMM d, yyyy',
+                                    ).format(checkOutDate).toUpperCase(),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                               ),
