@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class GuestRecordsPage extends StatefulWidget {
-  const GuestRecordsPage({super.key});
+  final String studentName;
+  const GuestRecordsPage({super.key, required this.studentName});
 
   @override
   State<GuestRecordsPage> createState() => _GuestRecordsPageState();
@@ -27,129 +28,34 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
             color: const Color(0xFF291F16),
             child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (_sidebarExpanded)
-                        Image.asset(
-                          'assets/images/PMS-logo-2.png',
-                          width: 30,
-                          height: 30,
-                        ),
-                      IconButton(
-                        icon: Icon(
-                          _sidebarExpanded
-                              ? Icons.chevron_left
-                              : Icons.chevron_right,
-                          size: 20,
-                          color: const Color(0xFF897249),
-                        ),
-                        onPressed: () => setState(
-                          () => _sidebarExpanded = !_sidebarExpanded,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _buildSidebarHeader(),
                 Expanded(
                   child: Column(
                     children: [
-                      _buildSidebarItem(
-                        Icons.calendar_today,
-                        'Calendar',
-                        () => Navigator.pushReplacementNamed(
+                      _buildSidebarItem(Icons.calendar_today, 'Calendar', () {
+                        Navigator.pushReplacementNamed(
                           context,
                           '/calendar',
-                        ),
-                      ),
+                          arguments: {'studentName': widget.studentName},
+                        );
+                      }),
                       _buildSidebarItem(
                         Icons.bed,
                         'Guest Records',
                         null,
                         isActive: true,
                       ),
-                      _buildSidebarItem(
-                        Icons.access_time,
-                        'Activity Logs',
-                        () => Navigator.pushReplacementNamed(
+                      _buildSidebarItem(Icons.access_time, 'Activity Logs', () {
+                        Navigator.pushReplacementNamed(
                           context,
                           '/activitylogs',
-                        ),
-                      ),
-                      _buildSidebarItem(
-                        Icons.check_box,
-                        'Available Cell',
-                        () => Navigator.pushReplacementNamed(
-                          context,
-                          '/availablecell',
-                        ),
-                      ),
-                      _buildSidebarItem(
-                        Icons.book_online,
-                        'Reserve Cell',
-                        () => Navigator.pushReplacementNamed(
-                          context,
-                          '/reservecell',
-                        ),
-                      ),
-                      _buildSidebarItem(
-                        Icons.hotel,
-                        'Occupied Cell',
-                        () => Navigator.pushReplacementNamed(
-                          context,
-                          '/occupiedcell',
-                        ),
-                      ),
+                          arguments: {'studentName': widget.studentName},
+                        );
+                      }),
                     ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: _sidebarExpanded
-                        ? MainAxisAlignment.spaceBetween
-                        : MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.account_circle,
-                        color: Color(0xFFFFFBF2),
-                        size: 20,
-                      ),
-                      if (_sidebarExpanded) ...[
-                        const SizedBox(width: 6),
-                        const Expanded(
-                          child: Text(
-                            'Lilo Cruz',
-                            style: TextStyle(
-                              color: Color(0xFFFFFBF2),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => Navigator.of(
-                            context,
-                          ).pushNamedAndRemoveUntil('/login', (route) => false),
-                          child: const Icon(
-                            Icons.logout,
-                            size: 18,
-                            color: Color(0xFF897249),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
+                _buildSidebarFooter(),
               ],
             ),
           ),
@@ -158,20 +64,7 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
           Expanded(
             child: Column(
               children: [
-                Container(
-                  height: 70,
-                  padding: const EdgeInsets.only(top: 20),
-                  alignment: Alignment.center,
-                  color: const Color(0xFFFFF1AB),
-                  child: const Text(
-                    'Guest Records',
-                    style: TextStyle(
-                      color: Color(0xFF291F16),
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
+                _buildHeader('Guest Records'),
                 Expanded(
                   child: Container(
                     color: const Color(0xFFFFF1AB),
@@ -181,45 +74,7 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
                     ),
                     child: Column(
                       children: [
-                        Row(
-                          children: const [
-                            Expanded(
-                              flex: 4,
-                              child: Text(
-                                'GUEST NAME',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                'TOTAL BOOKINGS',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                'TOTAL NIGHTS',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                'MOST USED ROOM',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 2,
-                              child: Text(
-                                'BOOKING HISTORY',
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
+                        _buildTableHeaders(),
                         const Divider(),
                         Expanded(
                           child: ListView.separated(
@@ -227,38 +82,7 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
                             separatorBuilder: (_, __) => const Divider(),
                             itemBuilder: (context, index) {
                               final guest = guests[index];
-                              return Row(
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Text(guest['guest'] ?? ''),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(guest['bookings'] ?? ''),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(guest['nights'] ?? ''),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Text(guest['room'] ?? ''),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: TextButton(
-                                      onPressed: () => _showGuestDialog(guest),
-                                      child: const Text('View'),
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        alignment: Alignment.centerLeft,
-                                        minimumSize: const Size(40, 20),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              );
+                              return _buildGuestRow(guest);
                             },
                           ),
                         ),
@@ -268,6 +92,28 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSidebarHeader() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (_sidebarExpanded)
+            Image.asset('assets/images/PMS-logo-2.png', width: 30, height: 30),
+          IconButton(
+            icon: Icon(
+              _sidebarExpanded ? Icons.chevron_left : Icons.chevron_right,
+              size: 20,
+              color: const Color(0xFF897249),
+            ),
+            onPressed: () =>
+                setState(() => _sidebarExpanded = !_sidebarExpanded),
           ),
         ],
       ),
@@ -310,6 +156,121 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSidebarFooter() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Row(
+        mainAxisAlignment: _sidebarExpanded
+            ? MainAxisAlignment.spaceBetween
+            : MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.account_circle, color: Color(0xFFFFFBF2), size: 20),
+          if (_sidebarExpanded) ...[
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                widget.studentName,
+                style: const TextStyle(
+                  color: Color(0xFFFFFBF2),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () => Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil('/login', (route) => false),
+              child: const Icon(
+                Icons.logout,
+                size: 18,
+                color: Color(0xFF897249),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(String title) {
+    return Container(
+      height: 70,
+      padding: const EdgeInsets.only(top: 20),
+      alignment: Alignment.center,
+      color: const Color(0xFFFFF1AB),
+      child: Text(
+        title,
+        style: const TextStyle(
+          color: Color(0xFF291F16),
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTableHeaders() {
+    return Row(
+      children: const [
+        Expanded(
+          flex: 4,
+          child: Text(
+            'GUEST NAME',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            'TOTAL BOOKINGS',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            'TOTAL NIGHTS',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            'MOST USED ROOM',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            'BOOKING HISTORY',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGuestRow(Map<String, String> guest) {
+    return Row(
+      children: [
+        Expanded(flex: 4, child: Text(guest['guest'] ?? '')),
+        Expanded(flex: 2, child: Text(guest['bookings'] ?? '')),
+        Expanded(flex: 2, child: Text(guest['nights'] ?? '')),
+        Expanded(flex: 2, child: Text(guest['room'] ?? '')),
+        Expanded(
+          flex: 2,
+          child: TextButton(
+            onPressed: () => _showGuestDialog(guest),
+            child: const Text('View'),
+          ),
+        ),
+      ],
     );
   }
 

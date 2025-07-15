@@ -589,6 +589,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           Navigator.pushReplacementNamed(
                             context,
                             '/guestrecords',
+                            arguments: {'studentName': widget.studentName},
                           );
                         },
                       ),
@@ -599,6 +600,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           Navigator.pushReplacementNamed(
                             context,
                             '/activitylogs',
+                            arguments: {'studentName': widget.studentName},
                           );
                         },
                       ),

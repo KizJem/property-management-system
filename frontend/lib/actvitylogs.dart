@@ -4,7 +4,8 @@ import 'occupiedcell.dart';
 import 'reservecell.dart';
 
 class ActivityLogsPage extends StatefulWidget {
-  const ActivityLogsPage({super.key});
+  final String studentName;
+  const ActivityLogsPage({super.key, required this.studentName});
 
   @override
   State<ActivityLogsPage> createState() => _ActivityLogsPageState();
@@ -82,52 +83,52 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildSidebarItem(
-                        Icons.calendar_today,
-                        'Calendar',
-                        () => Navigator.pushReplacementNamed(
+                      _buildSidebarItem(Icons.calendar_today, 'Calendar', () {
+                        Navigator.pushReplacementNamed(
                           context,
                           '/calendar',
-                        ),
-                      ),
-                      _buildSidebarItem(
-                        Icons.bed,
-                        'Guest Records',
-                        () => Navigator.pushReplacementNamed(
+                          arguments: {'studentName': widget.studentName},
+                        );
+                      }),
+                      _buildSidebarItem(Icons.bed, 'Guest Records', () {
+                        Navigator.pushReplacementNamed(
                           context,
                           '/guestrecords',
-                        ),
-                      ),
+                          arguments: {'studentName': widget.studentName},
+                        );
+                      }),
                       _buildSidebarItem(
                         Icons.access_time,
                         'Activity Logs',
                         null,
                         isActive: true,
                       ),
-                      _buildSidebarItem(
-                        Icons.check_box,
-                        'Available Cell',
-                        () => Navigator.pushReplacementNamed(
+                      _buildSidebarItem(Icons.check_box, 'Available Cell', () {
+                        Navigator.push(
                           context,
-                          '/availablecell',
-                        ),
-                      ),
-                      _buildSidebarItem(
-                        Icons.book_online,
-                        'Reserve Cell',
-                        () => Navigator.pushReplacementNamed(
+                          MaterialPageRoute(
+                            builder: (context) => const AvailableCellPage(
+                              roomType: 'STANDARD SINGLE ROOMS',
+                            ),
+                          ),
+                        );
+                      }),
+                      _buildSidebarItem(Icons.book_online, 'Reserve Cell', () {
+                        Navigator.push(
                           context,
-                          '/reservecell',
-                        ),
-                      ),
-                      _buildSidebarItem(
-                        Icons.hotel,
-                        'Occupied Cell',
-                        () => Navigator.pushReplacementNamed(
+                          MaterialPageRoute(
+                            builder: (context) => const ReservecellPage(),
+                          ),
+                        );
+                      }),
+                      _buildSidebarItem(Icons.hotel, 'Occupied Cell', () {
+                        Navigator.push(
                           context,
-                          '/occupiedcell',
-                        ),
-                      ),
+                          MaterialPageRoute(
+                            builder: (context) => const OccupiedCellPage(),
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ),
@@ -148,10 +149,10 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                       ),
                       if (_sidebarExpanded) ...[
                         const SizedBox(width: 6),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Lilo Cruz',
-                            style: TextStyle(
+                            widget.studentName,
+                            style: const TextStyle(
                               color: Color(0xFFFFFBF2),
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -188,13 +189,12 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                   child: const Text(
                     'Activity Logs',
                     style: TextStyle(
-                      color: Color(0xFF291F16), //291F16
+                      color: Color(0xFF291F16),
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(
@@ -273,11 +273,6 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                                     child: TextButton(
                                       onPressed: () => _showLogDetails(log),
                                       child: const Text('View'),
-                                      style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        alignment: Alignment.centerLeft,
-                                        minimumSize: const Size(40, 20),
-                                      ),
                                     ),
                                   ),
                                 ],
@@ -336,97 +331,27 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
     );
   }
 
-  Widget _buildAlignedRow(String label, String? value, {bool isEmail = false}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          const SizedBox(
-            width: 15,
-            child: Text(
-              ':',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Colors.black,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value ?? '',
-              style: TextStyle(
-                fontSize: 14,
-                color: isEmail ? Colors.black : Colors.black,
-                decoration: isEmail ? TextDecoration.none : TextDecoration.none,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  _showLogDetails(Map<String, String> log) {
+  void _showLogDetails(Map<String, String> log) {
     showDialog(
       context: context,
       builder: (_) => Dialog(
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Container(
-          padding: const EdgeInsets.all(35),
-          width: 460,
+          padding: const EdgeInsets.all(24),
+          width: 360,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    'Action Details',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    'Log Timestamp:\nMMM DD, YYYY - 00:00 AM',
-                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
-                    textAlign: TextAlign.end,
-                  ),
-                ],
+              const Text(
+                'Action Details',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 24),
-              _buildAlignedRow('Action Type', log['action']),
-              const SizedBox(height: 24),
-              _buildAlignedRow('Staff Name', log['staff']),
-              const SizedBox(height: 1),
-              _buildAlignedRow('Room Number', log['room']),
-              const SizedBox(height: 1),
-              _buildAlignedRow('No. of Guests', '1'),
-              const SizedBox(height: 1),
-              _buildAlignedRow(
-                'Stay Duration',
-                'June 05, 2025 – June 09, 2025',
-              ),
-              const SizedBox(height: 24),
-              _buildAlignedRow('Guest Name', 'Juan Dela Cruz'),
-              const SizedBox(height: 1),
-              _buildAlignedRow('Phone No.', '0997 – 456 – 7453'),
-              const SizedBox(height: 1),
-              _buildAlignedRow('Email', 'jdcruz@gmail.com', isEmail: true),
-              const SizedBox(height: 1),
-              _buildAlignedRow('Special Requests', 'None'),
+              const SizedBox(height: 16),
+              _buildDetailRow('Action Type', log['action']),
+              _buildDetailRow('Staff Name', log['staff']),
+              _buildDetailRow('Room Number', log['room']),
+              _buildDetailRow('Log Timestamp', log['dateTime']),
               const SizedBox(height: 24),
               const Text(
                 '🔒 Logs are read-only and cannot be edited or deleted.',
@@ -435,6 +360,24 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String? value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(child: Text(value ?? '')),
+        ],
       ),
     );
   }
