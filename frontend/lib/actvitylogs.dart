@@ -337,25 +337,66 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
       builder: (_) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Container(
-          padding: const EdgeInsets.all(24),
-          width: 360,
+          padding: const EdgeInsets.all(40),
+          width: 500,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Action Details',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              // Header row
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Action Details',
+                    style: TextStyle(
+                      fontSize: 20, // Match your design
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Log Timestamp:\nMMM DD, YYYY - 00:00 AM',
+                    style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.end,
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
+
+              const SizedBox(height: 30),
+              // Action Type
               _buildDetailRow('Action Type', log['action']),
+              const SizedBox(height: 14),
+
+              // Staff Name & Room Number
               _buildDetailRow('Staff Name', log['staff']),
               _buildDetailRow('Room Number', log['room']),
-              _buildDetailRow('Log Timestamp', log['dateTime']),
-              const SizedBox(height: 24),
-              const Text(
-                '🔒 Logs are read-only and cannot be edited or deleted.',
-                style: TextStyle(fontSize: 12, fontStyle: FontStyle.italic),
+              _buildDetailRow('No. of Guests', '1'),
+              _buildDetailRow('Stay Duration', 'June 5, 2025 - June 9, 2025'),
+              const SizedBox(height: 14),
+
+              // Guest info (replace with real values as needed)
+              _buildDetailRow('Guest Name', 'Juan Dela Cruz'),
+              _buildDetailRow('Phone Number', '09774567453'),
+              _buildDetailRow('Email', 'None'),
+              _buildDetailRow('Special Requests', 'None'),
+              const SizedBox(height: 18),
+
+              // Lock note
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.lock, size: 15, color: Colors.grey),
+                  SizedBox(width: 4),
+                  Text(
+                    'Logs are read-only and cannot be edited or deleted.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontStyle: FontStyle.italic,
+                      color: Colors.black54,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -366,17 +407,33 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
 
   Widget _buildDetailRow(String label, String? value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 2),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 120,
+            width: 130, // <-- adjust to your label length for neatness
             child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ),
-          Expanded(child: Text(value ?? '')),
+          const SizedBox(
+            width: 12,
+            child: Text(
+              ':',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value ?? '',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ),
         ],
       ),
     );
