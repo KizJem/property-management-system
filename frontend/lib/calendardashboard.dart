@@ -663,7 +663,21 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             ),
                           ),
                         ),
-                        Icon(Icons.logout, size: 18, color: Color(0xFF897249)),
+                        IconButton(
+                          icon: Icon(
+                            Icons.logout,
+                            size: 18,
+                            color: Color(0xFF897249),
+                          ),
+                          tooltip: 'Logout',
+                          onPressed: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/login',
+                              (route) => false,
+                            );
+                          },
+                        ),
                       ],
                     ],
                   ),
