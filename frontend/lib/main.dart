@@ -90,6 +90,7 @@ class MyApp extends StatelessWidget {
             },
             currentMonth: currentMonth,
             currentYear: currentYear,
+            studentName: 'Guest',
           );
         },
       },

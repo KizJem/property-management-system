@@ -9,6 +9,7 @@ class CalendarDashboard extends StatefulWidget {
   final Map<String, List<String>> rooms;
   final int currentMonth;
   final int currentYear;
+  final String studentName;
 
   const CalendarDashboard({
     Key? key,
@@ -16,6 +17,7 @@ class CalendarDashboard extends StatefulWidget {
     required this.rooms,
     required this.currentMonth,
     required this.currentYear,
+    required this.studentName,
   }) : super(key: key);
 
   @override
@@ -660,10 +662,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       ),
                       if (_sidebarExpanded) ...[
                         const SizedBox(width: 6),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            'Lilo Cruz',
-                            style: TextStyle(
+                            widget.studentName, // ✅ DYNAMIC
+                            style: const TextStyle(
                               color: Color(0xFFFFFBF2),
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
