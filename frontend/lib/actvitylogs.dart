@@ -107,8 +107,14 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AvailableCellPage(
+                            builder: (context) => AvailableCellPage(
                               roomType: 'STANDARD SINGLE ROOMS',
+                              roomNumber: 'Standard Single - Room No. 100',
+                              checkInDate:
+                                  DateTime.now(), // or any default/mock value
+                              checkOutDate: DateTime.now().add(
+                                const Duration(days: 1),
+                              ),
                             ),
                           ),
                         );

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'roomdetails.dart';
 
 class RoomFeature extends StatelessWidget {
@@ -24,8 +26,17 @@ class RoomFeature extends StatelessWidget {
 
 class AvailableCellPage extends StatelessWidget {
   final String roomType;
+  final String roomNumber;
+  final DateTime checkInDate;
+  final DateTime checkOutDate;
 
-  const AvailableCellPage({super.key, required this.roomType});
+  const AvailableCellPage({
+    super.key,
+    required this.roomType,
+    required this.roomNumber,
+    required this.checkInDate,
+    required this.checkOutDate,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -294,94 +305,136 @@ class AvailableCellPage extends StatelessWidget {
                               color: Colors.black87,
                             ),
                           ),
-                          const SizedBox(height: 5),
+                          // const SizedBox(height: 5),
                           Row(
                             children: [
                               const Icon(Icons.calendar_month),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Check-in Date',
-                                    hintText: 'MM/DD/YYYY',
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                    horizontal: 12,
                                   ),
-                                  keyboardType: TextInputType.datetime,
-                                  onTap: () async {
-                                    FocusScope.of(
-                                      context,
-                                    ).requestFocus(FocusNode());
-                                    await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2020),
-                                      lastDate: DateTime(2030),
-                                    );
-                                  },
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    DateFormat(
+                                      'MMM d, yyyy',
+                                    ).format(checkInDate),
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 5),
                               Expanded(
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Check-out Date',
-                                    hintText: 'MM/DD/YYYY',
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 14,
+                                    horizontal: 12,
                                   ),
-                                  keyboardType: TextInputType.datetime,
-                                  onTap: () async {
-                                    FocusScope.of(
-                                      context,
-                                    ).requestFocus(FocusNode());
-                                    await showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now().add(
-                                        const Duration(days: 1),
-                                      ),
-                                      firstDate: DateTime(2020),
-                                      lastDate: DateTime(2030),
-                                    );
-                                  },
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[200],
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    DateFormat(
+                                      'MMM d, yyyy',
+                                    ).format(checkOutDate),
+                                    style: const TextStyle(fontSize: 14),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 20),
+
+                          const SizedBox(height: 10),
                           Row(
                             children: [
                               Expanded(
-                                child: DropdownButtonFormField<String>(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Room Number',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'Room 101',
-                                      child: Text('Room 101'),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'Room Number',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 14,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.black26,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: Colors.white,
+                                      ),
+                                      child: Text(
+                                        roomNumber,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
                                     ),
                                   ],
-                                  onChanged: (value) {},
                                 ),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: DropdownButtonFormField<int>(
-                                  decoration: const InputDecoration(
-                                    labelText: 'No. of Guest',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  items: List.generate(
-                                    5,
-                                    (index) => DropdownMenuItem(
-                                      value: index + 1,
-                                      child: Text('${index + 1}'),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      'No. of Guest',
+                                      style: TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black87,
+                                      ),
                                     ),
-                                  ),
-                                  onChanged: (value) {},
+                                    const SizedBox(height: 6),
+                                    Container(
+                                      width: double.infinity,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.black26,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: Colors.white,
+                                      ),
+                                      child: TextField(
+                                        keyboardType: TextInputType.number,
+                                        decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Enter number',
+                                        ),
+                                        inputFormatters: [
+                                          // Allows only integer input
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 15),
                           TextField(
                             decoration: const InputDecoration(
                               labelText: 'Special Requests (Optional)',

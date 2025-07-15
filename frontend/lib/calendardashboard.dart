@@ -283,8 +283,20 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            AvailableCellPage(roomType: roomType),
+                        builder: (context) => AvailableCellPage(
+                          roomType: roomType,
+                          roomNumber: room,
+                          checkInDate: DateTime(
+                            _selectedYear,
+                            _selectedMonth,
+                            startIdx + 1,
+                          ),
+                          checkOutDate: DateTime(
+                            _selectedYear,
+                            _selectedMonth,
+                            endIdx + 1,
+                          ),
+                        ),
                       ),
                     );
                   },
@@ -607,16 +619,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       _buildSidebarItem(
                         Icons.check_box,
                         'Available Cell',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AvailableCellPage(
-                                roomType: 'STANDARD SINGLE ROOMS',
-                              ),
-                            ),
-                          );
-                        },
+                        onTap: () {},
                       ),
                       _buildSidebarItem(
                         Icons.book_online,
