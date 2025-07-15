@@ -268,73 +268,88 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           _selectedEnd[room] = null;
           _activeBookingRoom = room;
         } else if (_selectedStart[room] != null && _selectedEnd[room] == null) {
-          // Complete selection
-          if (dateIndex < _selectedStart[room]!) {
-            _selectedEnd[room] = _selectedStart[room];
-            _selectedStart[room] = dateIndex;
-          } else {
-            _selectedEnd[room] = dateIndex;
-          }
-          _activeBookingRoom = null;
-          // Show dialog with date range and continue button
-          final startIdx = _selectedStart[room]!;
-          final endIdx = _selectedEnd[room]!;
-          final dates = _generateDatesForMonth(
-            _selectedYear,
-            _selectedMonth,
-            daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
-          );
-          final startDate = dates[startIdx]['date'] ?? '';
-          final endDate = dates[endIdx]['date'] ?? '';
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text('Confirm Booking'),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Room: $room'),
-                    const SizedBox(height: 8),
-                    Text('Date Range: $startDate - $endDate'),
-                  ],
+  int newStart, newEnd;
+  if (dateIndex < _selectedStart[room]!) {
+    newStart = dateIndex;
+    newEnd = _selectedStart[room]!;
+  } else {
+    newStart = _selectedStart[room]!;
+    newEnd = dateIndex;
+  }
+
+  // 1. Update the selection state FIRST (triggers highlight)
+  setState(() {
+    _selectedStart[room] = newStart;
+    _selectedEnd[room] = newEnd;
+    _activeBookingRoom = null;
+  });
+
+  // 2. Show dialog AFTER UI update
+  final dates = _generateDatesForMonth(
+    _selectedYear,
+    _selectedMonth,
+    daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
+  );
+  final startDate = dates[newStart]['date'] ?? '';
+  final endDate = dates[newEnd]['date'] ?? '';
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Confirm Booking'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Room: $room'),
+            const SizedBox(height: 8),
+            Text('Date Range: $startDate - $endDate'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              // Optionally reset selection if cancelled
+              setState(() {
+                _selectedStart[room] = null;
+                _selectedEnd[room] = null;
+              });
+              Navigator.of(context).pop();
+            },
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AvailableCellPage(
+                    roomType: roomType,
+                    roomNumber: room,
+                    checkInDate: DateTime(
+                      _selectedYear,
+                      _selectedMonth,
+                      newStart + 1,
+                    ),
+                    checkOutDate: DateTime(
+                      _selectedYear,
+                      _selectedMonth,
+                      newEnd + 1,
+                    ),
+                  ),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close dialog
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                        builder: (context) => AvailableCellPage(
-                          roomType: roomType,
-                          roomNumber: room,
-                          checkInDate: DateTime(
-                            _selectedYear,
-                            _selectedMonth,
-                            startIdx + 1,
-                          ),
-                          checkOutDate: DateTime(
-                            _selectedYear,
-                            _selectedMonth,
-                            endIdx + 1,
-                          ),
-                        ),
-                      ),
-                      );
-                    },
-                    child: const Text('Continue'),
-                  ),
-                ],
               );
             },
-          );
-        }
+            child: const Text('Continue'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
       });
     } else if (_mode == Mode.housekeeping) {
       setState(() {
@@ -956,7 +971,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-  Widget _buildDateRows(String title, List<Map<String, String>> dates) {
+ Widget _buildDateRows(String title, List<Map<String, String>> dates) {
   final roomList = widget.rooms[title] ?? [];
   return Column(
     children: [
@@ -981,35 +996,60 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           children: dates.asMap().entries.map((dateEntry) {
             final i = dateEntry.key;
 
-            // Get housekeeping code if set
+            // Housekeeping status and color
             final hk = _housekeepingStatus[room]?[i];
             final statusCode = hk?['status'];
             final statusInfo = statusCode != null ? roomStatusMap[statusCode] : null;
             final cellColor = statusInfo != null ? statusInfo['color'] as Color : null;
 
-            // Preview highlight for current HK selection (before dialog)
+            // Booking selection highlights
+            final isBookingSelected = _mode == Mode.bookRooms &&
+                start != null &&
+                ((end != null && i >= start && i <= end) || (end == null && i == start));
+
+            final isStartCell = start != null && i == start;
+            final isEndCell = end != null && i == end;
+
+            BorderRadius? bookingBorderRadius;
+            if (isBookingSelected) {
+              if (isStartCell && isEndCell) {
+                bookingBorderRadius = BorderRadius.circular(8);
+              } else if (isStartCell) {
+                bookingBorderRadius = const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                );
+              } else if (isEndCell) {
+                bookingBorderRadius = const BorderRadius.only(
+                  topRight: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
+                );
+              } else {
+                bookingBorderRadius = BorderRadius.zero;
+              }
+            }
+
+            // Housekeeping preview selection highlights
             bool isHKPreview = false;
-            if (_mode == Mode.housekeeping && _activeHKRoom == null) {
+            if (_mode == Mode.housekeeping) {
               final selStart = _hkSelectedStart[room];
               final selEnd = _hkSelectedEnd[room];
-              if (selStart != null && selEnd == null) {
-                if (i == selStart) isHKPreview = true;
+              if (selStart != null && selEnd == null && i == selStart) {
+                isHKPreview = true; // First click preview
               }
               if (selStart != null && selEnd != null) {
                 final a = selStart;
                 final b = selEnd;
-                if (i >= a && i <= b) isHKPreview = true;
+                if (i >= a && i <= b) isHKPreview = true; // Range preview
               }
             }
 
-            // Booking logic (kept for reference; only use if you want booking highlight)
-            final isBookingSelected =
-                start != null &&
-                ((end != null && i >= start && i <= end) ||
-                    (end == null && i == start));
-            final isStart = start != null && i == start;
-            final isEnd = end != null && i == end;
+            // Determine if cell can be clicked in current mode
+            final isBookable = _mode == Mode.bookRooms && statusCode == null;
+            final isHKSelectable = _mode == Mode.housekeeping && statusCode == null;
+            final showHandCursor = isBookable || isHKSelectable;
 
+            // For merged housekeeping status blocks
             int? rangeStart, rangeEnd;
             if (statusCode != null) {
               rangeStart = i;
@@ -1023,51 +1063,56 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 rangeEnd++;
               }
             }
-
-            return GestureDetector(
-              onTap: (_mode == Mode.bookRooms && statusCode != null)
-                  ? null
-                  : () => _onCellTap(title, room, i),
-              child: Container(
-                width: 80,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: statusCode != null
-                      ? cellColor
-                      : isHKPreview
-                          ? Colors.grey.shade400 // preview color
-                          : null,
-                  border: (statusCode != null || isHKPreview)
-                      ? null
-                      : Border(
-                          right: i == dates.length - 1
-                              ? BorderSide.none
-                              : BorderSide(color: Colors.grey.shade300),
-                          bottom: isLast
-                              ? BorderSide.none
-                              : BorderSide(color: Colors.grey.shade300),
-                        ),
-                ),
-                child: (statusCode != null && i == rangeStart)
-                    ? Center(
-                        child: Container(
-                          width: 80.0 * (rangeEnd! - rangeStart! + 1),
-                          alignment: Alignment.center,
-                          child: Text(
-                            statusCode,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              letterSpacing: 2,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+            return MouseRegion(
+              cursor: showHandCursor ? SystemMouseCursors.click : SystemMouseCursors.basic,
+              child: GestureDetector(
+                onTap: showHandCursor ? () => _onCellTap(title, room, i) : null,
+                child: Container(
+                  width: 80,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: statusCode != null
+                        ? cellColor
+                        : isBookingSelected
+                            ? Colors.yellow[300]
+                            : isHKPreview
+                                ? Colors.grey[400]
+                                : null,
+                    border: (statusCode != null || isHKPreview || isBookingSelected)
+                        ? null
+                        : Border(
+                            right: i == dates.length - 1
+                                ? BorderSide.none
+                                : BorderSide(color: Colors.grey.shade300),
+                            bottom: isLast
+                                ? BorderSide.none
+                                : BorderSide(color: Colors.grey.shade300),
                           ),
-                        ),
-                      )
-                    : null,
+                    borderRadius: isBookingSelected
+                        ? bookingBorderRadius
+                        : (isHKPreview ? BorderRadius.circular(8) : null),
+                  ),
+                  child: (statusCode != null && i == rangeStart)
+                      ? Center(
+                          child: Container(
+                            width: 80.0 * (rangeEnd! - rangeStart! + 1),
+                            alignment: Alignment.center,
+                            child: Text(
+                              statusCode,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                letterSpacing: 2,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        )
+                      : null,
+                ),
               ),
             );
           }).toList(),
