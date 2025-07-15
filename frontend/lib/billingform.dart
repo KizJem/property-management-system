@@ -13,6 +13,7 @@ class BillingForm extends StatelessWidget {
     int total = subtotal + taxes;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFFF1AB), // Page background
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -57,8 +58,6 @@ class BillingForm extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // const SizedBox(height: 20),
-
             // 2-COLUMN LAYOUT
             Expanded(
               child: Row(
@@ -71,7 +70,10 @@ class BillingForm extends StatelessWidget {
                       margin: const EdgeInsets.all(20),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
+                        color: Colors.white, // <-- WHITE background
+                        border: Border.all(
+                          color: Color(0xFFFEA525),
+                        ), // Gold border
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(
@@ -135,7 +137,10 @@ class BillingForm extends StatelessWidget {
                       margin: const EdgeInsets.all(20),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey.shade300),
+                        color: Colors.white, // <-- WHITE background
+                        border: Border.all(
+                          color: Color(0xFFFEA525),
+                        ), // Gold border
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Column(

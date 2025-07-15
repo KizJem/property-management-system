@@ -546,7 +546,7 @@ class OccupiedCellPage extends StatelessWidget {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              backgroundColor: const Color(0xFFF6EDF9),
+              backgroundColor: const Color(0xFFFFF1AB),
 
               // 🔽 Remove default paddings so we can fully control layout
               titlePadding: EdgeInsets.zero,
