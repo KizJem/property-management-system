@@ -61,6 +61,7 @@ flutter:
   assets:
     - assets/images/single-standard-room.jpg
     - assets/images/superior-single-room.jpg
+    - assets/images/standard-double-room.jpg
     - assets/images/sign-in-left.jpg
     - assets/images/PMS-logo.png
     - assets/images/tagline.png

@@ -66,7 +66,7 @@ final Map<String, RoomDetail> roomDetails = {
 
   'STANDARD DOUBLE ROOMS': RoomDetail(
     name: 'Standard Double Room',
-    imageAsset: 'assets/images/superior-single-room.jpg', // Reuse for now
+    imageAsset: 'assets/images/standard-double-room.jpg',
     price: '₱ 5,000',
     description:
         'The room offers a semi-double bed with premium linens, perfect for solo travelers who want added comfort. It includes a private bathroom, air-conditioning, a flat-screen TV, a spacious work desk with a lamp, and complimentary high-speed Wi-Fi.',
