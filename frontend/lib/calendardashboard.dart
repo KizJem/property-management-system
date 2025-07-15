@@ -36,7 +36,13 @@ class CalendarDashboard extends StatefulWidget {
   }
 }
 
+/// Mode enum to toggle between booking rooms and housekeeping mode
+enum Mode { bookRooms, housekeeping }
+
 class _CalendarDashboardState extends State<CalendarDashboard> {
+  // Default mode is booking rooms
+  Mode _mode = Mode.bookRooms;
+
   // Returns the header date string for the calendar header (e.g., "8 Aug 2021")
   String _getHeaderDateString() {
     final day = _currentStartDay;
@@ -312,6 +318,79 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // --- SYSTEM NAME & MODE TOGGLE HEADER (NEW) ---
+                      Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 28,
+                          vertical: 16,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Left: System name label
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_month,
+                                  size: 28,
+                                  color: Color(0xFF291F16),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  "Property Management System                                                                                                                                                               ",
+
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF291F16),
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            // Right: Toggle/Radio for mode
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Radio<Mode>(
+                                  value: Mode.bookRooms,
+                                  groupValue: _mode,
+                                  onChanged: (Mode? value) {
+                                    setState(() {
+                                      _mode = value!;
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  'Book Rooms (Calendar Page)',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: 24),
+                                Radio<Mode>(
+                                  value: Mode.housekeeping,
+                                  groupValue: _mode,
+                                  onChanged: (Mode? value) {
+                                    setState(() {
+                                      _mode = value!;
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  'Set Housekeeping Status',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
                       // Date headers (sticky row)
                       Row(
                         children: [

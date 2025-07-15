@@ -4,12 +4,11 @@ class GuestRecordsPage extends StatefulWidget {
   const GuestRecordsPage({super.key});
 
   @override
-  State<GuestRecordsPage> createState() => _CheckInLogsPageState();
+  State<GuestRecordsPage> createState() => _GuestRecordsPageState();
 }
 
-class _CheckInLogsPageState extends State<GuestRecordsPage> {
+class _GuestRecordsPageState extends State<GuestRecordsPage> {
   bool _sidebarExpanded = true;
-  final double _sidebarWidth = 150;
 
   final List<Map<String, String>> guests = [
     {'guest': 'Juan Dela Cruz', 'bookings': '4', 'nights': '5', 'room': '101'},
@@ -20,95 +19,162 @@ class _CheckInLogsPageState extends State<GuestRecordsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black87,
-        leading: IconButton(
-          icon: const Icon(Icons.menu, color: Colors.white),
-          onPressed: () => setState(() => _sidebarExpanded = !_sidebarExpanded),
-          tooltip: _sidebarExpanded ? 'Collapse sidebar' : 'Expand sidebar',
-        ),
-        title: const Text('System Name'),
-      ),
       body: Row(
         children: [
-          _sidebarExpanded
-              ? Container(
-                  width: _sidebarWidth,
-                  color: Colors.grey[200],
+          // Sidebar
+          Container(
+            width: _sidebarExpanded ? 180 : 60,
+            color: const Color(0xFF291F16),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (_sidebarExpanded)
+                        Image.asset(
+                          'assets/images/PMS-logo-2.png',
+                          width: 30,
+                          height: 30,
+                        ),
+                      IconButton(
+                        icon: Icon(
+                          _sidebarExpanded
+                              ? Icons.chevron_left
+                              : Icons.chevron_right,
+                          size: 20,
+                          color: const Color(0xFF897249),
+                        ),
+                        onPressed: () => setState(
+                          () => _sidebarExpanded = !_sidebarExpanded,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
                   child: Column(
                     children: [
                       _buildSidebarItem(
-                        icon: Icons.calendar_today,
-                        title: 'Calendar',
-                        onTap: () => Navigator.pushReplacementNamed(
+                        Icons.calendar_today,
+                        'Calendar',
+                        () => Navigator.pushReplacementNamed(
                           context,
                           '/calendar',
                         ),
                       ),
                       _buildSidebarItem(
-                        icon: Icons.login,
-                        title: 'Guest Records',
-                        isHeader: true,
+                        Icons.bed,
+                        'Guest Records',
+                        null,
+                        isActive: true,
                       ),
                       _buildSidebarItem(
-                        icon: Icons.list_alt,
-                        title: 'Activity Logs',
-                        onTap: () => Navigator.pushReplacementNamed(
+                        Icons.access_time,
+                        'Activity Logs',
+                        () => Navigator.pushReplacementNamed(
                           context,
                           '/activitylogs',
                         ),
                       ),
                       _buildSidebarItem(
-                        icon: Icons.check_box,
-                        title: 'Available Cell',
-                        onTap: () => Navigator.pushReplacementNamed(
+                        Icons.check_box,
+                        'Available Cell',
+                        () => Navigator.pushReplacementNamed(
                           context,
                           '/availablecell',
                         ),
                       ),
                       _buildSidebarItem(
-                        icon: Icons.table_rows,
-                        title: 'Reserve Cell',
-                        onTap: () => Navigator.pushReplacementNamed(
+                        Icons.book_online,
+                        'Reserve Cell',
+                        () => Navigator.pushReplacementNamed(
                           context,
                           '/reservecell',
                         ),
                       ),
                       _buildSidebarItem(
-                        icon: Icons.bed,
-                        title: 'Occupied Cell',
-                        onTap: () => Navigator.pushReplacementNamed(
+                        Icons.hotel,
+                        'Occupied Cell',
+                        () => Navigator.pushReplacementNamed(
                           context,
                           '/occupiedcell',
                         ),
                       ),
                     ],
                   ),
-                )
-              : const SizedBox.shrink(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: _sidebarExpanded
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.account_circle,
+                        color: Color(0xFFFFFBF2),
+                        size: 20,
+                      ),
+                      if (_sidebarExpanded) ...[
+                        const SizedBox(width: 6),
+                        const Expanded(
+                          child: Text(
+                            'Lilo Cruz',
+                            style: TextStyle(
+                              color: Color(0xFFFFFBF2),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.of(
+                            context,
+                          ).pushNamedAndRemoveUntil('/login', (route) => false),
+                          child: const Icon(
+                            Icons.logout,
+                            size: 18,
+                            color: Color(0xFF897249),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Main Content
           Expanded(
             child: Column(
               children: [
                 Container(
-                  width: double.infinity,
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 16,
-                  ),
+                  height: 70,
+                  padding: const EdgeInsets.only(top: 20),
                   alignment: Alignment.center,
+                  color: const Color(0xFFFFF1AB),
                   child: const Text(
-                    '  Guest Records',
+                    'Guest Records',
                     style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 26,
+                      color: Color(0xFF291F16),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
                 Expanded(
                   child: Container(
-                    color: const Color.fromARGB(255, 255, 255, 255),
+                    color: const Color(0xFFFFF1AB),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 16,
@@ -208,37 +274,38 @@ class _CheckInLogsPageState extends State<GuestRecordsPage> {
     );
   }
 
-  /// Sidebar item builder with icon (matches CalendarDashboard)
-  Widget _buildSidebarItem({
-    required IconData icon,
-    required String title,
-    VoidCallback? onTap,
-    bool isHeader = false,
+  Widget _buildSidebarItem(
+    IconData icon,
+    String title,
+    VoidCallback? onTap, {
+    bool isActive = false,
   }) {
     return Material(
-      color: isHeader ? Colors.grey[300] : Colors.transparent,
+      color: Colors.transparent,
       child: InkWell(
-        onTap: isHeader ? null : onTap,
+        onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          constraints: const BoxConstraints(minHeight: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey.shade400)),
+            color: isActive ? const Color(0xFF3B2F25) : Colors.transparent,
           ),
           child: Row(
+            mainAxisAlignment: _sidebarExpanded
+                ? MainAxisAlignment.start
+                : MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 20, color: isHeader ? Colors.black : null),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
+              Icon(icon, size: 20, color: const Color(0xFF897249)),
+              if (_sidebarExpanded) ...[
+                const SizedBox(width: 10),
+                Text(
                   title,
-                  style: TextStyle(
-                    fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
-                    fontSize: isHeader ? 16 : 14,
-                    color: isHeader ? Colors.black : null,
+                  style: const TextStyle(
+                    color: Color(0xFFFFFBF2),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
