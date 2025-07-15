@@ -84,4 +84,84 @@ final Map<String, RoomDetail> roomDetails = {
       RoomFeature(icon: Icons.night_shelter, label: 'Extended stay friendly'),
     ],
   ),
+  'DELUXE ROOMS': RoomDetail(
+    name: 'Standard Double Room',
+    imageAsset: 'assets/images/standard-double-room.jpg',
+    price: '₱ 5,000',
+    description:
+        'The room offers a semi-double bed with premium linens, perfect for solo travelers who want added comfort. It includes a private bathroom, air-conditioning, a flat-screen TV, a spacious work desk with a lamp, and complimentary high-speed Wi-Fi.',
+    featuresLeft: const [
+      RoomFeature(icon: Icons.bed, label: 'Semi-double bed'),
+      RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
+      RoomFeature(icon: Icons.ac_unit, label: 'Air conditioning'),
+      RoomFeature(icon: Icons.tv, label: 'Flat-screen TV'),
+      RoomFeature(icon: Icons.desk, label: 'Work desk with lamp'),
+    ],
+    featuresRight: const [
+      RoomFeature(icon: Icons.wifi, label: 'High-speed Wi-Fi'),
+      RoomFeature(icon: Icons.kitchen, label: 'Basic appliances'),
+      RoomFeature(icon: Icons.light_mode, label: 'Warm ambient lighting'),
+      RoomFeature(icon: Icons.night_shelter, label: 'Extended stay friendly'),
+    ],
+  ),
+  'FAMIILY ROOMS': RoomDetail(
+    name: 'Standard Double Room',
+    imageAsset: 'assets/images/standard-double-room.jpg',
+    price: '₱ 5,000',
+    description:
+        'The room offers a semi-double bed with premium linens, perfect for solo travelers who want added comfort. It includes a private bathroom, air-conditioning, a flat-screen TV, a spacious work desk with a lamp, and complimentary high-speed Wi-Fi.',
+    featuresLeft: const [
+      RoomFeature(icon: Icons.bed, label: 'Semi-double bed'),
+      RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
+      RoomFeature(icon: Icons.ac_unit, label: 'Air conditioning'),
+      RoomFeature(icon: Icons.tv, label: 'Flat-screen TV'),
+      RoomFeature(icon: Icons.desk, label: 'Work desk with lamp'),
+    ],
+    featuresRight: const [
+      RoomFeature(icon: Icons.wifi, label: 'High-speed Wi-Fi'),
+      RoomFeature(icon: Icons.kitchen, label: 'Basic appliances'),
+      RoomFeature(icon: Icons.light_mode, label: 'Warm ambient lighting'),
+      RoomFeature(icon: Icons.night_shelter, label: 'Extended stay friendly'),
+    ],
+  ),
+  'EXECUTIVE ROOMS': RoomDetail(
+    name: 'Standard Double Room',
+    imageAsset: 'assets/images/standard-double-room.jpg',
+    price: '₱ 5,000',
+    description:
+        'The room offers a semi-double bed with premium linens, perfect for solo travelers who want added comfort. It includes a private bathroom, air-conditioning, a flat-screen TV, a spacious work desk with a lamp, and complimentary high-speed Wi-Fi.',
+    featuresLeft: const [
+      RoomFeature(icon: Icons.bed, label: 'Semi-double bed'),
+      RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
+      RoomFeature(icon: Icons.ac_unit, label: 'Air conditioning'),
+      RoomFeature(icon: Icons.tv, label: 'Flat-screen TV'),
+      RoomFeature(icon: Icons.desk, label: 'Work desk with lamp'),
+    ],
+    featuresRight: const [
+      RoomFeature(icon: Icons.wifi, label: 'High-speed Wi-Fi'),
+      RoomFeature(icon: Icons.kitchen, label: 'Basic appliances'),
+      RoomFeature(icon: Icons.light_mode, label: 'Warm ambient lighting'),
+      RoomFeature(icon: Icons.night_shelter, label: 'Extended stay friendly'),
+    ],
+  ),
+  'SUITE ROOMS': RoomDetail(
+    name: 'Standard Double Room',
+    imageAsset: 'assets/images/standard-double-room.jpg',
+    price: '₱ 5,000',
+    description:
+        'The room offers a semi-double bed with premium linens, perfect for solo travelers who want added comfort. It includes a private bathroom, air-conditioning, a flat-screen TV, a spacious work desk with a lamp, and complimentary high-speed Wi-Fi.',
+    featuresLeft: const [
+      RoomFeature(icon: Icons.bed, label: 'Semi-double bed'),
+      RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
+      RoomFeature(icon: Icons.ac_unit, label: 'Air conditioning'),
+      RoomFeature(icon: Icons.tv, label: 'Flat-screen TV'),
+      RoomFeature(icon: Icons.desk, label: 'Work desk with lamp'),
+    ],
+    featuresRight: const [
+      RoomFeature(icon: Icons.wifi, label: 'High-speed Wi-Fi'),
+      RoomFeature(icon: Icons.kitchen, label: 'Basic appliances'),
+      RoomFeature(icon: Icons.light_mode, label: 'Warm ambient lighting'),
+      RoomFeature(icon: Icons.night_shelter, label: 'Extended stay friendly'),
+    ],
+  ),
 };
