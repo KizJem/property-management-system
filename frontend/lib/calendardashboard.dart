@@ -268,88 +268,87 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           _selectedEnd[room] = null;
           _activeBookingRoom = room;
         } else if (_selectedStart[room] != null && _selectedEnd[room] == null) {
-        int newStart, newEnd;
-        if (dateIndex < _selectedStart[room]!) {
-          newStart = dateIndex;
-          newEnd = _selectedStart[room]!;
-        } else {
-          newStart = _selectedStart[room]!;
-          newEnd = dateIndex;
-        }
+          int newStart, newEnd;
+          if (dateIndex < _selectedStart[room]!) {
+            newStart = dateIndex;
+            newEnd = _selectedStart[room]!;
+          } else {
+            newStart = _selectedStart[room]!;
+            newEnd = dateIndex;
+          }
 
-        // 1. Update the selection state FIRST (triggers highlight)
-        setState(() {
-          _selectedStart[room] = newStart;
-          _selectedEnd[room] = newEnd;
-          _activeBookingRoom = null;
-        });
+          // 1. Update the selection state FIRST (triggers highlight)
+          setState(() {
+            _selectedStart[room] = newStart;
+            _selectedEnd[room] = newEnd;
+            _activeBookingRoom = null;
+          });
 
-        // 2. Show dialog AFTER UI update
-        final dates = _generateDatesForMonth(
-          _selectedYear,
-          _selectedMonth,
-          daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
-        );
-        final startDate = dates[newStart]['date'] ?? '';
-        final endDate = dates[newEnd]['date'] ?? '';
+          // 2. Show dialog AFTER UI update
+          final dates = _generateDatesForMonth(
+            _selectedYear,
+            _selectedMonth,
+            daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
+          );
+          final startDate = dates[newStart]['date'] ?? '';
+          final endDate = dates[newEnd]['date'] ?? '';
 
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('Confirm Booking'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Room: $room'),
-                  const SizedBox(height: 8),
-                  Text('Date Range: $startDate - $endDate'),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    // Optionally reset selection if cancelled
-                    setState(() {
-                      _selectedStart[room] = null;
-                      _selectedEnd[room] = null;
-                    });
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('Cancel'),
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text('Confirm Booking'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Room: $room'),
+                    const SizedBox(height: 8),
+                    Text('Date Range: $startDate - $endDate'),
+                  ],
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AvailableCellPage(
-                          roomType: roomType,
-                          roomNumber: room,
-                          checkInDate: DateTime(
-                            _selectedYear,
-                            _selectedMonth,
-                            newStart + 1,
-                          ),
-                          checkOutDate: DateTime(
-                            _selectedYear,
-                            _selectedMonth,
-                            newEnd + 1,
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      // Optionally reset selection if cancelled
+                      setState(() {
+                        _selectedStart[room] = null;
+                        _selectedEnd[room] = null;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Cancel'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AvailableCellPage(
+                            roomType: roomType,
+                            roomNumber: room,
+                            checkInDate: DateTime(
+                              _selectedYear,
+                              _selectedMonth,
+                              newStart + 1,
+                            ),
+                            checkOutDate: DateTime(
+                              _selectedYear,
+                              _selectedMonth,
+                              newEnd + 1,
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                  child: const Text('Continue'),
-                ),
-              ],
-            );
-          },
-        );
-      }
-
+                      );
+                    },
+                    child: const Text('Continue'),
+                  ),
+                ],
+              );
+            },
+          );
+        }
       });
     } else if (_mode == Mode.housekeeping) {
       setState(() {
@@ -365,7 +364,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           _hkSelectedStart[room] = dateIndex;
           _hkSelectedEnd[room] = null;
           _activeHKRoom = room;
-        } else if (_hkSelectedStart[room] != null && _hkSelectedEnd[room] == null) {
+        } else if (_hkSelectedStart[room] != null &&
+            _hkSelectedEnd[room] == null) {
           // Complete selection
           if (dateIndex < _hkSelectedStart[room]!) {
             _hkSelectedEnd[room] = _hkSelectedStart[room];
@@ -408,7 +408,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           text: TextSpan(
                             style: TextStyle(color: Colors.black),
                             children: [
-                              TextSpan(text: 'Room Number(s): ', style: TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                text: 'Room Number(s): ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(text: roomNumber),
                             ],
                           ),
@@ -418,52 +421,65 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           text: TextSpan(
                             style: TextStyle(color: Colors.black),
                             children: [
-                              TextSpan(text: 'Dates: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                text: 'Dates: ',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
                               TextSpan(text: '$startDate - $endDate'),
                             ],
                           ),
                         ),
                         SizedBox(height: 16),
-                        Text('Select Status', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Select Status',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         SizedBox(height: 4),
                         DropdownButtonFormField<String>(
-  value: selectedStatus,
-  items: roomStatusMap.entries.map((entry) {
-    final code = entry.key;
-    final color = entry.value['color'] as Color;
-    final label = entry.value['label'] as String;
-    return DropdownMenuItem(
-      value: code,
-      child: Row(
-        children: [
-          Container(
-            width: 16,
-            height: 16,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-            ),
-          ),
-          SizedBox(width: 8),
-          Text('$code – $label'),
-        ],
-      ),
-    );
-  }).toList(),
-  onChanged: (val) {
-    setStateDialog(() {
-      selectedStatus = val;
-    });
-  },
-  decoration: InputDecoration(border: OutlineInputBorder()),
-),
+                          value: selectedStatus,
+                          items: roomStatusMap.entries.map((entry) {
+                            final code = entry.key;
+                            final color = entry.value['color'] as Color;
+                            final label = entry.value['label'] as String;
+                            return DropdownMenuItem(
+                              value: code,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: color,
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text('$code – $label'),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (val) {
+                            setStateDialog(() {
+                              selectedStatus = val;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
                         SizedBox(height: 16),
-                        Text('Additional Notes (Optional)', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(
+                          'Additional Notes (Optional)',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         SizedBox(height: 4),
                         TextField(
                           controller: notesController,
                           maxLines: 3,
-                          decoration: InputDecoration(border: OutlineInputBorder()),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
                         ),
                       ],
                     ),
@@ -478,7 +494,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             : () {
                                 // Save housekeeping status for all selected dates
                                 setState(() {
-                                  _housekeepingStatus.putIfAbsent(room, () => {});
+                                  _housekeepingStatus.putIfAbsent(
+                                    room,
+                                    () => {},
+                                  );
                                   for (int i = startIdx; i <= endIdx; i++) {
                                     _housekeepingStatus[room]![i] = {
                                       'status': selectedStatus!,
@@ -501,8 +520,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final daysInMonth = DateTime(_selectedYear, _selectedMonth + 1, 0).day;
@@ -516,8 +533,60 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
       builder: (context, constraints) {
         return SizedBox.expand(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Date headers and date cells scroll together horizontally
+              // --- Fixed Mode Toggle Header (Always Top Right)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 1),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 10,
+                  ),
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: Row(
+                    children: [
+                      const Spacer(),
+                      Radio<Mode>(
+                        value: Mode.bookRooms,
+                        groupValue: _mode,
+                        onChanged: (Mode? value) {
+                          setState(() {
+                            _mode = value!;
+                          });
+                        },
+                      ),
+                      const Text(
+                        'Book Rooms',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Radio<Mode>(
+                        value: Mode.housekeeping,
+                        groupValue: _mode,
+                        onChanged: (Mode? value) {
+                          setState(() {
+                            _mode = value!;
+                          });
+                        },
+                      ),
+                      const Text(
+                        'Set Housekeeping Status',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // --- Horizontal Scroll for Date Headers and Calendar
               Expanded(
                 child: SingleChildScrollView(
                   controller: _horizontalScrollController,
@@ -525,80 +594,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // --- SYSTEM NAME & MODE TOGGLE HEADER (NEW) ---
-                      Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 28,
-                          vertical: 16,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Left: System name label
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.calendar_month,
-                                  size: 28,
-                                  color: Color(0xFF291F16),
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  "Property Management System                                                                                                                                                               ",
-
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF291F16),
-                                    letterSpacing: 0.5,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            // Right: Toggle/Radio for mode
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Radio<Mode>(
-                                  value: Mode.bookRooms,
-                                  groupValue: _mode,
-                                  onChanged: (Mode? value) {
-                                    setState(() {
-                                      _mode = value!;
-                                    });
-                                  },
-                                ),
-                                const Text(
-                                  'Book Rooms (Calendar Page)',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                SizedBox(width: 24),
-                                Radio<Mode>(
-                                  value: Mode.housekeeping,
-                                  groupValue: _mode,
-                                  onChanged: (Mode? value) {
-                                    setState(() {
-                                      _mode = value!;
-                                    });
-                                  },
-                                ),
-                                const Text(
-                                  'Set Housekeeping Status',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      // Date headers (sticky row)
+                      // --- Date Headers Row
                       Row(
                         children: [
                           Container(
@@ -671,7 +667,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                     dateMap['date']?.split(' ').last ?? '',
                                     style: const TextStyle(
                                       color: Colors.black87,
-                                      fontWeight: FontWeight.normal,
                                       fontSize: 15,
                                     ),
                                   ),
@@ -681,7 +676,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           }).toList(),
                         ],
                       ),
-                      // Room column and date cells scroll together vertically
+
+                      // --- Scrollable Room Rows
                       Expanded(
                         child: Scrollbar(
                           controller: _verticalScrollController,
@@ -692,7 +688,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Fixed room column
+                                // Room Types Column
                                 Container(
                                   width: 300,
                                   child: Column(
@@ -707,7 +703,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                     ],
                                   ),
                                 ),
-                                // Date cells columns
+                                // Date Cells
                                 Column(
                                   children: [
                                     _buildDateRows(
@@ -809,7 +805,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           );
                         },
                       ),
-                      
+
                       _buildSidebarItem(
                         Icons.check_box,
                         'Available Cell',
@@ -971,232 +967,249 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-Widget _buildDateRows(String title, List<Map<String, String>> dates) {
-  const Radius cornerRadius = Radius.circular(10);
-  final roomList = widget.rooms[title] ?? [];
+  Widget _buildDateRows(String title, List<Map<String, String>> dates) {
+    const Radius cornerRadius = Radius.circular(10);
+    final roomList = widget.rooms[title] ?? [];
 
-  return Column(
-    children: [
-      // Header row (date titles)
-      Row(
-        children: List.generate(
-          dates.length,
-          (_) => Container(
-            width: 80,
-            height: 50,
-            color: Colors.grey.shade300,
+    return Column(
+      children: [
+        // Header row (date titles)
+        Row(
+          children: List.generate(
+            dates.length,
+            (_) =>
+                Container(width: 80, height: 50, color: Colors.grey.shade300),
           ),
         ),
-      ),
-      ...roomList.asMap().entries.map((entry) {
-        final isLastRoom = entry.key == roomList.length - 1;
-        final room = entry.value;
+        ...roomList.asMap().entries.map((entry) {
+          final isLastRoom = entry.key == roomList.length - 1;
+          final room = entry.value;
 
-        final bookingStart = _selectedStart[room];
-        final bookingEnd = _selectedEnd[room] ?? bookingStart;
+          final bookingStart = _selectedStart[room];
+          final bookingEnd = _selectedEnd[room] ?? bookingStart;
 
-        return Row(
-          children: dates.asMap().entries.map((dateEntry) {
-            final i = dateEntry.key;
+          return Row(
+            children: dates.asMap().entries.map((dateEntry) {
+              final i = dateEntry.key;
 
-            final hk = _housekeepingStatus[room]?[i];
-            final statusCode = hk?['status'];
-            final statusInfo = statusCode != null ? roomStatusMap[statusCode] : null;
-            final hkColor = statusInfo != null ? statusInfo['color'] as Color : null;
+              final hk = _housekeepingStatus[room]?[i];
+              final statusCode = hk?['status'];
+              final statusInfo = statusCode != null
+                  ? roomStatusMap[statusCode]
+                  : null;
+              final hkColor = statusInfo != null
+                  ? statusInfo['color'] as Color
+                  : null;
 
-            // Booking range highlight
-            final isBookingSelected = _mode == Mode.bookRooms &&
-                bookingStart != null &&
-                bookingEnd != null &&
-                i >= bookingStart &&
-                i <= bookingEnd;
+              // Booking range highlight
+              final isBookingSelected =
+                  _mode == Mode.bookRooms &&
+                  bookingStart != null &&
+                  bookingEnd != null &&
+                  i >= bookingStart &&
+                  i <= bookingEnd;
 
-            // Housekeeping preview range
-            final selStart = _hkSelectedStart[room];
-            final selEnd = _hkSelectedEnd[room];
-            bool isHKPreview = false;
-            int? hkPreviewStart;
-            int? hkPreviewEnd;
+              // Housekeeping preview range
+              final selStart = _hkSelectedStart[room];
+              final selEnd = _hkSelectedEnd[room];
+              bool isHKPreview = false;
+              int? hkPreviewStart;
+              int? hkPreviewEnd;
 
-            if (_mode == Mode.housekeeping) {
-              if (selStart != null && selEnd == null && i == selStart) {
-                isHKPreview = true;
-                hkPreviewStart = selStart;
-                hkPreviewEnd = selStart;
-              } else if (selStart != null && selEnd != null) {
-                if (i >= selStart && i <= selEnd) isHKPreview = true;
-                hkPreviewStart = selStart;
-                hkPreviewEnd = selEnd;
-              }
-            }
-
-            int? hkRangeStart;
-            int? hkRangeEnd;
-
-            if (statusCode != null) {
-              hkRangeStart = i;
-              while (hkRangeStart! > 0) {
-                final prevStatus = _housekeepingStatus[room]?[hkRangeStart - 1]?['status'];
-                if (prevStatus == statusCode) {
-                  hkRangeStart = hkRangeStart - 1;
-                } else {
-                  break;
+              if (_mode == Mode.housekeeping) {
+                if (selStart != null && selEnd == null && i == selStart) {
+                  isHKPreview = true;
+                  hkPreviewStart = selStart;
+                  hkPreviewEnd = selStart;
+                } else if (selStart != null && selEnd != null) {
+                  if (i >= selStart && i <= selEnd) isHKPreview = true;
+                  hkPreviewStart = selStart;
+                  hkPreviewEnd = selEnd;
                 }
               }
 
-              hkRangeEnd = i;
-              while (hkRangeEnd! < dates.length - 1) {
-                final nextStatus = _housekeepingStatus[room]?[hkRangeEnd + 1]?['status'];
-                if (nextStatus == statusCode) {
-                  hkRangeEnd = hkRangeEnd + 1;
-                } else {
-                  break;
+              int? hkRangeStart;
+              int? hkRangeEnd;
+
+              if (statusCode != null) {
+                hkRangeStart = i;
+                while (hkRangeStart! > 0) {
+                  final prevStatus =
+                      _housekeepingStatus[room]?[hkRangeStart - 1]?['status'];
+                  if (prevStatus == statusCode) {
+                    hkRangeStart = hkRangeStart - 1;
+                  } else {
+                    break;
+                  }
+                }
+
+                hkRangeEnd = i;
+                while (hkRangeEnd! < dates.length - 1) {
+                  final nextStatus =
+                      _housekeepingStatus[room]?[hkRangeEnd + 1]?['status'];
+                  if (nextStatus == statusCode) {
+                    hkRangeEnd = hkRangeEnd + 1;
+                  } else {
+                    break;
+                  }
                 }
               }
-            }
 
+              bool isInsideMergedHKRange =
+                  statusCode != null &&
+                  hkRangeStart != null &&
+                  hkRangeEnd != null &&
+                  i >= hkRangeStart &&
+                  i <= hkRangeEnd;
+              bool isMergedHKRangeStart =
+                  isInsideMergedHKRange && i == hkRangeStart;
 
-            bool isInsideMergedHKRange = statusCode != null &&
-                hkRangeStart != null &&
-                hkRangeEnd != null &&
-                i >= hkRangeStart &&
-                i <= hkRangeEnd;
-            bool isMergedHKRangeStart = isInsideMergedHKRange && i == hkRangeStart;
+              // Determine if cell is start of booking merged block
+              bool isMergedBookingRangeStart =
+                  isBookingSelected && i == bookingStart;
 
-            // Determine if cell is start of booking merged block
-            bool isMergedBookingRangeStart = isBookingSelected && i == bookingStart;
+              bool noBorder =
+                  isInsideMergedHKRange || isBookingSelected || isHKPreview;
 
-            bool noBorder = isInsideMergedHKRange || isBookingSelected || isHKPreview;
-
-            BorderRadius? bookingCellRadius;
-            if (isBookingSelected) {
-              if (bookingStart == bookingEnd) {
-                bookingCellRadius = BorderRadius.circular(8);
-              } else if (bookingStart == i) {
-                bookingCellRadius = BorderRadius.only(
-                  topLeft: cornerRadius,
-                  bottomLeft: cornerRadius,
-                );
-              } else if (bookingEnd == i) {
-                bookingCellRadius = BorderRadius.only(
-                  topRight: cornerRadius,
-                  bottomRight: cornerRadius,
-                );
-              } else {
-                bookingCellRadius = BorderRadius.zero;
+              BorderRadius? bookingCellRadius;
+              if (isBookingSelected) {
+                if (bookingStart == bookingEnd) {
+                  bookingCellRadius = BorderRadius.circular(8);
+                } else if (bookingStart == i) {
+                  bookingCellRadius = BorderRadius.only(
+                    topLeft: cornerRadius,
+                    bottomLeft: cornerRadius,
+                  );
+                } else if (bookingEnd == i) {
+                  bookingCellRadius = BorderRadius.only(
+                    topRight: cornerRadius,
+                    bottomRight: cornerRadius,
+                  );
+                } else {
+                  bookingCellRadius = BorderRadius.zero;
+                }
               }
-            }
 
-            return MouseRegion(
-              cursor: ( (_mode == Mode.bookRooms && statusCode == null) ||
-                      _mode == Mode.housekeeping )
-                  ? SystemMouseCursors.click
-                  : SystemMouseCursors.basic,
-              child: GestureDetector(
-                onTap: ( (_mode == Mode.bookRooms && statusCode == null) ||
-                        _mode == Mode.housekeeping )
-                    ? () => _onCellTap(title, room, i)
-                    : null,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Booking range highlight block (only on first cell)
-                    if (isMergedBookingRangeStart)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: 50,
-                        width: 80.0 * (bookingEnd! - bookingStart! + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.yellow[300],
-                            borderRadius: BorderRadius.horizontal(
-                              left: bookingStart == i ? cornerRadius : Radius.zero,
-                              right: bookingEnd == i ? cornerRadius : Radius.zero,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    // Housekeeping preview highlight block (only on first cell of preview)
-                    if (isHKPreview && hkPreviewStart != null && hkPreviewEnd != null && i == hkPreviewStart)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: 50,
-                        width: 80.0 * (hkPreviewEnd - hkPreviewStart + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
-                            borderRadius: BorderRadius.horizontal(
-                              left: cornerRadius,
-                              right: cornerRadius,
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    // Housekeeping merged block (only on first cell)
-                    if (isMergedHKRangeStart)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: 50,
-                        width: 80.0 * (hkRangeEnd! - hkRangeStart! + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: hkColor,
-                            borderRadius: BorderRadius.horizontal(
-                              left: cornerRadius,
-                              right: cornerRadius,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            statusCode!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              letterSpacing: 2,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ),
-
-                    // The normal cell container for borders and default background
-                    Container(
-                      width: 80,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: (isBookingSelected && !isMergedBookingRangeStart)
-                            ? Colors.transparent
-                            : null,
-                        border: noBorder
-                            ? null
-                            : Border(
-                                right: i == dates.length - 1
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
-                                bottom: isLastRoom
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
+              return MouseRegion(
+                cursor:
+                    ((_mode == Mode.bookRooms && statusCode == null) ||
+                        _mode == Mode.housekeeping)
+                    ? SystemMouseCursors.click
+                    : SystemMouseCursors.basic,
+                child: GestureDetector(
+                  onTap:
+                      ((_mode == Mode.bookRooms && statusCode == null) ||
+                          _mode == Mode.housekeeping)
+                      ? () => _onCellTap(title, room, i)
+                      : null,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Booking range highlight block (only on first cell)
+                      if (isMergedBookingRangeStart)
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          height: 50,
+                          width: 80.0 * (bookingEnd! - bookingStart! + 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.yellow[300],
+                              borderRadius: BorderRadius.horizontal(
+                                left: bookingStart == i
+                                    ? cornerRadius
+                                    : Radius.zero,
+                                right: bookingEnd == i
+                                    ? cornerRadius
+                                    : Radius.zero,
                               ),
-                        borderRadius: bookingCellRadius,
+                            ),
+                          ),
+                        ),
+
+                      // Housekeeping preview highlight block (only on first cell of preview)
+                      if (isHKPreview &&
+                          hkPreviewStart != null &&
+                          hkPreviewEnd != null &&
+                          i == hkPreviewStart)
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          height: 50,
+                          width: 80.0 * (hkPreviewEnd - hkPreviewStart + 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade400,
+                              borderRadius: BorderRadius.horizontal(
+                                left: cornerRadius,
+                                right: cornerRadius,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      // Housekeeping merged block (only on first cell)
+                      if (isMergedHKRangeStart)
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          height: 50,
+                          width: 80.0 * (hkRangeEnd! - hkRangeStart! + 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: hkColor,
+                              borderRadius: BorderRadius.horizontal(
+                                left: cornerRadius,
+                                right: cornerRadius,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              statusCode!,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                letterSpacing: 2,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+
+                      // The normal cell container for borders and default background
+                      Container(
+                        width: 80,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color:
+                              (isBookingSelected && !isMergedBookingRangeStart)
+                              ? Colors.transparent
+                              : null,
+                          border: noBorder
+                              ? null
+                              : Border(
+                                  right: i == dates.length - 1
+                                      ? BorderSide.none
+                                      : BorderSide(color: Colors.grey.shade300),
+                                  bottom: isLastRoom
+                                      ? BorderSide.none
+                                      : BorderSide(color: Colors.grey.shade300),
+                                ),
+                          borderRadius: bookingCellRadius,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
-        );
-      }).toList(),
-    ],
-  );
-}
+              );
+            }).toList(),
+          );
+        }).toList(),
+      ],
+    );
+  }
 
   Widget _buildRoomTypeSection(String title, List<Map<String, String>> dates) {
     final roomList = widget.rooms[title] ?? [];
