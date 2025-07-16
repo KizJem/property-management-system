@@ -972,16 +972,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   }
 
 Widget _buildDateRows(String title, List<Map<String, String>> dates) {
-  const Radius cornerRadius = Radius.circular(12);
+  const Radius cornerRadius = Radius.circular(8);
   final roomList = widget.rooms[title] ?? [];
 
   return Column(
     children: [
-      // Header row
+      // Header row (date titles)
       Row(
         children: List.generate(
           dates.length,
-          (index) => Container(
+          (_) => Container(
             width: 80,
             height: 50,
             color: Colors.grey.shade300,
@@ -989,14 +989,11 @@ Widget _buildDateRows(String title, List<Map<String, String>> dates) {
         ),
       ),
       ...roomList.asMap().entries.map((entry) {
-        final isLast = entry.key == roomList.length - 1;
+        final isLastRoom = entry.key == roomList.length - 1;
         final room = entry.value;
 
-        // Booking indices
-        final start = _selectedStart[room];
-        final end = _selectedEnd[room];
-        final bookingRangeStart = start;
-        final bookingRangeEnd = end ?? start;
+        final bookingStart = _selectedStart[room];
+        final bookingEnd = _selectedEnd[room] ?? bookingStart;
 
         return Row(
           children: dates.asMap().entries.map((dateEntry) {
@@ -1007,53 +1004,56 @@ Widget _buildDateRows(String title, List<Map<String, String>> dates) {
             final statusInfo = statusCode != null ? roomStatusMap[statusCode] : null;
             final hkColor = statusInfo != null ? statusInfo['color'] as Color : null;
 
-            final isBookingSelected = bookingRangeStart != null &&
-                bookingRangeEnd != null &&
-                i >= bookingRangeStart &&
-                i <= bookingRangeEnd;
+            // Booking range highlight
+            final isBookingSelected = _mode == Mode.bookRooms &&
+                bookingStart != null &&
+                bookingEnd != null &&
+                i >= bookingStart &&
+                i <= bookingEnd;
 
+            // Housekeeping preview range
+            final selStart = _hkSelectedStart[room];
+            final selEnd = _hkSelectedEnd[room];
             bool isHKPreview = false;
+            int? hkPreviewStart;
+            int? hkPreviewEnd;
+
             if (_mode == Mode.housekeeping) {
-              final selStart = _hkSelectedStart[room];
-              final selEnd = _hkSelectedEnd[room];
               if (selStart != null && selEnd == null && i == selStart) {
                 isHKPreview = true;
-              }
-              if (selStart != null && selEnd != null) {
+                hkPreviewStart = selStart;
+                hkPreviewEnd = selStart;
+              } else if (selStart != null && selEnd != null) {
                 if (i >= selStart && i <= selEnd) isHKPreview = true;
+                hkPreviewStart = selStart;
+                hkPreviewEnd = selEnd;
               }
             }
 
-            final isBookable = _mode == Mode.bookRooms && statusCode == null;
-            // In housekeeping mode, all cells are selectable for status editing
-            final isHKSelectable = _mode == Mode.housekeeping;
-            final showHandCursor = isBookable || isHKSelectable;
-
-            // Housekeeping merged ranges logic
             int? hkRangeStart;
-int? hkRangeEnd;
+            int? hkRangeEnd;
 
-if (statusCode != null) {
-  hkRangeStart = i;
-  while (hkRangeStart! > 0) {
-    final prevStatus = _housekeepingStatus[room]?[hkRangeStart - 1]?['status'];
-    if (prevStatus == statusCode) {
-      hkRangeStart = hkRangeStart - 1;
-    } else {
-      break;
-    }
-  }
+            if (statusCode != null) {
+              hkRangeStart = i;
+              while (hkRangeStart! > 0) {
+                final prevStatus = _housekeepingStatus[room]?[hkRangeStart - 1]?['status'];
+                if (prevStatus == statusCode) {
+                  hkRangeStart = hkRangeStart - 1;
+                } else {
+                  break;
+                }
+              }
 
-  hkRangeEnd = i;
-  while (hkRangeEnd! < dates.length - 1) {
-    final nextStatus = _housekeepingStatus[room]?[hkRangeEnd + 1]?['status'];
-    if (nextStatus == statusCode) {
-      hkRangeEnd = hkRangeEnd + 1;
-    } else {
-      break;
-    }
-  }
-}
+              hkRangeEnd = i;
+              while (hkRangeEnd! < dates.length - 1) {
+                final nextStatus = _housekeepingStatus[room]?[hkRangeEnd + 1]?['status'];
+                if (nextStatus == statusCode) {
+                  hkRangeEnd = hkRangeEnd + 1;
+                } else {
+                  break;
+                }
+              }
+            }
 
 
             bool isInsideMergedHKRange = statusCode != null &&
@@ -1063,29 +1063,21 @@ if (statusCode != null) {
                 i <= hkRangeEnd;
             bool isMergedHKRangeStart = isInsideMergedHKRange && i == hkRangeStart;
 
-            bool isMergedBookingRangeStart = isBookingSelected && i == bookingRangeStart;
-            bool isInsideMergedBookingRange = isBookingSelected;
+            // Determine if cell is start of booking merged block
+            bool isMergedBookingRangeStart = isBookingSelected && i == bookingStart;
 
-            BorderRadius housekeepingBlockRadius = BorderRadius.horizontal(
-              left: cornerRadius,
-              right: cornerRadius,
-            );
-
-            BorderRadius bookingBlockRadius = BorderRadius.horizontal(
-              left: cornerRadius,
-              right: cornerRadius,
-            );
+            bool noBorder = isInsideMergedHKRange || isBookingSelected || isHKPreview;
 
             BorderRadius? bookingCellRadius;
             if (isBookingSelected) {
-              if (bookingRangeStart == bookingRangeEnd) {
+              if (bookingStart == bookingEnd) {
                 bookingCellRadius = BorderRadius.circular(8);
-              } else if (bookingRangeStart == i) {
+              } else if (bookingStart == i) {
                 bookingCellRadius = BorderRadius.only(
                   topLeft: cornerRadius,
                   bottomLeft: cornerRadius,
                 );
-              } else if (bookingRangeEnd == i) {
+              } else if (bookingEnd == i) {
                 bookingCellRadius = BorderRadius.only(
                   topRight: cornerRadius,
                   bottomRight: cornerRadius,
@@ -1095,56 +1087,56 @@ if (statusCode != null) {
               }
             }
 
-            bool noBorder =
-                isInsideMergedBookingRange || isHKPreview || isInsideMergedHKRange;
-
             return MouseRegion(
-              cursor: showHandCursor
+              cursor: ( (_mode == Mode.bookRooms && statusCode == null) ||
+                      _mode == Mode.housekeeping )
                   ? SystemMouseCursors.click
                   : SystemMouseCursors.basic,
               child: GestureDetector(
-                onTap: showHandCursor ? () => _onCellTap(title, room, i) : null,
+                onTap: ( (_mode == Mode.bookRooms && statusCode == null) ||
+                        _mode == Mode.housekeeping )
+                    ? () => _onCellTap(title, room, i)
+                    : null,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
-                    // Booking block (yellow)
+                    // Booking range highlight block (only on first cell)
                     if (isMergedBookingRangeStart)
                       Positioned(
                         left: 0,
                         top: 0,
                         height: 50,
-                        width: 80.0 * (bookingRangeEnd! - bookingRangeStart! + 1),
+                        width: 80.0 * (bookingEnd! - bookingStart! + 1),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.yellow[300],
-                            borderRadius: bookingBlockRadius,
+                            borderRadius: BorderRadius.horizontal(
+                              left: bookingStart == i ? cornerRadius : Radius.zero,
+                              right: bookingEnd == i ? cornerRadius : Radius.zero,
+                            ),
                           ),
                         ),
                       ),
 
-                    // Individual booking cell background (transparent if merged)
-                    Container(
-                      width: 80,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: (isInsideMergedBookingRange && i != bookingRangeStart)
-                            ? Colors.transparent
-                            : null,
-                        border: noBorder
-                            ? null
-                            : Border(
-                                right: i == dates.length - 1
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
-                                bottom: isLast
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
-                              ),
-                        borderRadius: bookingCellRadius,
+                    // Housekeeping preview highlight block (only on first cell of preview)
+                    if (isHKPreview && hkPreviewStart != null && hkPreviewEnd != null && i == hkPreviewStart)
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        height: 50,
+                        width: 80.0 * (hkPreviewEnd - hkPreviewStart + 1),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade400,
+                            borderRadius: BorderRadius.horizontal(
+                              left: cornerRadius,
+                              right: cornerRadius,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
 
-                    // Housekeeping status overlay
+                    // Housekeeping merged block (only on first cell)
                     if (isMergedHKRangeStart)
                       Positioned(
                         left: 0,
@@ -1154,11 +1146,14 @@ if (statusCode != null) {
                         child: Container(
                           decoration: BoxDecoration(
                             color: hkColor,
-                            borderRadius: housekeepingBlockRadius,
+                            borderRadius: BorderRadius.horizontal(
+                              left: cornerRadius,
+                              right: cornerRadius,
+                            ),
                           ),
                           alignment: Alignment.center,
                           child: Text(
-                            statusCode ?? '',
+                            statusCode!,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -1171,16 +1166,27 @@ if (statusCode != null) {
                         ),
                       ),
 
-                    // Housekeeping preview highlight
-                    if (isHKPreview && !isInsideMergedHKRange)
-                      Container(
-                        width: 80,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade400,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+                    // The normal cell container for borders and default background
+                    Container(
+                      width: 80,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: (isBookingSelected && !isMergedBookingRangeStart)
+                            ? Colors.transparent
+                            : null,
+                        border: noBorder
+                            ? null
+                            : Border(
+                                right: i == dates.length - 1
+                                    ? BorderSide.none
+                                    : BorderSide(color: Colors.grey.shade300),
+                                bottom: isLastRoom
+                                    ? BorderSide.none
+                                    : BorderSide(color: Colors.grey.shade300),
+                              ),
+                        borderRadius: bookingCellRadius,
                       ),
+                    ),
                   ],
                 ),
               ),
