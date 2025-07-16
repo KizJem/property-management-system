@@ -972,7 +972,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   }
 
 Widget _buildDateRows(String title, List<Map<String, String>> dates) {
-  const Radius cornerRadius = Radius.circular(8);
+  const Radius cornerRadius = Radius.circular(10);
   final roomList = widget.rooms[title] ?? [];
 
   return Column(
