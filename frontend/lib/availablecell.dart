@@ -68,11 +68,12 @@ class AvailableCellPageState extends State<AvailableCellPage> {
     if (_firstNameError == null &&
         _lastNameError == null &&
         _phoneError == null) {
-      final email = _emailController.text.trim(); // ✅ included
+      final email = _emailController.text.trim();
       final firstName = _firstNameController.text.trim();
       final lastName = _lastNameController.text.trim();
       final phone = _phoneController.text.trim();
-      Navigator.pop(context); // ✅ Back to CalendarDashboard
+
+      Navigator.pop(context);
     }
   }
 
@@ -81,7 +82,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _phoneController.dispose();
-    _emailController.dispose(); // ✅ added
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -189,7 +190,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
 
               const SizedBox(width: 20),
 
-              // RIGHT SIDE - UNCHANGED BOOKING FORM
+              // RIGHT SIDE - BOOKING FORM
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -344,7 +345,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               ),
                             ],
                           ),
-                          // const SizedBox(height: 20),
+
                           // Second Row: Phone Number & Email
                           Row(
                             children: [
@@ -505,7 +506,6 @@ class AvailableCellPageState extends State<AvailableCellPage> {
 
                               const SizedBox(width: 8),
 
-                              // Dash separator
                               const Text(
                                 '-',
                                 style: TextStyle(
@@ -618,7 +618,6 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                           hintText: 'Enter number',
                                         ),
                                         inputFormatters: [
-                                          // Allows only integer input
                                           FilteringTextInputFormatter
                                               .digitsOnly,
                                         ],
@@ -643,7 +642,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                       ),
                     ),
 
-                    // Action Buttons
+                    // Continue Action Button
                     Row(
                       children: [
                         Expanded(
