@@ -24,7 +24,7 @@ class RoomFeature extends StatelessWidget {
   }
 }
 
-class AvailableCellPage extends StatelessWidget {
+class AvailableCellPage extends StatefulWidget {
   final String roomType;
   final String roomNumber;
   final DateTime checkInDate;
@@ -39,8 +39,55 @@ class AvailableCellPage extends StatelessWidget {
   });
 
   @override
+  State<AvailableCellPage> createState() => AvailableCellPageState();
+}
+
+class AvailableCellPageState extends State<AvailableCellPage> {
+  final _firstNameController = TextEditingController();
+  final _lastNameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
+
+  String? _firstNameError;
+  String? _lastNameError;
+  String? _phoneError;
+
+  void _handleContinue() {
+    setState(() {
+      _firstNameError = _firstNameController.text.trim().isEmpty
+          ? 'Please enter first name'
+          : null;
+      _lastNameError = _lastNameController.text.trim().isEmpty
+          ? 'Please enter last name'
+          : null;
+      _phoneError = _phoneController.text.trim().isEmpty
+          ? 'Please enter phone number'
+          : null;
+    });
+
+    if (_firstNameError == null &&
+        _lastNameError == null &&
+        _phoneError == null) {
+      final email = _emailController.text.trim(); // ✅ included
+      final firstName = _firstNameController.text.trim();
+      final lastName = _lastNameController.text.trim();
+      final phone = _phoneController.text.trim();
+      Navigator.pop(context); // ✅ Back to CalendarDashboard
+    }
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose(); // ✅ added
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final details = roomDetails[roomType]!;
+    final details = roomDetails[widget.roomType]!;
     final now = DateTime.now();
 
     return Scaffold(
@@ -55,7 +102,6 @@ class AvailableCellPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Back button
                     Padding(
                       padding: const EdgeInsets.only(left: 0),
                       child: IconButton(
@@ -80,7 +126,7 @@ class AvailableCellPage extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Container(
-                            height: 250,
+                            height: 270,
                             decoration: BoxDecoration(
                               color: Colors.grey[300],
                               borderRadius: BorderRadius.circular(20),
@@ -183,7 +229,7 @@ class AvailableCellPage extends StatelessWidget {
 
                     // Contact Details
                     Container(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       margin: const EdgeInsets.symmetric(vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -193,65 +239,185 @@ class AvailableCellPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          const Text(
+                            'Contact Details',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+
+                          // First Row: First Name & Last Name
                           Row(
                             children: [
-                              const Text(
-                                'Contact Details',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: _firstNameController,
+                                      decoration: InputDecoration(
+                                        labelText: 'First Name *',
+                                        labelStyle: TextStyle(
+                                          color: _firstNameError != null
+                                              ? Colors.red
+                                              : null,
+                                        ),
+                                        border: OutlineInputBorder(),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: _firstNameError != null
+                                                ? Colors.red
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: _firstNameError != null
+                                                ? Colors.red
+                                                : Colors.blue,
+                                          ),
+                                        ),
+                                        helperText: ' ',
+                                      ),
+                                    ),
+                                    if (_firstNameError != null)
+                                      Transform.translate(
+                                        offset: const Offset(0, -20),
+                                        child: Text(
+                                          _firstNameError!,
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
-                              const Spacer(),
-                              TextButton(
-                                onPressed: () {},
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: const [
-                                    Icon(Icons.edit, size: 16),
-                                    SizedBox(width: 5),
-                                    Text('Edit Information'),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: _lastNameController,
+                                      decoration: InputDecoration(
+                                        labelText: 'Last Name *',
+                                        labelStyle: TextStyle(
+                                          color: _lastNameError != null
+                                              ? Colors.red
+                                              : null,
+                                        ),
+                                        border: OutlineInputBorder(),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: _lastNameError != null
+                                                ? Colors.red
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: _lastNameError != null
+                                                ? Colors.red
+                                                : Colors.blue,
+                                          ),
+                                        ),
+                                        helperText: ' ',
+                                      ),
+                                    ),
+                                    if (_lastNameError != null)
+                                      Transform.translate(
+                                        offset: const Offset(0, -20),
+                                        child: Text(
+                                          _lastNameError!,
+                                          style: const TextStyle(
+                                            color: Colors.red,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
                                   ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
+                          // const SizedBox(height: 20),
+                          // Second Row: Phone Number & Email
                           Row(
                             children: [
                               Expanded(
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'First Name *',
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: _phoneController,
+                                      keyboardType: TextInputType.phone,
+                                      decoration: InputDecoration(
+                                        labelText: 'Phone Number *',
+                                        labelStyle: TextStyle(
+                                          color: _phoneError != null
+                                              ? Colors.red
+                                              : null,
+                                        ),
+                                        border: const OutlineInputBorder(),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: _phoneError != null
+                                                ? Colors.red
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: _phoneError != null
+                                                ? Colors.red
+                                                : Colors.blue,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    SizedBox(
+                                      height: 16,
+                                      child: Text(
+                                        _phoneError ??
+                                            ' ', // Show error or blank space
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(width: 10),
                               Expanded(
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Last Name *',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Phone Number *',
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: TextField(
-                                  decoration: const InputDecoration(
-                                    labelText: 'Email (Optional)',
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextField(
+                                      controller: _emailController,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Email (Optional)',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    const SizedBox(
+                                      height: 16,
+                                      child: Text(
+                                        ' ', // Invisible placeholder for alignment
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.transparent,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -263,7 +429,7 @@ class AvailableCellPage extends StatelessWidget {
                     // Booking Details
                     Container(
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                      margin: const EdgeInsets.only(bottom: 30),
+                      margin: const EdgeInsets.only(bottom: 15),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(20),
@@ -328,7 +494,7 @@ class AvailableCellPage extends StatelessWidget {
                                   child: Text(
                                     DateFormat(
                                       'MMMM d, yyyy',
-                                    ).format(checkInDate).toUpperCase(),
+                                    ).format(widget.checkInDate).toUpperCase(),
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w500,
@@ -368,7 +534,7 @@ class AvailableCellPage extends StatelessWidget {
                                   child: Text(
                                     DateFormat(
                                       'MMMM d, yyyy',
-                                    ).format(checkOutDate).toUpperCase(),
+                                    ).format(widget.checkOutDate).toUpperCase(),
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w500,
@@ -409,7 +575,7 @@ class AvailableCellPage extends StatelessWidget {
                                         color: Colors.white,
                                       ),
                                       child: Text(
-                                        roomNumber,
+                                        widget.roomNumber,
                                         style: const TextStyle(
                                           fontSize: 14,
                                           color: Colors.black87,
@@ -482,7 +648,7 @@ class AvailableCellPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () => Navigator.pop(context),
                             style: OutlinedButton.styleFrom(
                               backgroundColor: const Color(0xFFFFFBF1),
                               foregroundColor: const Color(0xFF0F0F0F),
@@ -497,7 +663,7 @@ class AvailableCellPage extends StatelessWidget {
                         const SizedBox(width: 10),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () {},
+                            onPressed: _handleContinue,
                             style: OutlinedButton.styleFrom(
                               backgroundColor: const Color(0xFFFDD41A),
                               foregroundColor: const Color(0xFF0F0F0F),
