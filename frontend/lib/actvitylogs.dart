@@ -191,7 +191,7 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                   height: 70,
                   padding: const EdgeInsets.only(top: 20),
                   alignment: Alignment.center,
-                  color: const Color(0xFFFFF1AB),
+                  color: const Color(0xFFFFFBF2), //AL bg
                   child: const Text(
                     'Activity Logs',
                     style: TextStyle(
@@ -207,7 +207,7 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                       horizontal: 24,
                       vertical: 16,
                     ),
-                    color: const Color(0xFFFFF1AB),
+                    color: const Color(0xFFFFFBF2), //AL body bg
                     child: Column(
                       children: [
                         Row(
@@ -249,11 +249,21 @@ class _ActivityLogsPageState extends State<ActivityLogsPage> {
                             ),
                           ],
                         ),
-                        const Divider(),
+                        const Divider(
+                          color: Color(0xFF291F16),
+                          thickness: 0.8,
+                          height: 20,
+                        ),
+
                         Expanded(
                           child: ListView.separated(
                             itemCount: logs.length,
-                            separatorBuilder: (_, __) => const Divider(),
+                            // Use ListView.separated for better performance
+                            separatorBuilder: (_, __) => const Divider(
+                              color: Color(0xFF291F16),
+                              thickness: 0.8,
+                              height: 20,
+                            ),
                             itemBuilder: (context, index) {
                               final log = logs[index];
                               return Row(

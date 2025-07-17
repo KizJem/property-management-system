@@ -67,7 +67,7 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
                 _buildHeader('Guest Records'),
                 Expanded(
                   child: Container(
-                    color: const Color(0xFFFFF1AB),
+                    color: const Color(0xFFFFFBF2), //GR body bg
                     padding: const EdgeInsets.symmetric(
                       horizontal: 24,
                       vertical: 16,
@@ -75,11 +75,19 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
                     child: Column(
                       children: [
                         _buildTableHeaders(),
-                        const Divider(),
+                        const Divider(
+                          color: Color(0xFF291F16),
+                          thickness: 0.8,
+                          height: 20,
+                        ),
                         Expanded(
                           child: ListView.separated(
                             itemCount: guests.length,
-                            separatorBuilder: (_, __) => const Divider(),
+                            separatorBuilder: (_, __) => const Divider(
+                              color: Color(0xFF291F16),
+                              thickness: 0.8,
+                              height: 20,
+                            ),
                             itemBuilder: (context, index) {
                               final guest = guests[index];
                               return _buildGuestRow(guest);
@@ -202,7 +210,7 @@ class _GuestRecordsPageState extends State<GuestRecordsPage> {
       height: 70,
       padding: const EdgeInsets.only(top: 20),
       alignment: Alignment.center,
-      color: const Color(0xFFFFF1AB),
+      color: const Color(0xFFFFFBF2), //GR bg
       child: Text(
         title,
         style: const TextStyle(
