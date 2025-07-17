@@ -1,5 +1,3 @@
-// lib/roomdetails.dart
-
 import 'package:flutter/material.dart';
 import 'availablecell.dart';
 
