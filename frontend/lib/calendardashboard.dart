@@ -4,13 +4,20 @@ import 'availablecell.dart';
 import 'occupiedcell.dart';
 import 'reservecell.dart';
 
+// CalendarDashboard is a stateful widget that displays a calendar view of room bookings.
 class CalendarDashboard extends StatefulWidget {
+  // List of dates with metadata (used to display calendar columns).
   final List<Map<String, String>> dates;
+  // Mapping of room types to list of room numbers.
   final Map<String, List<String>> rooms;
+  // The current month being viewed.
   final int currentMonth;
+  // The current year being viewed.
   final int currentYear;
+  // The name of the currently logged-in student.
   final String studentName;
 
+  // Constructor for CalendarDashboard that takes dates, rooms, current month/year, and student name.
   const CalendarDashboard({
     Key? key,
     required this.dates,
@@ -18,20 +25,25 @@ class CalendarDashboard extends StatefulWidget {
     required this.currentMonth,
     required this.currentYear,
     required this.studentName,
+    // Call to superclass constructor with the given key.
   }) : super(key: key);
 
   @override
+  // Creates the mutable state for the CalendarDashboard widget.
   State<CalendarDashboard> createState() => _CalendarDashboardState();
 
   @override
+  // Adds diagnostic properties for debugging (useful in development tools).
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
+    // Adding 'dates' and 'rooms' to diagnostics for debug inspection.
     properties.add(
       IterableProperty<String>(
         'dates',
         dates.map((e) => e['date'] ?? '').toList(),
       ),
     );
+    // Adding 'dates' and 'rooms' to diagnostics for debug inspection.
     properties.add(
       DiagnosticsProperty<Map<String, List<String>>>('rooms', rooms),
     );
@@ -43,19 +55,33 @@ enum Mode { bookRooms, housekeeping }
 
 const Map<String, Map<String, dynamic>> roomStatusMap = {
   // AVAILABLE
-  'VC': {'color': Color(0xFF13C06D), 'label': 'Vacant Clean'},
-  'VD': {'color': Color(0xFF79511C), 'label': 'Vacant Dirty'},
-  'VR': {'color': Color(0xFF29C8E6), 'label': 'Vacant Ready'},
+  'VD': {
+    'color': Color(0xFF79511C),
+    'label': 'Vacant Dirty',
+  }, // #79511C (brown)
+  'VR': {'color': Color(0xFF307FCF), 'label': 'Vacant Ready'}, // #307FCF (blue)
   // OCCUPIED
-  'OC': {'color': Color(0xFFC495FF), 'label': 'Occupied Clean'},
-  'OD': {'color': Color(0xFF020249), 'label': 'Occupied Dirty'},
+  'OC': {
+    'color': Color(0xFFCBECE6),
+    'label': 'Occupied Clean',
+  }, // #CBECE6 (light aqua)
+  'OD': {
+    'color': Color(0xFF074B0C),
+    'label': 'Occupied Dirty',
+  }, // #074B0C (dark green)
   // UNAVAILABLE
-  'OOO': {'color': Color(0xFFE0373C), 'label': 'Out of Order'},
-  'CO': {'color': Color(0xFF33B678), 'label': 'Check Out'},
-  'BLO': {'color': Color(0xFF222222), 'label': 'Blocked'},
-  'HU': {'color': Color(0xFFFFD231), 'label': 'House Use'},
+  'OOO': {
+    'color': Color(0xFF171300),
+    'label': 'Out of Order',
+  }, // #171300 (dark brown)
+  'BLO': {
+    'color': Color(0xFFFFF1AB),
+    'label': 'Blocked',
+  }, // #FFF1AB (light yellow)
+  'HU': {'color': Color(0xFFFDD41A), 'label': 'House Use'}, // #FDD41A (yellow)
 };
 
+// _CalendarDashboardState holds the UI and logic for the calendar view including mode switching and booking interactions.
 class _CalendarDashboardState extends State<CalendarDashboard> {
   // Default mode is booking rooms
   Mode _mode = Mode.bookRooms;
@@ -1003,7 +1029,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
               // Booking range highlight
               final isBookingSelected =
-                  _mode == Mode.bookRooms &&
+                  // _mode == Mode.bookRooms &&
                   bookingStart != null &&
                   bookingEnd != null &&
                   i >= bookingStart &&
@@ -1359,12 +1385,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   }
 
   @override
+  // Adds diagnostic properties for debugging (useful in development tools).
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
+    // Adding 'dates' and 'rooms' to diagnostics for debug inspection.
     properties.add(
       DiagnosticsProperty<bool>('_sidebarExpanded', _sidebarExpanded),
     );
+    // Adding 'dates' and 'rooms' to diagnostics for debug inspection.
     properties.add(DoubleProperty('_sidebarWidth', _sidebarWidth));
+    // Adding 'dates' and 'rooms' to diagnostics for debug inspection.
     properties.add(
       DoubleProperty('_sidebarCollapsedWidth', _sidebarCollapsedWidth),
     );
