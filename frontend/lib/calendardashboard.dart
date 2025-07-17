@@ -557,14 +557,14 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             children: [
               // --- Fixed Mode Toggle Header (Always Top Right)
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 1),
+                padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
                     vertical: 10,
                   ),
                   width: double.infinity,
-                  color: Colors.white,
+                  color: const Color(0xFFFEF7FF),
                   child: Row(
                     children: [
                       const Spacer(),
