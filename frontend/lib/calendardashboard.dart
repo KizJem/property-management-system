@@ -1112,20 +1112,22 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
               return MouseRegion(
                 cursor:
-                    ((_mode == Mode.bookRooms && statusCode == 'VR') ||
+                    ((_mode == Mode.bookRooms &&
+                            (statusCode == null || statusCode == 'VR')) ||
                         _mode == Mode.housekeeping)
                     ? SystemMouseCursors.click
                     : SystemMouseCursors.basic,
                 child: GestureDetector(
                   onTap:
-                      ((_mode == Mode.bookRooms && statusCode == 'VR') ||
+                      ((_mode == Mode.bookRooms &&
+                              (statusCode == null || statusCode == 'VR')) ||
                           _mode == Mode.housekeeping)
                       ? () => _onCellTap(title, room, i)
                       : null,
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      // Booking range highlight block (only on first cell)
+                      // Booking range highlight block
                       if (isMergedBookingRangeStart)
                         Positioned(
                           left: 0,
@@ -1147,7 +1149,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // Housekeeping preview highlight block (only on first cell of preview)
+                      // Housekeeping preview range highlight
                       if (isHKPreview &&
                           hkPreviewStart != null &&
                           hkPreviewEnd != null &&
@@ -1168,8 +1170,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // Housekeeping merged block (only on first cell)
-                      if (isMergedHKRangeStart)
+                      // Housekeeping status highlight (only if NOT VR)
+                      if (isMergedHKRangeStart && statusCode != 'VR')
                         Positioned(
                           left: 0,
                           top: 0,
@@ -1198,15 +1200,11 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // The normal cell container for borders and default background
+                      // ✅ Base cell (always present)
                       Container(
                         width: 80,
                         height: 50,
                         decoration: BoxDecoration(
-                          color:
-                              (isBookingSelected && !isMergedBookingRangeStart)
-                              ? Colors.transparent
-                              : null,
                           border: noBorder
                               ? null
                               : Border(
