@@ -85,13 +85,143 @@ class AvailableCellPageState extends State<AvailableCellPage> {
     if (_firstNameError == null &&
         _lastNameError == null &&
         _phoneError == null) {
-      final email = _emailController.text.trim();
-      final firstName = _firstNameController.text.trim();
-      final lastName = _lastNameController.text.trim();
-      final phone = _phoneController.text.trim();
+      final fullName =
+          '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
+      final guests = '1';
+      final specialRequest = 'None';
+      final price = roomDetails[widget.roomType]?.price ?? '₱0';
+      final checkInFormatted = DateFormat.yMMMMd().format(widget.checkInDate);
+      final checkOutFormatted = DateFormat.yMMMMd().format(widget.checkOutDate);
 
-      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: Colors.white,
+          content: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 24.0,
+              horizontal: 24.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Confirm this reservation?',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 24),
+                _buildRow(Icons.person, 'Guest Name', fullName),
+                _buildRow(
+                  Icons.date_range,
+                  'Arrival & Departure Dates',
+                  '$checkInFormatted - $checkOutFormatted',
+                ),
+                _buildRow(Icons.people, 'No. of Guests', guests),
+                _buildRow(
+                  Icons.meeting_room,
+                  'Room',
+                  'NO. ${widget.roomNumber.toUpperCase()}',
+                ),
+                _buildRow(Icons.price_change, 'Price', price.toUpperCase()),
+                _buildRow(Icons.notes, 'Special Requests', specialRequest),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 220,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          side: const BorderSide(color: Colors.black),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    SizedBox(
+                      width: 220,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child: const Text(
+                          'Confirm Booking',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
+  }
+
+  Widget _buildRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: Colors.black87),
+          const SizedBox(width: 12),
+          // Label + colon aligned
+          SizedBox(
+            width: 220, // Adjust width based on your longest label
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  ),
+                ),
+                const Text(
+                  " :",
+                  style: TextStyle(fontSize: 15, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Value
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
