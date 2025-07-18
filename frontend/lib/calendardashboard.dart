@@ -564,7 +564,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     vertical: 10,
                   ),
                   width: double.infinity,
-                  color: const Color(0xFFFEF7FF),
+                  color: const Color(0xFFFFF1AB),
                   child: Row(
                     children: [
                       const Spacer(),
@@ -1089,7 +1089,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   isBookingSelected && i == bookingStart;
 
               bool noBorder =
-                  isInsideMergedHKRange || isBookingSelected || isHKPreview;
+                  (isInsideMergedHKRange && statusCode != 'VR') ||
+                  isBookingSelected ||
+                  (isHKPreview && statusCode != 'VR');
 
               BorderRadius? bookingCellRadius;
               if (isBookingSelected) {
@@ -1137,14 +1139,15 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.yellow[300],
-                              borderRadius: BorderRadius.horizontal(
+                              borderRadius: BorderRadius.circular(16),
+                              /*borderRadius: BorderRadius.horizontal(
                                 left: bookingStart == i
                                     ? cornerRadius
                                     : Radius.zero,
                                 right: bookingEnd == i
                                     ? cornerRadius
                                     : Radius.zero,
-                              ),
+                              ),*/
                             ),
                           ),
                         ),
@@ -1153,7 +1156,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       if (isHKPreview &&
                           hkPreviewStart != null &&
                           hkPreviewEnd != null &&
-                          i == hkPreviewStart)
+                          i == hkPreviewStart &&
+                          (statusCode == null || statusCode != 'VR'))
                         Positioned(
                           left: 0,
                           top: 0,
@@ -1171,7 +1175,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
 
                       // Housekeeping status highlight (only if NOT VR)
-                      if (isMergedHKRangeStart && statusCode != 'VR')
+                      if (isMergedHKRangeStart &&
+                          statusCode != null &&
+                          statusCode != 'VR')
                         Positioned(
                           left: 0,
                           top: 0,
