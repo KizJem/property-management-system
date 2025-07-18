@@ -1089,7 +1089,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   isBookingSelected && i == bookingStart;
 
               bool noBorder =
-                  isInsideMergedHKRange || isBookingSelected || isHKPreview;
+                  (isInsideMergedHKRange && statusCode != 'VR') ||
+                  isBookingSelected ||
+                  isHKPreview;
 
               BorderRadius? bookingCellRadius;
               if (isBookingSelected) {
@@ -1171,7 +1173,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
 
                       // Housekeeping status highlight (only if NOT VR)
-                      if (isMergedHKRangeStart && statusCode != 'VR')
+                      if (isMergedHKRangeStart &&
+                          statusCode != null &&
+                          statusCode != 'VR')
                         Positioned(
                           left: 0,
                           top: 0,
