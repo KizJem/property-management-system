@@ -60,6 +60,7 @@ class AvailableCellPage extends StatefulWidget {
 }
 
 class AvailableCellPageState extends State<AvailableCellPage> {
+  int _selectedGuests = 1;
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _phoneController = TextEditingController();
@@ -87,7 +88,8 @@ class AvailableCellPageState extends State<AvailableCellPage> {
         _phoneError == null) {
       final fullName =
           '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
-      final guests = '1';
+      final guests = _selectedGuests.toString();
+
       final specialRequest = 'None';
       final price = roomDetails[widget.roomType]?.price ?? '₱0';
       final checkInFormatted = DateFormat.yMMMMd().format(widget.checkInDate);
@@ -829,7 +831,8 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                 child: SizedBox(
                                   height: 40,
                                   child: DropdownButtonFormField<int>(
-                                    value: 1,
+                                    value:
+                                        _selectedGuests, // <-- bound to state
                                     icon: const Icon(Icons.arrow_drop_down),
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
@@ -854,8 +857,14 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                         );
                                       },
                                     ),
-
-                                    onChanged: (value) {},
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _selectedGuests =
+                                              value; // <-- update state
+                                        });
+                                      }
+                                    },
                                   ),
                                 ),
                               ),
