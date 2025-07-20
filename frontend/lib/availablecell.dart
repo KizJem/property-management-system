@@ -65,6 +65,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
   final lastNameController = TextEditingController();
   final phoneController = TextEditingController();
   final emailController = TextEditingController();
+  final specialRequestController = TextEditingController();
 
   String? firstNameError;
   String? lastNameError;
@@ -109,7 +110,10 @@ class AvailableCellPageState extends State<AvailableCellPage> {
           '${firstNameController.text.trim()} ${lastNameController.text.trim()}';
       final guests = selectedGuests.toString();
 
-      final specialRequest = 'None';
+      // final specialRequest = 'None';
+      final specialRequest = specialRequestController.text.trim().isEmpty
+          ? 'None'
+          : specialRequestController.text.trim();
       final price = roomDetails[widget.roomType]?.price ?? '₱0';
       final checkInFormatted = DateFormat.yMMMMd().format(widget.checkInDate);
       final checkOutFormatted = DateFormat.yMMMMd().format(widget.checkOutDate);
@@ -251,6 +255,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
     lastNameController.dispose();
     phoneController.dispose();
     emailController.dispose();
+    specialRequestController.dispose();
     super.dispose();
   }
 
@@ -933,6 +938,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                     ),
                     const SizedBox(height: 6),
                     TextField(
+                      controller: specialRequestController,
                       decoration: InputDecoration(
                         hintText: 'Note special requests here.',
                         hintStyle: const TextStyle(color: Colors.black38),
