@@ -72,15 +72,36 @@ class AvailableCellPageState extends State<AvailableCellPage> {
 
   void _handleContinue() {
     setState(() {
-      _firstNameError = _firstNameController.text.trim().isEmpty
+      final nameRegex = RegExp(r'^[a-zA-Z\s]+$');
+      final phoneRegex = RegExp(r'^\d+$');
+      final emailRegex = RegExp(r'^[a-zA-Z0-9@.\s]+$');
+
+      String firstName = _firstNameController.text.trim();
+      String lastName = _lastNameController.text.trim();
+      String phone = _phoneController.text.trim();
+      String email = _emailController.text.trim();
+
+      _firstNameError = firstName.isEmpty
           ? 'Please enter first name'
-          : null;
-      _lastNameError = _lastNameController.text.trim().isEmpty
+          : (!nameRegex.hasMatch(firstName) ? 'Please enter characters' : null);
+
+      _lastNameError = lastName.isEmpty
           ? 'Please enter last name'
-          : null;
-      _phoneError = _phoneController.text.trim().isEmpty
+          : (!nameRegex.hasMatch(lastName) ? 'Please enter characters' : null);
+
+      _phoneError = phone.isEmpty
           ? 'Please enter phone number'
-          : null;
+          : (!phoneRegex.hasMatch(phone) ? 'Please enter number' : null);
+
+      // Optional email validation if not empty
+      if (email.isNotEmpty && !emailRegex.hasMatch(email)) {
+        _emailController.clear(); // Optional: reset invalid input
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email must only contain valid characters'),
+          ),
+        );
+      }
     });
 
     if (_firstNameError == null &&
