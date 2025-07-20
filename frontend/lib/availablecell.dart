@@ -60,15 +60,15 @@ class AvailableCellPage extends StatefulWidget {
 }
 
 class AvailableCellPageState extends State<AvailableCellPage> {
-  int _selectedGuests = 1;
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
+  int selectedGuests = 1;
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
 
-  String? _firstNameError;
-  String? _lastNameError;
-  String? _phoneError;
+  String? firstNameError;
+  String? lastNameError;
+  String? phoneError;
 
   void _handleContinue() {
     setState(() {
@@ -76,26 +76,26 @@ class AvailableCellPageState extends State<AvailableCellPage> {
       final phoneRegex = RegExp(r'^\d+$');
       final emailRegex = RegExp(r'^[a-zA-Z0-9@.\s]+$');
 
-      String firstName = _firstNameController.text.trim();
-      String lastName = _lastNameController.text.trim();
-      String phone = _phoneController.text.trim();
-      String email = _emailController.text.trim();
+      String firstName = firstNameController.text.trim();
+      String lastName = lastNameController.text.trim();
+      String phone = phoneController.text.trim();
+      String email = emailController.text.trim();
 
-      _firstNameError = firstName.isEmpty
+      firstNameError = firstName.isEmpty
           ? 'Please enter first name'
           : (!nameRegex.hasMatch(firstName) ? 'Please enter characters' : null);
 
-      _lastNameError = lastName.isEmpty
+      lastNameError = lastName.isEmpty
           ? 'Please enter last name'
           : (!nameRegex.hasMatch(lastName) ? 'Please enter characters' : null);
 
-      _phoneError = phone.isEmpty
+      phoneError = phone.isEmpty
           ? 'Please enter phone number'
           : (!phoneRegex.hasMatch(phone) ? 'Please enter number' : null);
 
       // Optional email validation if not empty
       if (email.isNotEmpty && !emailRegex.hasMatch(email)) {
-        _emailController.clear(); // Optional: reset invalid input
+        emailController.clear(); // Optional: reset invalid input
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Email must only contain valid characters'),
@@ -104,12 +104,10 @@ class AvailableCellPageState extends State<AvailableCellPage> {
       }
     });
 
-    if (_firstNameError == null &&
-        _lastNameError == null &&
-        _phoneError == null) {
+    if (firstNameError == null && lastNameError == null && phoneError == null) {
       final fullName =
-          '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
-      final guests = _selectedGuests.toString();
+          '${firstNameController.text.trim()} ${lastNameController.text.trim()}';
+      final guests = selectedGuests.toString();
 
       final specialRequest = 'None';
       final price = roomDetails[widget.roomType]?.price ?? '₱0';
@@ -249,10 +247,10 @@ class AvailableCellPageState extends State<AvailableCellPage> {
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 
@@ -479,7 +477,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 40,
                                 child: TextField(
-                                  controller: _firstNameController,
+                                  controller: firstNameController,
                                   decoration: InputDecoration(
                                     hintText: "Enter guest’s first name",
                                     hintStyle: const TextStyle(
@@ -498,7 +496,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                        color: _firstNameError != null
+                                        color: firstNameError != null
                                             ? Colors.red
                                             : Colors.black26,
                                       ),
@@ -506,7 +504,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                        color: _firstNameError != null
+                                        color: firstNameError != null
                                             ? Colors.red
                                             : Colors.black87,
                                       ),
@@ -519,7 +517,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 16,
                                 child: Text(
-                                  _firstNameError ?? ' ',
+                                  firstNameError ?? ' ',
                                   style: const TextStyle(
                                     color: Colors.red,
                                     fontSize: 10,
@@ -550,7 +548,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 40,
                                 child: TextField(
-                                  controller: _lastNameController,
+                                  controller: lastNameController,
                                   decoration: InputDecoration(
                                     hintText: "Enter guest’s last name",
                                     hintStyle: const TextStyle(
@@ -569,7 +567,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                        color: _lastNameError != null
+                                        color: lastNameError != null
                                             ? Colors.red
                                             : Colors.black26,
                                       ),
@@ -577,7 +575,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                        color: _lastNameError != null
+                                        color: lastNameError != null
                                             ? Colors.red
                                             : Colors.black87,
                                       ),
@@ -590,7 +588,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 16,
                                 child: Text(
-                                  _lastNameError ?? ' ',
+                                  lastNameError ?? ' ',
                                   style: const TextStyle(
                                     color: Colors.red,
                                     fontSize: 10,
@@ -626,7 +624,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 40,
                                 child: TextField(
-                                  controller: _phoneController,
+                                  controller: phoneController,
                                   keyboardType: TextInputType.phone,
                                   decoration: InputDecoration(
                                     hintText: "Enter guest’s phone number",
@@ -646,7 +644,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     enabledBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                        color: _phoneError != null
+                                        color: phoneError != null
                                             ? Colors.red
                                             : Colors.black26,
                                       ),
@@ -654,7 +652,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     focusedBorder: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
                                       borderSide: BorderSide(
-                                        color: _phoneError != null
+                                        color: phoneError != null
                                             ? Colors.red
                                             : Colors.black87,
                                       ),
@@ -667,7 +665,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 16,
                                 child: Text(
-                                  _phoneError ?? ' ',
+                                  phoneError ?? ' ',
                                   style: const TextStyle(
                                     color: Colors.red,
                                     fontSize: 10,
@@ -701,7 +699,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                               SizedBox(
                                 height: 40,
                                 child: TextField(
-                                  controller: _emailController,
+                                  controller: emailController,
                                   keyboardType: TextInputType.emailAddress,
                                   decoration: InputDecoration(
                                     hintText: "Enter guest’s email address",
@@ -852,8 +850,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                 child: SizedBox(
                                   height: 40,
                                   child: DropdownButtonFormField<int>(
-                                    value:
-                                        _selectedGuests, // <-- bound to state
+                                    value: selectedGuests, // <-- bound to state
                                     icon: const Icon(Icons.arrow_drop_down),
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
@@ -881,7 +878,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                                     onChanged: (value) {
                                       if (value != null) {
                                         setState(() {
-                                          _selectedGuests =
+                                          selectedGuests =
                                               value; // <-- update state
                                         });
                                       }
