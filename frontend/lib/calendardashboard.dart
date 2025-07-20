@@ -85,87 +85,43 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     final monthName = _monthAbbr(date.month);
     return "$day $monthName ${date.year}";
   }
-
+  int get _currentStartDay => _currentStartDate.day;
   bool _sidebarExpanded = false;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
+  // Track selected start date (for calendar display)
+  late DateTime _currentStartDate;
+
   int _selectedMonth = DateTime.now().month; // 1-based for DateTime
   int _selectedYear = DateTime.now().year;
-  void _showMonthYearPicker(BuildContext context) async {
-    int tempMonth = _selectedMonth;
-    int tempYear = _selectedYear;
-    await showDialog(
-      context: context,
-      builder: (ctx) {
-        int tempMonth = _selectedMonth;
-        int tempYear = _selectedYear;
 
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              title: const Text('Select Month and Year'),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DropdownButton<int>(
-                    value: tempMonth,
-                    items: List.generate(12, (i) {
-                      return DropdownMenuItem(
-                        value: i + 1,
-                        child: Text(_monthAbbr(i + 1)),
-                      );
-                    }),
-                    onChanged: (val) {
-                      if (val != null) {
-                        setStateDialog(() {
-                          tempMonth = val;
-                        });
-                      }
-                    },
-                  ),
-                  const SizedBox(width: 12),
-                  DropdownButton<int>(
-                    value: tempYear,
-                    items: List.generate(10, (i) {
-                      final year = DateTime.now().year - 5 + i;
-                      return DropdownMenuItem(
-                        value: year,
-                        child: Text(year.toString()),
-                      );
-                    }),
-                    onChanged: (val) {
-                      if (val != null) {
-                        setStateDialog(() {
-                          tempYear = val;
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedMonth = tempMonth;
-                      _selectedYear = tempYear;
-                    });
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text('Apply'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+  @override
+  void initState() {
+    super.initState();
+    _selectedMonth = widget.currentMonth;
+    _selectedYear = widget.currentYear;
+
+    _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
   }
 
+  // Generate list of dates from _currentStartDate for 30 days
+  List<Map<String, String>> _generateDatesFromStartDate(DateTime startDate, int daysToShow) {
+    return List.generate(daysToShow, (i) {
+      final date = startDate.add(Duration(days: i));
+      return {
+        'weekday': ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7],
+        'date': "${_monthAbbr(date.month)} ${date.day}",
+      };
+    });
+  }
+  
+  String _monthAbbr(int month) {
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    ];
+    return months[month - 1];
+  }
   // Add these scroll controllers
   final ScrollController _horizontalScrollController = ScrollController();
   final ScrollController _verticalScrollController = ScrollController();
@@ -175,13 +131,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     _horizontalScrollController.dispose();
     _verticalScrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedMonth = widget.currentMonth;
-    _selectedYear = widget.currentYear;
   }
 
   void _goToToday() {
@@ -231,27 +180,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
       };
     });
   }
-
-  String _monthAbbr(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return months[month - 1];
-  }
-
-  final int _currentStartDay = 1;
-  // Remove days to show limit: show all days in the month
 
   // Add state for booking selection
   Map<String, int?> _selectedStart = {};
@@ -540,14 +468,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     }
   }
 
-  @override
+   @override
   Widget build(BuildContext context) {
-    final daysInMonth = DateTime(_selectedYear, _selectedMonth + 1, 0).day;
-    final dates = _generateDatesForMonth(
-      _selectedYear,
-      _selectedMonth,
-      daysToShow: daysInMonth,
-    );
+    // Generate 30 days from selected start date
+    final dates = _generateDatesFromStartDate(_currentStartDate, 30);
 
     final mainContent = LayoutBuilder(
       builder: (context, constraints) {
@@ -559,15 +483,65 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 0),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 10,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   width: double.infinity,
                   color: const Color(0xFFFFF1AB),
                   child: Row(
                     children: [
                       const Spacer(),
+
+                      // DATE PICKER BUTTON replacing month-year filter
+                      Container(
+                        width: 300,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            right: BorderSide(
+                              color: Colors.black26,
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[100],
+                            foregroundColor: Colors.black87,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.calendar_today,
+                            color: Colors.black54,
+                          ),
+                          label: Text(
+                            "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: _currentStartDate,
+                              firstDate: DateTime(_selectedYear - 5),
+                              lastDate: DateTime(_selectedYear + 5),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                _currentStartDate = selectedDate;
+                                _selectedYear = selectedDate.year;
+                                _selectedMonth = selectedDate.month;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+
+                      // Mode toggles
                       Radio<Mode>(
                         value: Mode.bookRooms,
                         groupValue: _mode,
@@ -606,316 +580,291 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 ),
               ),
 
-              // --- Horizontal Scroll for Date Headers and Calendar
-              Expanded(
-                child: SingleChildScrollView(
-                  controller: _horizontalScrollController,
-                  scrollDirection: Axis.horizontal,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // --- Date Headers Row
-                      Row(
-                        children: [
-                          Container(
-                            width: 300,
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors.black26,
-                                  width: 2,
-                                ),
+            // --- Horizontal Scroll for Date Headers and Calendar
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _horizontalScrollController,
+                scrollDirection: Axis.horizontal,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // --- Date Headers Row
+                    Row(
+                      children: [
+                        Container(
+                          width: 300,
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(
+                            border: Border(
+                              right: BorderSide(
+                                color: Colors.black26,
+                                width: 2,
                               ),
-                            ),
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[100],
-                                foregroundColor: Colors.black87,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              icon: const Icon(
-                                Icons.filter_list,
-                                color: Colors.black54,
-                              ),
-                              label: Text(
-                                "${_monthAbbr(_selectedMonth)} $_selectedYear",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              onPressed: () => _showMonthYearPicker(context),
                             ),
                           ),
-                          ...dates.map((dateMap) {
-                            return Container(
-                              width: 80,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: Colors.grey.shade300,
-                                  ),
+                          child: const SizedBox(), // Empty space for room column
+                        ),
+                        ...dates.map((dateMap) {
+                          return Container(
+                            width: 80,
+                            height: 56,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              border: Border(
+                                right: BorderSide(
+                                  color: Colors.grey.shade300,
+                                ),
+                                bottom: BorderSide(
+                                  color: Colors.grey.shade300,
                                 ),
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    dateMap['weekday'] ?? '',
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    dateMap['date']?.split(' ').last ?? '',
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                        ],
-                      ),
-
-                      // --- Scrollable Room Rows
-                      Expanded(
-                        child: Scrollbar(
-                          controller: _verticalScrollController,
-                          thumbVisibility: true,
-                          child: SingleChildScrollView(
-                            controller: _verticalScrollController,
-                            scrollDirection: Axis.vertical,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                // Room Types Column
-                                Container(
-                                  width: 300,
-                                  child: Column(
-                                    children: [
-                                      _buildRoomColumn('STANDARD SINGLE ROOMS'),
-                                      _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
-                                      _buildRoomColumn('STANDARD DOUBLE ROOMS'),
-                                      _buildRoomColumn('DELUXE ROOMS'),
-                                      _buildRoomColumn('FAMILY ROOMS'),
-                                      _buildRoomColumn('EXECUTIVE ROOMS'),
-                                      _buildRoomColumn('SUITE ROOMS'),
-                                    ],
+                                Text(
+                                  dateMap['weekday'] ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
                                   ),
                                 ),
-                                // Date Cells
-                                Column(
-                                  children: [
-                                    _buildDateRows(
-                                      'STANDARD SINGLE ROOMS',
-                                      dates,
-                                    ),
-                                    _buildDateRows(
-                                      'SUPERIOR SINGLE ROOMS',
-                                      dates,
-                                    ),
-                                    _buildDateRows(
-                                      'STANDARD DOUBLE ROOMS',
-                                      dates,
-                                    ),
-                                    _buildDateRows('DELUXE ROOMS', dates),
-                                    _buildDateRows('FAMILY ROOMS', dates),
-                                    _buildDateRows('EXECUTIVE ROOMS', dates),
-                                    _buildDateRows('SUITE ROOMS', dates),
-                                  ],
+                                const SizedBox(height: 2),
+                                Text(
+                                  dateMap['date']?.split(' ').last ?? '',
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontSize: 15,
+                                  ),
                                 ),
                               ],
                             ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+
+                    // --- Scrollable Room Rows
+                    Expanded(
+                      child: Scrollbar(
+                        controller: _verticalScrollController,
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          controller: _verticalScrollController,
+                          scrollDirection: Axis.vertical,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Room Types Column
+                              Container(
+                                width: 300,
+                                child: Column(
+                                  children: [
+                                    _buildRoomColumn('STANDARD SINGLE ROOMS'),
+                                    _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
+                                    _buildRoomColumn('STANDARD DOUBLE ROOMS'),
+                                    _buildRoomColumn('DELUXE ROOMS'),
+                                    _buildRoomColumn('FAMILY ROOMS'),
+                                    _buildRoomColumn('EXECUTIVE ROOMS'),
+                                    _buildRoomColumn('SUITE ROOMS'),
+                                  ],
+                                ),
+                              ),
+
+                              // Date Cells
+                              Column(
+                                children: [
+                                  _buildDateRows(
+                                    'STANDARD SINGLE ROOMS',
+                                    dates,
+                                  ),
+                                  _buildDateRows(
+                                    'SUPERIOR SINGLE ROOMS',
+                                    dates,
+                                  ),
+                                  _buildDateRows(
+                                    'STANDARD DOUBLE ROOMS',
+                                    dates,
+                                  ),
+                                  _buildDateRows('DELUXE ROOMS', dates),
+                                  _buildDateRows('FAMILY ROOMS', dates),
+                                  _buildDateRows('EXECUTIVE ROOMS', dates),
+                                  _buildDateRows('SUITE ROOMS', dates),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  return Scaffold(
+    body: Row(
+      children: [
+        Container(
+          width: _sidebarExpanded ? 180 : 60,
+          color: const Color(0xFF291F16),
+          child: Column(
+            children: [
+              // Top: Logo & Toggle
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 12,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    if (_sidebarExpanded)
+                      Image.asset(
+                        'assets/images/PMS-logo-2.png',
+                        width: 30,
+                        height: 30,
+                      ),
+                    IconButton(
+                      icon: Icon(
+                        _sidebarExpanded
+                            ? Icons.chevron_left
+                            : Icons.chevron_right,
+                        size: 20,
+                        color: Color(0xFF897249),
+                      ),
+                      onPressed: () => setState(
+                        () => _sidebarExpanded = !_sidebarExpanded,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Middle: Menu Items (takes all remaining space)
+              Expanded(
+                child: Column(
+                  children: [
+                    _buildSidebarItem(Icons.calendar_today, 'Calendar'),
+                    _buildSidebarItem(
+                      Icons.bed,
+                      'Guest Records',
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/guestrecords',
+                          arguments: {'studentName': widget.studentName},
+                        );
+                      },
+                    ),
+                    _buildSidebarItem(
+                      Icons.access_time,
+                      'Activity Logs',
+                      onTap: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          '/activitylogs',
+                          arguments: {'studentName': widget.studentName},
+                        );
+                      },
+                    ),
+                    _buildSidebarItem(
+                      Icons.check_box,
+                      'Available Cell',
+                      onTap: () {},
+                    ),
+                    _buildSidebarItem(
+                      Icons.book_online,
+                      'Reserve Cell',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ReservecellPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    _buildSidebarItem(
+                      Icons.hotel,
+                      'Occupied Cell',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const OccupiedCellPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+
+              // Bottom: User Info
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                child: Row(
+                  mainAxisAlignment: _sidebarExpanded
+                      ? MainAxisAlignment.spaceBetween
+                      : MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.account_circle,
+                      color: Color(0xFFFFFBF2),
+                      size: 20,
+                    ),
+                    if (_sidebarExpanded) ...[
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          widget.studentName, // ✅ DYNAMIC
+                          style: const TextStyle(
+                            color: Color(0xFFFFFBF2),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.logout,
+                          size: 18,
+                          color: Color(0xFF897249),
+                        ),
+                        tooltip: 'Logout',
+                        onPressed: () {
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            '/login',
+                            (route) => false,
+                          );
+                        },
+                      ),
                     ],
-                  ),
+                  ],
                 ),
               ),
             ],
           ),
-        );
-      },
-    );
+        ),
+        Expanded(child: mainContent),
+      ],
+    ),
+  );
+}
 
-    return Scaffold(
-      body: Row(
-        children: [
-          Container(
-            width: _sidebarExpanded ? 180 : 60,
-            color: const Color(0xFF291F16),
-            child: Column(
-              children: [
-                // Top: Logo & Toggle
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      if (_sidebarExpanded)
-                        Image.asset(
-                          'assets/images/PMS-logo-2.png',
-                          width: 30,
-                          height: 30,
-                        ),
-                      IconButton(
-                        icon: Icon(
-                          _sidebarExpanded
-                              ? Icons.chevron_left
-                              : Icons.chevron_right,
-                          size: 20,
-                          color: Color(0xFF897249),
-                        ),
-                        onPressed: () => setState(
-                          () => _sidebarExpanded = !_sidebarExpanded,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Middle: Menu Items (takes all remaining space)
-                Expanded(
-                  child: Column(
-                    children: [
-                      _buildSidebarItem(Icons.calendar_today, 'Calendar'),
-                      _buildSidebarItem(
-                        Icons.bed,
-                        'Guest Records',
-                        onTap: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/guestrecords',
-                            arguments: {'studentName': widget.studentName},
-                          );
-                        },
-                      ),
-                      _buildSidebarItem(
-                        Icons.access_time,
-                        'Activity Logs',
-                        onTap: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/activitylogs',
-                            arguments: {'studentName': widget.studentName},
-                          );
-                        },
-                      ),
-
-                      _buildSidebarItem(
-                        Icons.check_box,
-                        'Available Cell',
-                        onTap: () {},
-                      ),
-                      _buildSidebarItem(
-                        Icons.book_online,
-                        'Reserve Cell',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const ReservecellPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      _buildSidebarItem(
-                        Icons.hotel,
-                        'Occupied Cell',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const OccupiedCellPage(),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Bottom: User Info
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: _sidebarExpanded
-                        ? MainAxisAlignment.spaceBetween
-                        : MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.account_circle,
-                        color: Color(0xFFFFFBF2),
-                        size: 20,
-                      ),
-                      if (_sidebarExpanded) ...[
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            widget.studentName, // ✅ DYNAMIC
-                            style: const TextStyle(
-                              color: Color(0xFFFFFBF2),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.logout,
-                            size: 18,
-                            color: Color(0xFF897249),
-                          ),
-                          tooltip: 'Logout',
-                          onPressed: () {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              '/login',
-                              (route) => false,
-                            );
-                          },
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          Expanded(child: mainContent),
-        ],
-      ),
-    );
-  }
 
   Widget _buildSidebarItem(IconData icon, String title, {VoidCallback? onTap}) {
     return InkWell(
