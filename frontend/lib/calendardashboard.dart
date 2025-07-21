@@ -1049,13 +1049,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return Column(
       children: [
         // Placeholder row aligned with room header (empty)
+        // Group header row color to match left-side group header
         Row(
           children: List.generate(
             dates.length,
-            (_) =>
-                Container(width: 80, height: 40, color: Colors.grey.shade300),
+            (_) => Container(
+              width: 80,
+              height: 40,
+              color: const Color(0xFF5B3A00), // same as left group header
+            ),
           ),
         ),
+
         ...roomList.asMap().entries.map((entry) {
           final isLastRoom = entry.key == roomList.length - 1;
           final room = entry.value;
