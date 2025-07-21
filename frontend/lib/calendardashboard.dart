@@ -86,83 +86,154 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return "$day $monthName ${date.year}";
   }
 
+  int get _currentStartDay => _currentStartDate.day;
   bool _sidebarExpanded = false;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
+  // Track selected start date (for calendar display)
+  late DateTime _currentStartDate;
+
   int _selectedMonth = DateTime.now().month; // 1-based for DateTime
   int _selectedYear = DateTime.now().year;
-  void _showMonthYearPicker(BuildContext context) async {
-    int tempMonth = _selectedMonth;
-    int tempYear = _selectedYear;
-    await showDialog(
-      context: context,
-      builder: (ctx) {
-        int tempMonth = _selectedMonth;
-        int tempYear = _selectedYear;
 
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              title: const Text('Select Month and Year'),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DropdownButton<int>(
-                    value: tempMonth,
-                    items: List.generate(12, (i) {
-                      return DropdownMenuItem(
-                        value: i + 1,
-                        child: Text(_monthAbbr(i + 1)),
-                      );
-                    }),
-                    onChanged: (val) {
-                      if (val != null) {
-                        setStateDialog(() {
-                          tempMonth = val;
-                        });
-                      }
+  @override
+  void initState() {
+    super.initState();
+    _selectedMonth = widget.currentMonth;
+    _selectedYear = widget.currentYear;
+
+    _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
+    _selectedDate = _currentStartDate; // Initialize selectedDate
+  }
+
+  DateTime _selectedDate = DateTime.now();
+
+  List<DateTime> _generateDatesFromStartDate(
+    DateTime startDate,
+    int daysToShow,
+  ) {
+    return List.generate(daysToShow, (i) => startDate.add(Duration(days: i)));
+  }
+
+  String _monthAbbr(int month) {
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return months[month - 1];
+  }
+
+  Widget _buildDateHeaders(List<DateTime> dates) {
+    return Container(
+      color: Colors.grey.shade100,
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left),
+            onPressed: () {
+              setState(() {
+                _currentStartDate = _currentStartDate.subtract(
+                  const Duration(days: 1),
+                );
+                if (_selectedDate.isBefore(_currentStartDate)) {
+                  _selectedDate = _currentStartDate;
+                }
+              });
+            },
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: dates.map((date) {
+                  final isSelected =
+                      date.year == _selectedDate.year &&
+                      date.month == _selectedDate.month &&
+                      date.day == _selectedDate.day;
+
+                  final weekdayStr = [
+                    'Mon',
+                    'Tue',
+                    'Wed',
+                    'Thu',
+                    'Fri',
+                    'Sat',
+                    'Sun',
+                  ][date.weekday - 1];
+                  final monthStr = _monthAbbr(date.month);
+                  final dayStr = date.day.toString();
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedDate = date;
+                      });
                     },
-                  ),
-                  const SizedBox(width: 12),
-                  DropdownButton<int>(
-                    value: tempYear,
-                    items: List.generate(10, (i) {
-                      final year = DateTime.now().year - 5 + i;
-                      return DropdownMenuItem(
-                        value: year,
-                        child: Text(year.toString()),
-                      );
-                    }),
-                    onChanged: (val) {
-                      if (val != null) {
-                        setStateDialog(() {
-                          tempYear = val;
-                        });
-                      }
-                    },
-                  ),
-                ],
+                    child: Container(
+                      width: 80,
+                      margin: const EdgeInsets.symmetric(horizontal: 2),
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Colors.grey.shade300 : null,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            color: isSelected
+                                ? Colors.black
+                                : Colors.grey.shade800,
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          children: [
+                            TextSpan(text: weekdayStr + ' '),
+                            TextSpan(text: monthStr + ' '),
+                            TextSpan(
+                              text: dayStr,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _selectedMonth = tempMonth;
-                      _selectedYear = tempYear;
-                    });
-                    Navigator.of(ctx).pop();
-                  },
-                  child: const Text('Apply'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right),
+            onPressed: () {
+              setState(() {
+                _currentStartDate = _currentStartDate.add(
+                  const Duration(days: 1),
+                );
+                final lastDate = _currentStartDate.add(Duration(days: 29));
+                if (_selectedDate.isAfter(lastDate)) {
+                  _selectedDate = lastDate;
+                }
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -175,13 +246,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     _horizontalScrollController.dispose();
     _verticalScrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedMonth = widget.currentMonth;
-    _selectedYear = widget.currentYear;
   }
 
   void _goToToday() {
@@ -231,27 +295,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
       };
     });
   }
-
-  String _monthAbbr(int month) {
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return months[month - 1];
-  }
-
-  final int _currentStartDay = 1;
-  // Remove days to show limit: show all days in the month
 
   // Add state for booking selection
   Map<String, int?> _selectedStart = {};
@@ -542,12 +585,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final daysInMonth = DateTime(_selectedYear, _selectedMonth + 1, 0).day;
-    final dates = _generateDatesForMonth(
-      _selectedYear,
-      _selectedMonth,
-      daysToShow: daysInMonth,
-    );
+    // Generate 30 days from selected start date
+    final dates = _generateDatesFromStartDate(_currentStartDate, 30);
 
     final mainContent = LayoutBuilder(
       builder: (context, constraints) {
@@ -568,6 +607,59 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: Row(
                     children: [
                       const Spacer(),
+
+                      // DATE PICKER BUTTON replacing month-year filter
+                      Container(
+                        width: 300,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            right: BorderSide(color: Colors.black26, width: 2),
+                          ),
+                        ),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[100],
+                            foregroundColor: Colors.black87,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.calendar_today,
+                            color: Colors.black54,
+                          ),
+                          label: Text(
+                            "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: _currentStartDate,
+                              firstDate: DateTime(_selectedYear - 5),
+                              lastDate: DateTime(_selectedYear + 5),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                _currentStartDate = selectedDate;
+                                _selectedYear = selectedDate.year;
+                                _selectedMonth = selectedDate.month;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+
+                      // Mode toggles
                       Radio<Mode>(
                         value: Mode.bookRooms,
                         groupValue: _mode,
@@ -610,6 +702,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 ),
               ),
 
+              _buildDateHeaders(dates),
               // --- Horizontal Scroll for Date Headers and Calendar
               Expanded(
                 child: SingleChildScrollView(
@@ -618,86 +711,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // --- Date Headers Row
                       Row(
                         children: [
-                          Container(
-                            width: 300,
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                right: BorderSide(
-                                  color: Colors.black26,
-                                  width: 2,
-                                ),
-                              ),
-                            ),
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.grey[100],
-                                foregroundColor: Colors.black87,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              icon: const Icon(
-                                Icons.filter_list,
-                                color: Colors.black54,
-                              ),
-                              label: Text(
-                                "${_monthAbbr(_selectedMonth)} $_selectedYear",
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                ),
-                              ),
-                              onPressed: () => _showMonthYearPicker(context),
-                            ),
-                          ),
-                          ...dates.map((dateMap) {
-                            return Container(
-                              width: 80,
-                              height: 56,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border(
-                                  right: BorderSide(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  bottom: BorderSide(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                ),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    dateMap['weekday'] ?? '',
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    dateMap['date']?.split(' ').last ?? '',
-                                    style: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }).toList(),
+                          //
                         ],
                       ),
 
@@ -727,6 +743,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                     ],
                                   ),
                                 ),
+
                                 // Date Cells
                                 Column(
                                   children: [
@@ -829,7 +846,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           );
                         },
                       ),
-
                       _buildSidebarItem(
                         Icons.check_box,
                         'Available Cell',
@@ -914,7 +930,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
               ],
             ),
           ),
-
           Expanded(child: mainContent),
         ],
       ),
@@ -952,38 +967,78 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   Widget _buildRoomColumn(String title) {
     final roomList = widget.rooms[title] ?? [];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Room type title with background color separator
+        // Group header (e.g., STANDARD SINGLE ROOMS)
         Container(
-          height: 50, // Match room cell height
+          height: 40,
           width: 300,
+          color: const Color(0xFF5B3A00), // dark brown
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
-          color: Colors.grey.shade300, // Background color for separator
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          child: Row(
+            children: [
+              const Icon(Icons.hotel, color: Colors.white, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                title.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
         ),
+
+        // Room rows like: "101  Standard Single"
         ...roomList.asMap().entries.map((entry) {
           final isLast = entry.key == roomList.length - 1;
+          final roomFull = entry.value;
+
+          // Parse string like: 'Standard Single - Room No. 101'
+          final match = RegExp(
+            r'(.+?)\s*-\s*Room No\. (\d+)$',
+          ).firstMatch(roomFull);
+          final roomType = match?.group(1)?.trim() ?? title;
+          final roomNumber = match?.group(2)?.trim() ?? '';
+
           return Container(
-            width: 300, // Match the fixed room column width
+            width: 300,
             height: 50,
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Colors.white,
               border: Border(
                 bottom: isLast
                     ? BorderSide.none
                     : BorderSide(color: Colors.grey.shade300),
               ),
             ),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             alignment: Alignment.centerLeft,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Text(entry.value),
+            child: Row(
+              children: [
+                Text(
+                  roomNumber,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    roomType,
+                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
           );
         }),
@@ -991,20 +1046,25 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-  Widget _buildDateRows(String title, List<Map<String, String>> dates) {
+  Widget _buildDateRows(String title, List<DateTime> dates) {
     const Radius cornerRadius = Radius.circular(10);
     final roomList = widget.rooms[title] ?? [];
 
     return Column(
       children: [
-        // Header row (date titles)
+        // Placeholder row aligned with room header (empty)
+        // Group header row color to match left-side group header
         Row(
           children: List.generate(
             dates.length,
-            (_) =>
-                Container(width: 80, height: 50, color: Colors.grey.shade300),
+            (_) => Container(
+              width: 80,
+              height: 40,
+              color: const Color(0xFF5B3A00), // same as left group header
+            ),
           ),
         ),
+
         ...roomList.asMap().entries.map((entry) {
           final isLastRoom = entry.key == roomList.length - 1;
           final room = entry.value;
@@ -1088,7 +1148,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
               bool isMergedHKRangeStart =
                   isInsideMergedHKRange && i == hkRangeStart;
 
-              // Determine if cell is start of booking merged block
               bool isMergedBookingRangeStart =
                   isBookingSelected && i == bookingStart;
 
@@ -1133,7 +1192,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      // Booking range highlight block
                       if (isMergedBookingRangeStart)
                         Positioned(
                           left: 0,
@@ -1148,7 +1206,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // Housekeeping preview range highlight
                       if (isHKPreview &&
                           hkPreviewStart != null &&
                           hkPreviewEnd != null &&
@@ -1170,7 +1227,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // Housekeeping status highlight (only if NOT VR)
                       if (isMergedHKRangeStart &&
                           statusCode != null &&
                           statusCode != 'VR')
@@ -1202,7 +1258,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // ✅ Base cell (always present)
                       Container(
                         width: 80,
                         height: 50,
@@ -1228,153 +1283,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           );
         }).toList(),
       ],
-    );
-  }
-
-  Widget _buildRoomTypeSection(String title, List<Map<String, String>> dates) {
-    final roomList = widget.rooms[title] ?? [];
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-        ),
-        ...roomList.map(
-          (room) => Container(
-            height: 50,
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey.shade300)),
-            ),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 300,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            room,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        // Removed room status dropdown
-                      ],
-                    ),
-                  ),
-                ),
-                // Date cells for this room
-                SizedBox(
-                  width: dates.length * 80, // Match header width
-                  child: Row(
-                    children: List.generate(dates.length, (index) {
-                      return Container(
-                        width: 80, // Match header width
-                        height: 50,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            right: BorderSide(color: Colors.grey.shade300),
-                          ),
-                        ),
-                        child: const Text(''),
-                      );
-                    }),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMonthSelector() {
-    final months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return Container(
-      color: const Color.fromARGB(255, 0, 0, 0),
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Removed previous/next month icons
-          ...List.generate(12, (i) {
-            final isSelected = (i + 1) == _selectedMonth;
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 2),
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () => _changeMonth(i + 1),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 10,
-                    ),
-                    decoration: isSelected
-                        ? BoxDecoration(
-                            color: const Color(0xFF5B3DF5),
-                            borderRadius: BorderRadius.circular(16),
-                          )
-                        : null,
-                    child: Text(
-                      months[i],
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          }),
-          const SizedBox(width: 16),
-          IconButton(
-            icon: const Icon(Icons.chevron_left, size: 20),
-            onPressed: () => _changeYear(-1),
-            tooltip: 'Previous Year',
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              _selectedYear.toString(),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right, size: 20),
-            onPressed: () => _changeYear(1),
-            tooltip: 'Next Year',
-          ),
-        ],
-      ),
     );
   }
 

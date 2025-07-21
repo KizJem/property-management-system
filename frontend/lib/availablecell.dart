@@ -3,8 +3,25 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'roomdetails.dart';
 
+int _getMaxGuests(String roomType) {
+  switch (roomType.toUpperCase()) {
+    case 'STANDARD SINGLE ROOMS':
+    case 'SUPERIOR SINGLE ROOMS':
+      return 1;
+    case 'STANDARD DOUBLE ROOMS':
+    case 'DELUXE ROOMS':
+    case 'EXECUTIVE ROOMS':
+    case 'SUITE ROOMS':
+      return 2;
+    case 'FAMILY ROOMS':
+      return 5;
+    default:
+      return 1;
+  }
+}
+
 class RoomFeature extends StatelessWidget {
-  final IconData icon; // Still required for compatibility with roomDetails.dart
+  final IconData icon;
   final String label;
 
   const RoomFeature({super.key, required this.icon, required this.label});
@@ -17,7 +34,7 @@ class RoomFeature extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('• ', style: TextStyle(fontSize: 16)),
-          Expanded(child: Text(label, style: const TextStyle(fontSize: 14))),
+          Expanded(child: Text(label, style: const TextStyle(fontSize: 12))),
         ],
       ),
     );
@@ -43,46 +60,202 @@ class AvailableCellPage extends StatefulWidget {
 }
 
 class AvailableCellPageState extends State<AvailableCellPage> {
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _emailController = TextEditingController();
+  int selectedGuests = 1;
+  final firstNameController = TextEditingController();
+  final lastNameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+  final specialRequestController = TextEditingController();
 
-  String? _firstNameError;
-  String? _lastNameError;
-  String? _phoneError;
+  String? firstNameError;
+  String? lastNameError;
+  String? phoneError;
 
   void _handleContinue() {
     setState(() {
-      _firstNameError = _firstNameController.text.trim().isEmpty
+      final nameRegex = RegExp(r'^[a-zA-Z\s]+$');
+      final phoneRegex = RegExp(r'^\d+$');
+      final emailRegex = RegExp(r'^[a-zA-Z0-9@.\s]+$');
+
+      String firstName = firstNameController.text.trim();
+      String lastName = lastNameController.text.trim();
+      String phone = phoneController.text.trim();
+      String email = emailController.text.trim();
+
+      firstNameError = firstName.isEmpty
           ? 'Please enter first name'
-          : null;
-      _lastNameError = _lastNameController.text.trim().isEmpty
+          : (!nameRegex.hasMatch(firstName) ? 'Please enter characters' : null);
+
+      lastNameError = lastName.isEmpty
           ? 'Please enter last name'
-          : null;
-      _phoneError = _phoneController.text.trim().isEmpty
+          : (!nameRegex.hasMatch(lastName) ? 'Please enter characters' : null);
+
+      phoneError = phone.isEmpty
           ? 'Please enter phone number'
-          : null;
+          : (!phoneRegex.hasMatch(phone) ? 'Please enter number' : null);
+
+      // Optional email validation if not empty
+      if (email.isNotEmpty && !emailRegex.hasMatch(email)) {
+        emailController.clear(); // Optional: reset invalid input
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Email must only contain valid characters'),
+          ),
+        );
+      }
     });
 
-    if (_firstNameError == null &&
-        _lastNameError == null &&
-        _phoneError == null) {
-      final email = _emailController.text.trim();
-      final firstName = _firstNameController.text.trim();
-      final lastName = _lastNameController.text.trim();
-      final phone = _phoneController.text.trim();
+    if (firstNameError == null && lastNameError == null && phoneError == null) {
+      final fullName =
+          '${firstNameController.text.trim()} ${lastNameController.text.trim()}';
+      final guests = selectedGuests.toString();
 
-      Navigator.pop(context);
+      // final specialRequest = 'None';
+      final specialRequest = specialRequestController.text.trim().isEmpty
+          ? 'None'
+          : specialRequestController.text.trim();
+      final price = roomDetails[widget.roomType]?.price ?? '₱0';
+      final checkInFormatted = DateFormat.yMMMMd().format(widget.checkInDate);
+      final checkOutFormatted = DateFormat.yMMMMd().format(widget.checkOutDate);
+
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: Colors.white,
+          content: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 24.0,
+              horizontal: 24.0,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Confirm this reservation?',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 24),
+                _buildRow(Icons.person, 'Guest Name', fullName),
+                _buildRow(
+                  Icons.date_range,
+                  'Arrival & Departure Dates',
+                  '$checkInFormatted - $checkOutFormatted',
+                ),
+                _buildRow(Icons.people, 'No. of Guests', guests),
+                _buildRow(
+                  Icons.meeting_room,
+                  'Room',
+                  'NO. ${widget.roomNumber.toUpperCase()}',
+                ),
+                _buildRow(Icons.price_change, 'Price', price.toUpperCase()),
+                _buildRow(Icons.notes, 'Special Requests', specialRequest),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 220,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          side: const BorderSide(color: Colors.black),
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    SizedBox(
+                      width: 220,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                          backgroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(vertical: 15),
+                        ),
+                        child: const Text(
+                          'Confirm Booking',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
+  }
+
+  Widget _buildRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: Colors.black87),
+          const SizedBox(width: 12),
+          // Label + colon aligned
+          SizedBox(
+            width: 220, // Adjust width based on your longest label
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    label,
+                    style: const TextStyle(fontSize: 15, color: Colors.black87),
+                  ),
+                ),
+                const Text(
+                  " :",
+                  style: TextStyle(fontSize: 15, color: Colors.black87),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          // Value
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _phoneController.dispose();
-    _emailController.dispose();
+    firstNameController.dispose();
+    lastNameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    specialRequestController.dispose();
     super.dispose();
   }
 
@@ -144,7 +317,6 @@ class AvailableCellPageState extends State<AvailableCellPage> {
         const SizedBox(height: 10),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 5),
-          padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
             border: Border.all(color: Color(0xFF444444), width: 0.3),
@@ -153,72 +325,73 @@ class AvailableCellPageState extends State<AvailableCellPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 250,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
                 ),
+                child: Image.asset(
+                  details.imageAsset,
+                  fit: BoxFit.cover,
+                  height: 280,
+                  width: double.infinity,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(50, 20, 50, 20),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
-                      child: Image.asset(
-                        details.imageAsset,
-                        fit: BoxFit.cover,
-                        height: 250,
-                        width: double.infinity,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.meeting_room, size: 22),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${widget.roomNumber.replaceAll(RegExp(r'[^0-9]'), '')} - ${details.name}',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          details.price,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      details.description,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    const SizedBox(height: 10),
+                    const Divider(thickness: 0.3, color: Colors.black),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'Room Features',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 5),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: Column(children: details.featuresLeft)),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(children: details.featuresRight),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.meeting_room, size: 22),
-                      const SizedBox(width: 6),
-                      Text(
-                        '${widget.roomNumber.replaceAll(RegExp(r'[^0-9]'), '')} - ${details.name}',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    details.price,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(details.description),
-              const SizedBox(height: 10),
-              const Divider(thickness: 0.3, color: Colors.black),
-              const SizedBox(height: 10),
-              const Text(
-                'Room Features',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-
-              const SizedBox(height: 5),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(child: Column(children: details.featuresLeft)),
-                  const SizedBox(width: 16),
-                  Expanded(child: Column(children: details.featuresRight)),
-                ],
               ),
             ],
           ),
@@ -264,12 +437,15 @@ class AvailableCellPageState extends State<AvailableCellPage> {
 
               // Contact Details
               Container(
-                padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
+                padding: const EdgeInsets.fromLTRB(30, 15, 30, 10),
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Color(0xFF444444), width: 0.3),
+                  border: Border.all(
+                    color: const Color(0xFF444444),
+                    width: 0.3,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,152 +453,79 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                     const Text(
                       'Contact Details',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 5),
 
-                    // First Row: First Name & Last Name
+                    // First Row: First name & Last name
                     Row(
                       children: [
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextField(
-                                controller: _firstNameController,
-                                decoration: InputDecoration(
-                                  labelText: 'First Name *',
-                                  labelStyle: TextStyle(
-                                    color: _firstNameError != null
-                                        ? Colors.red
-                                        : null,
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _firstNameError != null
-                                          ? Colors.red
-                                          : Colors.grey,
+                              const Text.rich(
+                                TextSpan(
+                                  text: 'First name ',
+                                  style: TextStyle(fontSize: 13),
+                                  children: [
+                                    TextSpan(
+                                      text: '*',
+                                      style: TextStyle(color: Colors.red),
                                     ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _firstNameError != null
-                                          ? Colors.red
-                                          : Colors.blue,
-                                    ),
-                                  ),
-                                  helperText: ' ',
+                                  ],
                                 ),
                               ),
-                              if (_firstNameError != null)
-                                Transform.translate(
-                                  offset: const Offset(0, -20),
-                                  child: Text(
-                                    _firstNameError!,
-                                    style: const TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 12,
+                              const SizedBox(height: 6),
+                              SizedBox(
+                                height: 40,
+                                child: TextField(
+                                  controller: firstNameController,
+                                  decoration: InputDecoration(
+                                    hintText: "Enter guest’s first name",
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black45,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 14,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: firstNameError != null
+                                            ? Colors.red
+                                            : Colors.black26,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: firstNameError != null
+                                            ? Colors.red
+                                            : Colors.black87,
+                                      ),
                                     ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextField(
-                                controller: _lastNameController,
-                                decoration: InputDecoration(
-                                  labelText: 'Last Name *',
-                                  labelStyle: TextStyle(
-                                    color: _lastNameError != null
-                                        ? Colors.red
-                                        : null,
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _lastNameError != null
-                                          ? Colors.red
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _lastNameError != null
-                                          ? Colors.red
-                                          : Colors.blue,
-                                    ),
-                                  ),
-                                  helperText: ' ',
-                                ),
-                              ),
-                              if (_lastNameError != null)
-                                Transform.translate(
-                                  offset: const Offset(0, -20),
-                                  child: Text(
-                                    _lastNameError!,
-                                    style: const TextStyle(
-                                      color: Colors.red,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Second Row: Phone Number & Email
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              TextField(
-                                controller: _phoneController,
-                                keyboardType: TextInputType.phone,
-                                decoration: InputDecoration(
-                                  labelText: 'Phone Number *',
-                                  labelStyle: TextStyle(
-                                    color: _phoneError != null
-                                        ? Colors.red
-                                        : null,
-                                  ),
-                                  border: const OutlineInputBorder(),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _phoneError != null
-                                          ? Colors.red
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _phoneError != null
-                                          ? Colors.red
-                                          : Colors.blue,
-                                    ),
-                                  ),
+                                  style: const TextStyle(fontSize: 14),
                                 ),
                               ),
                               const SizedBox(height: 4),
                               SizedBox(
                                 height: 16,
                                 child: Text(
-                                  _phoneError ??
-                                      ' ', // Show error or blank space
+                                  firstNameError ?? ' ',
                                   style: const TextStyle(
                                     color: Colors.red,
-                                    fontSize: 12,
+                                    fontSize: 10,
                                   ),
                                 ),
                               ),
@@ -434,24 +537,207 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              TextField(
-                                controller: _emailController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Email (Optional)',
-                                  border: OutlineInputBorder(),
+                              const Text.rich(
+                                TextSpan(
+                                  text: 'Last name ',
+                                  style: TextStyle(fontSize: 13),
+                                  children: [
+                                    TextSpan(
+                                      text: '*',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              SizedBox(
+                                height: 40,
+                                child: TextField(
+                                  controller: lastNameController,
+                                  decoration: InputDecoration(
+                                    hintText: "Enter guest’s last name",
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black45,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 14,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: lastNameError != null
+                                            ? Colors.red
+                                            : Colors.black26,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: lastNameError != null
+                                            ? Colors.red
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              const SizedBox(
+                              SizedBox(
                                 height: 16,
                                 child: Text(
-                                  ' ', // Invisible placeholder for alignment
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.transparent,
+                                  lastNameError ?? ' ',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 10,
                                   ),
                                 ),
                               ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // Second Row: Phone number & Email
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text.rich(
+                                TextSpan(
+                                  text: 'Phone number ',
+                                  style: TextStyle(fontSize: 13),
+                                  children: [
+                                    TextSpan(
+                                      text: '*',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              SizedBox(
+                                height: 40,
+                                child: TextField(
+                                  controller: phoneController,
+                                  keyboardType: TextInputType.phone,
+                                  decoration: InputDecoration(
+                                    hintText: "Enter guest’s phone number",
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black45,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 14,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: phoneError != null
+                                            ? Colors.red
+                                            : Colors.black26,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: BorderSide(
+                                        color: phoneError != null
+                                            ? Colors.red
+                                            : Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              SizedBox(
+                                height: 16,
+                                child: Text(
+                                  phoneError ?? ' ',
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text.rich(
+                                TextSpan(
+                                  text: 'Email ',
+                                  style: TextStyle(fontSize: 13),
+                                  children: [
+                                    TextSpan(
+                                      text: '(optional)',
+                                      style: TextStyle(
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              SizedBox(
+                                height: 40,
+                                child: TextField(
+                                  controller: emailController,
+                                  keyboardType: TextInputType.emailAddress,
+                                  decoration: InputDecoration(
+                                    hintText: "Enter guest’s email address",
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black45,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 14,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                        color: Colors.black26,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      borderSide: const BorderSide(
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
                             ],
                           ),
                         ),
@@ -460,7 +746,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                   ],
                 ),
               ),
-
+              const SizedBox(height: 5),
               // Booking Details
               Container(
                 padding: const EdgeInsets.fromLTRB(30, 10, 30, 10),
@@ -478,132 +764,66 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                         const Text(
                           'Booking Details',
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const Spacer(),
                         Radio(value: true, groupValue: true, onChanged: (_) {}),
-                        const Text('Reservation'),
+                        const Text(
+                          'Reservation',
+                          style: TextStyle(fontSize: 12),
+                        ),
                         const SizedBox(width: 10),
                         Radio(
                           value: false,
                           groupValue: true,
                           onChanged: (_) {},
                         ),
-                        const Text('Check-In'),
+                        const Text('Check-In', style: TextStyle(fontSize: 12)),
                       ],
                     ),
-                    const Text(
-                      'Arrival and Departure Date',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
                     Row(
-                      children: [
-                        const Icon(Icons.calendar_month),
-                        const SizedBox(width: 10),
-
-                        // Check-in Date
-                        Container(
-                          width: 150,
-                          height: 36,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              DateFormat(
-                                'MMMM d, yyyy',
-                              ).format(widget.checkInDate).toUpperCase(),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        const Text(
-                          '-',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        // Check-out Date
-                        Container(
-                          width: 150,
-                          height: 36,
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          alignment: Alignment.center,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              DateFormat(
-                                'MMMM d, yyyy',
-                              ).format(widget.checkOutDate).toUpperCase(),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
+                          flex: 2,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'Room Number',
+                                'Arrival and Departure Date',
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                   color: Colors.black87,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Container(
-                                width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
-                                  vertical: 14,
+                                  vertical: 10,
                                 ),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black26),
-                                  borderRadius: BorderRadius.circular(4),
                                   color: Colors.white,
+                                  border: Border.all(color: Colors.black26),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text(
-                                  widget.roomNumber,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.black87,
-                                  ),
+                                child: Row(
+                                  children: [
+                                    const Icon(Icons.calendar_month, size: 20),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        '${DateFormat('MMMM d, yyyy').format(widget.checkInDate).toUpperCase()}  –  ${DateFormat('MMMM d, yyyy').format(widget.checkOutDate).toUpperCase()}',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -611,37 +831,99 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
+                          flex: 1,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
-                                'No. of Guest',
+                                'Number of Guests',
                                 style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 12,
                                   color: Colors.black87,
                                 ),
                               ),
                               const SizedBox(height: 6),
                               Container(
-                                width: double.infinity,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
                                 ),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black26),
-                                  borderRadius: BorderRadius.circular(4),
                                   color: Colors.white,
+                                  border: Border.all(color: Colors.black26),
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: TextField(
-                                  keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    hintText: 'Enter number',
+                                child: SizedBox(
+                                  height: 40,
+                                  child: DropdownButtonFormField<int>(
+                                    value: selectedGuests, // <-- bound to state
+                                    icon: const Icon(Icons.arrow_drop_down),
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      contentPadding: EdgeInsets.only(
+                                        top: 0,
+                                        bottom: 8,
+                                      ),
+                                    ),
+                                    items: List.generate(
+                                      _getMaxGuests(widget.roomType),
+                                      (index) {
+                                        final value = index + 1;
+                                        return DropdownMenuItem(
+                                          value: value,
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.person_outline),
+                                              const SizedBox(width: 8),
+                                              Text('$value'),
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          selectedGuests =
+                                              value; // <-- update state
+                                        });
+                                      }
+                                    },
                                   ),
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.digitsOnly,
-                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Room Number',
+                          style: TextStyle(fontSize: 12, color: Colors.black87),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          height: 40,
+                          alignment: Alignment.centerLeft,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black26),
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white,
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.meeting_room_outlined),
+                              const SizedBox(width: 10),
+                              Text(
+                                '${widget.roomType.toUpperCase()} - ${widget.roomNumber.toUpperCase()}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black87,
                                 ),
                               ),
                             ],
@@ -650,13 +932,38 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                       ],
                     ),
                     const SizedBox(height: 15),
+                    const Text(
+                      'Special Requests',
+                      style: TextStyle(fontSize: 12, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 6),
                     TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Special Requests (Optional)',
-                        border: OutlineInputBorder(),
-                        alignLabelWithHint: true,
+                      controller: specialRequestController,
+                      decoration: InputDecoration(
+                        hintText: 'Note special requests here.',
+                        hintStyle: const TextStyle(color: Colors.black38),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.black26),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.black26),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.black87,
+                            width: 1.0,
+                          ),
+                        ),
                       ),
                       maxLines: 3,
+                      style: const TextStyle(fontSize: 14),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -676,14 +983,14 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                           color: Color(0xFF000003),
                           width: 0.3,
                         ),
-                        minimumSize: const Size.fromHeight(50),
+                        minimumSize: const Size.fromHeight(45),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(200),
                         ),
                       ),
                       child: const Text(
                         'Cancel',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 12),
                       ),
                     ),
                   ),
@@ -698,14 +1005,14 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                           color: Color(0xFF000003),
                           width: 0.3,
                         ),
-                        minimumSize: const Size.fromHeight(50),
+                        minimumSize: const Size.fromHeight(45),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(200),
                         ),
                       ),
                       child: const Text(
                         'Continue',
-                        style: TextStyle(fontSize: 16),
+                        style: TextStyle(fontSize: 12),
                       ),
                     ),
                   ),

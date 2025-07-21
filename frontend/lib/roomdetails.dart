@@ -102,7 +102,7 @@ final Map<String, RoomDetail> roomDetails = {
       RoomFeature(icon: Icons.night_shelter, label: 'Extended stay friendly'),
     ],
   ),
-  'FAMIILY ROOMS': RoomDetail(
+  'FAMILY ROOMS': RoomDetail(
     name: 'Standard Double Room',
     imageAsset: 'assets/images/standard-double-room.jpg',
     price: '₱ 5,000',
