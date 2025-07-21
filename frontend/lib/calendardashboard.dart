@@ -38,35 +38,19 @@ class CalendarDashboard extends StatefulWidget {
   }
 }
 
-/// Mode enum to toggle between booking rooms and housekeeping mode
 enum Mode { bookRooms, housekeeping }
 
 const Map<String, Map<String, dynamic>> roomStatusMap = {
   // AVAILABLE
-  'VD': {
-    'color': Color(0xFF79511C),
-    'label': 'Vacant Dirty',
-  }, // #79511C (brown)
+  'VD': {'color': Color(0xFF79511C), 'label': 'Vacant Dirty'},
   'VR': {'color': Color(0xFF307FCF), 'label': 'Vacant Ready'}, // #307FCF (blue)
   // OCCUPIED
-  'OC': {
-    'color': Color(0xFFCBECE6),
-    'label': 'Occupied Clean',
-  }, // #CBECE6 (light aqua)
-  'OD': {
-    'color': Color(0xFF074B0C),
-    'label': 'Occupied Dirty',
-  }, // #074B0C (dark green)
+  'OC': {'color': Color(0xFFCBECE6), 'label': 'Occupied Clean'},
+  'OD': {'color': Color(0xFF074B0C), 'label': 'Occupied Dirty'},
   // UNAVAILABLE
-  'OOO': {
-    'color': Color(0xFF171300),
-    'label': 'Out of Order',
-  }, // #171300 (dark brown)
-  'BLO': {
-    'color': Color(0xFFFFF1AB),
-    'label': 'Blocked',
-  }, // #FFF1AB (light yellow)
-  'HU': {'color': Color(0xFFFDD41A), 'label': 'House Use'}, // #FDD41A (yellow)
+  'OOO': {'color': Color(0xFF171300), 'label': 'Out of Order'},
+  'BLO': {'color': Color(0xFFFFF1AB), 'label': 'Blocked'},
+  'HU': {'color': Color(0xFFFDD41A), 'label': 'House Use'},
 };
 
 class _CalendarDashboardState extends State<CalendarDashboard> {
@@ -86,7 +70,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     super.dispose();
   }
 
-  // Default mode is booking rooms
   Mode _mode = Mode.bookRooms;
 
   Map<String, List<Map<String, int>>> _housekeepingRanges = {};
@@ -94,7 +77,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   int? _housekeepingStart;
   int? _housekeepingEnd;
 
-  // Returns the header date string for the calendar header (e.g., "8 Aug 2021")
   String _getHeaderDateString() {
     final day = _currentStartDay;
     final date = DateTime(_selectedYear, _selectedMonth, day);
@@ -106,10 +88,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   bool _sidebarExpanded = false;
   final double _sidebarWidth = 150;
   final double _sidebarCollapsedWidth = 48;
-  // Track selected start date (for calendar display)
+
   late DateTime _currentStartDate;
 
-  int _selectedMonth = DateTime.now().month; // 1-based for DateTime
+  int _selectedMonth = DateTime.now().month;
   int _selectedYear = DateTime.now().year;
 
   @override
@@ -119,7 +101,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     _selectedYear = widget.currentYear;
 
     _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
-    _selectedDate = _currentStartDate; // Initialize selectedDate
+    _selectedDate = _currentStartDate;
   }
 
   DateTime _selectedDate = DateTime.now();
@@ -198,21 +180,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
       _selectedMonth = now.month;
       _selectedYear = now.year;
     });
-    // Optionally, update dates here if you want to regenerate the grid
   }
 
   void _changeMonth(int month) {
     setState(() {
       _selectedMonth = month;
     });
-    // Optionally, update dates here if you want to regenerate the grid
   }
 
   void _changeYear(int delta) {
     setState(() {
       _selectedYear += delta;
     });
-    // Optionally, update dates here if you want to regenerate the grid
   }
 
   List<Map<String, String>> _generateDatesForMonth(
@@ -245,9 +224,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   Map<String, int?> _selectedEnd = {};
   String? _activeBookingRoom;
 
-  // Housekeeping status state: Map<room, Map<dateIndex, {status, notes}>>
   Map<String, Map<int, Map<String, String>>> _housekeepingStatus = {};
-  // Housekeeping selection state
+
   Map<String, int?> _hkSelectedStart = {};
   Map<String, int?> _hkSelectedEnd = {};
   String? _activeHKRoom;
@@ -258,12 +236,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         if (_activeBookingRoom != null &&
             _activeBookingRoom != room &&
             _selectedEnd[_activeBookingRoom!] == null) {
-          // Prevent booking another room while previous booking is not done
           return;
         }
         if (_selectedStart[room] == null ||
             (_selectedStart[room] != null && _selectedEnd[room] != null)) {
-          // Start new selection
           _selectedStart[room] = dateIndex;
           _selectedEnd[room] = null;
           _activeBookingRoom = room;
@@ -277,14 +253,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             newEnd = dateIndex;
           }
 
-          // 1. Update the selection state FIRST (triggers highlight)
           setState(() {
             _selectedStart[room] = newStart;
             _selectedEnd[room] = newEnd;
             _activeBookingRoom = null;
           });
 
-          // 2. Show dialog AFTER UI update
           final displayedDates = _generateDatesFromStartDate(
             _currentStartDate,
             30,
@@ -322,7 +296,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 actions: [
                   TextButton(
                     onPressed: () {
-                      // Optionally reset selection if cancelled
                       setState(() {
                         _selectedStart[room] = null;
                         _selectedEnd[room] = null;
@@ -340,7 +313,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           builder: (context) => AvailableCellPage(
                             roomType: roomType,
                             roomNumber: room,
-                            // you may also want to use displayedDates[newStart]/[newEnd] here
                             checkInDate: DateTime(
                               startDt.year,
                               startDt.month,
@@ -368,7 +340,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         if (_activeHKRoom != null &&
             _activeHKRoom != room &&
             _hkSelectedEnd[_activeHKRoom!] == null) {
-          // Prevent another selection while previous is not done
           return;
         }
         if (_hkSelectedStart[room] == null ||
@@ -512,7 +483,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         onPressed: selectedStatus == null
                             ? null
                             : () {
-                                // Save housekeeping status for all selected dates
                                 setState(() {
                                   _housekeepingStatus.putIfAbsent(
                                     room,
@@ -548,13 +518,11 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return Scaffold(
       body: Row(
         children: [
-          // 🧭 Sidebar
           Container(
             width: _sidebarExpanded ? 180 : 60,
             color: const Color(0xFF291F16),
             child: Column(
               children: [
-                // Logo & Toggle
                 Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
@@ -692,11 +660,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             ),
           ),
 
-          // 🧱 Main calendar area
           Expanded(
             child: Column(
               children: [
-                // Header: title + date picker + toggle
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
@@ -767,6 +733,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       Radio<Mode>(
                         value: Mode.bookRooms,
                         groupValue: _mode,
+                        activeColor: const Color(0xFF664D21),
                         onChanged: (Mode? value) =>
                             setState(() => _mode = value!),
                       ),
@@ -782,6 +749,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       Radio<Mode>(
                         value: Mode.housekeeping,
                         groupValue: _mode,
+                        activeColor: const Color(0xFF9B2C13),
                         onChanged: (Mode? newValue) async {
                           if (newValue == Mode.housekeeping) {
                             final confirmed = await showDialog<bool>(
@@ -795,9 +763,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                   horizontal: 24,
                                 ),
                                 title: Padding(
-                                  padding: const EdgeInsets.only(
-                                    top: 24.0,
-                                  ), // <— 32px above
+                                  padding: const EdgeInsets.only(top: 24.0),
                                   child: Center(
                                     child: Text(
                                       'Switch to Housekeeping Mode?',
@@ -923,7 +889,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   ),
                 ),
 
-                // 🔄 Combined Scroll Area: vertical scroll sync
                 Expanded(
                   child: Scrollbar(
                     controller: _verticalScrollController,
@@ -1042,17 +1007,13 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
         child: Row(
           children: [
-            Icon(
-              icon,
-              size: 20,
-              color: const Color(0xFF897249), // <- Correct icon color
-            ),
+            Icon(icon, size: 20, color: const Color(0xFF897249)),
             if (_sidebarExpanded) ...[
               const SizedBox(width: 10),
               Text(
                 title,
                 style: const TextStyle(
-                  color: Color(0xFFFFFBF2), // <- Correct text color
+                  color: Color(0xFFFFFBF2),
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -1067,14 +1028,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   Widget _buildRoomColumn(String title) {
     final roomList = widget.rooms[title] ?? [];
 
+    final headerBg = _mode == Mode.housekeeping
+        ? const Color(0xFF9B2C13)
+        : const Color(0xFF5B3A00);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Group header (e.g., STANDARD SINGLE ROOMS)
         Container(
           height: 40,
-          width: 300,
-          color: const Color(0xFF5B3A00), // dark brown
+          // width: 300,
+          width: roomColumnWidth,
+          color: headerBg,
           padding: const EdgeInsets.symmetric(horizontal: 12),
           alignment: Alignment.centerLeft,
           child: Row(
@@ -1094,12 +1059,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           ),
         ),
 
-        // Room rows like: "101  Standard Single"
         ...roomList.asMap().entries.map((entry) {
           final isLast = entry.key == roomList.length - 1;
           final roomFull = entry.value;
 
-          // Parse string like: 'Standard Single - Room No. 101'
           final match = RegExp(
             r'(.+?)\s*-\s*Room No\. (\d+)$',
           ).firstMatch(roomFull);
@@ -1149,21 +1112,23 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     const Radius cornerRadius = Radius.circular(10);
     final roomList = widget.rooms[title] ?? [];
 
+    final placeholderBg = _mode == Mode.housekeeping
+        ? const Color(0xFF9B2C13)
+        : const Color(0xFF5B3A00);
+
     return Column(
       children: [
-        // Header placeholder (aligned with date headers)
         Row(
           children: List.generate(
             dates.length,
             (_) => Container(
               width: cellWidth,
               height: headerCellHeight,
-              color: const Color(0xFF5B3A00),
+              color: placeholderBg,
             ),
           ),
         ),
 
-        // Room rows
         ...roomList.asMap().entries.map((entry) {
           final isLastRoom = entry.key == roomList.length - 1;
           final room = entry.value;
@@ -1214,7 +1179,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 }
               }
 
-              // Calculate merged housekeeping range for block display
               int? hkRangeStart;
               int? hkRangeEnd;
 
