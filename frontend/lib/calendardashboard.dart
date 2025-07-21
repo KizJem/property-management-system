@@ -138,83 +138,99 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return months[month - 1];
   }
 
+  // Add this constant (or reuse whatever you already have for your room column)
+  static const double roomColumnWidth = 300;
+
   Widget _buildDateHeaders(List<DateTime> dates) {
+    // Local weekday lookup
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
     return Container(
       color: Colors.grey.shade100,
       child: Row(
         children: [
-          IconButton(
-            icon: const Icon(Icons.chevron_left),
-            onPressed: () {
-              setState(() {
-                _currentStartDate = _currentStartDate.subtract(
-                  const Duration(days: 1),
-                );
-                if (_selectedDate.isBefore(_currentStartDate)) {
-                  _selectedDate = _currentStartDate;
-                }
-              });
-            },
+          // ── ROOM COLUMN SPACE ──
+          SizedBox(
+            width: roomColumnWidth, // matches your room-column width
+            height: cellHeight, // same height as each date header
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // ←← block-jump back
+                IconButton(
+                  icon: const Icon(Icons.keyboard_double_arrow_left),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    setState(() {
+                      _currentStartDate = _currentStartDate.subtract(
+                        const Duration(days: 7),
+                      );
+                      if (_selectedDate.isBefore(_currentStartDate)) {
+                        _selectedDate = _currentStartDate;
+                      }
+                    });
+                  },
+                ),
+
+                // →→ block-jump forward
+                IconButton(
+                  icon: const Icon(Icons.keyboard_double_arrow_right),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    setState(() {
+                      _currentStartDate = _currentStartDate.add(
+                        const Duration(days: 7),
+                      );
+                      final lastVisible = _currentStartDate.add(
+                        Duration(days: dates.length - 1),
+                      );
+                      if (_selectedDate.isAfter(lastVisible)) {
+                        _selectedDate = lastVisible;
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
+
+          // ── DATE CELLS ──
           Expanded(
             child: SingleChildScrollView(
+              controller: _horizontalScrollController,
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: dates.map((date) {
-                  final isSelected =
+                  final isSel =
                       date.year == _selectedDate.year &&
                       date.month == _selectedDate.month &&
                       date.day == _selectedDate.day;
-
-                  final weekdayStr = [
-                    'Mon',
-                    'Tue',
-                    'Wed',
-                    'Thu',
-                    'Fri',
-                    'Sat',
-                    'Sun',
-                  ][date.weekday - 1];
-                  final monthStr = _monthAbbr(date.month);
-                  final dayStr = date.day.toString();
+                  final wd = weekdays[date.weekday - 1];
+                  final mo = _monthAbbr(date.month);
+                  final d = date.day.toString();
 
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedDate = date;
-                      });
-                    },
+                    onTap: () => setState(() => _selectedDate = date),
                     child: Container(
                       width: cellWidth,
                       height: cellHeight,
                       margin: const EdgeInsets.symmetric(horizontal: 4),
-                      padding: const EdgeInsets.symmetric(vertical: 8),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: isSelected ? Colors.grey.shade300 : null,
+                        color: isSel
+                            ? Colors.grey.shade300
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: RichText(
+                      child: Text(
+                        '$wd $mo $d',
                         textAlign: TextAlign.center,
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.black
-                                : Colors.grey.shade800,
-                            fontSize: 14,
-                            fontWeight: FontWeight.normal,
-                          ),
-                          children: [
-                            TextSpan(text: weekdayStr + ' '),
-                            TextSpan(text: monthStr + ' '),
-                            TextSpan(
-                              text: dayStr,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
+                        style: TextStyle(
+                          fontWeight: isSel
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -222,20 +238,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 }).toList(),
               ),
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right),
-            onPressed: () {
-              setState(() {
-                _currentStartDate = _currentStartDate.add(
-                  const Duration(days: 1),
-                );
-                final lastDate = _currentStartDate.add(Duration(days: 29));
-                if (_selectedDate.isAfter(lastDate)) {
-                  _selectedDate = lastDate;
-                }
-              });
-            },
           ),
         ],
       ),
@@ -611,6 +613,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   color: const Color(0xFFFFF1AB),
                   child: Row(
                     children: [
+                      Text(
+                        'PROPERTY MANAGEMENT SYSTEM', // ← your system name
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.brown.shade800, // match your theme
+                        ),
+                      ),
+
+                      const SizedBox(width: 24),
                       const Spacer(),
 
                       // DATE PICKER BUTTON replacing month-year filter
