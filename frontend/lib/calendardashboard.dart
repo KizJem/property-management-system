@@ -575,6 +575,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           setState(() {
                             _mode = value!;
                           });
+                          activeColor:
+                          Colors.blue;
                         },
                       ),
                       const Text(
@@ -592,6 +594,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           setState(() {
                             _mode = value!;
                           });
+                          activeColor:
+                          Colors.blue;
                         },
                       ),
                       const Text(
@@ -1140,14 +1144,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             decoration: BoxDecoration(
                               color: Colors.yellow[300],
                               borderRadius: BorderRadius.circular(16),
-                              /*borderRadius: BorderRadius.horizontal(
-                                left: bookingStart == i
-                                    ? cornerRadius
-                                    : Radius.zero,
-                                right: bookingEnd == i
-                                    ? cornerRadius
-                                    : Radius.zero,
-                              ),*/
                             ),
                           ),
                         ),
