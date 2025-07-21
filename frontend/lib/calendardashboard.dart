@@ -164,7 +164,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   onPressed: () {
                     setState(() {
                       _currentStartDate = _currentStartDate.subtract(
-                        const Duration(days: 7),
+                        const Duration(days: 1),
                       );
                       if (_selectedDate.isBefore(_currentStartDate)) {
                         _selectedDate = _currentStartDate;
@@ -181,14 +181,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   onPressed: () {
                     setState(() {
                       _currentStartDate = _currentStartDate.add(
-                        const Duration(days: 7),
+                        const Duration(days: 1),
                       );
-                      final lastVisible = _currentStartDate.add(
-                        Duration(days: dates.length - 1),
-                      );
-                      if (_selectedDate.isAfter(lastVisible)) {
-                        _selectedDate = lastVisible;
-                      }
+                      _selectedDate = _currentStartDate;
                     });
                   },
                 ),
