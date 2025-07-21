@@ -211,7 +211,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     child: Container(
                       width: cellWidth,
                       height: cellHeight,
-                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      // ❌ Remove the margin to align perfectly with grid cells
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: isSel
