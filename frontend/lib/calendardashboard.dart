@@ -76,7 +76,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   static const double roomColumnWidth = 300;
   static const double roomColumnHeaderHeight = 50.0;
 
-
   final ScrollController _horizontalScrollController = ScrollController();
   final ScrollController _verticalScrollController = ScrollController();
 
@@ -86,7 +85,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     _verticalScrollController.dispose();
     super.dispose();
   }
-
 
   // Default mode is booking rooms
   Mode _mode = Mode.bookRooms;
@@ -151,50 +149,48 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     return months[month - 1];
   }
 
-
   Widget _buildDateHeaderRow(List<DateTime> dates) {
-  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  return Row(
-    children: dates.map((date) {
-      final isSel = date.year == _selectedDate.year &&
-          date.month == _selectedDate.month &&
-          date.day == _selectedDate.day;
+    return Row(
+      children: dates.map((date) {
+        final isSel =
+            date.year == _selectedDate.year &&
+            date.month == _selectedDate.month &&
+            date.day == _selectedDate.day;
 
-      final wd = weekdays[date.weekday - 1];
-      final mo = _monthAbbr(date.month);
-      final d = date.day.toString();
+        final wd = weekdays[date.weekday - 1];
+        final mo = _monthAbbr(date.month);
+        final d = date.day.toString();
 
-      return GestureDetector(
-        onTap: () => setState(() => _selectedDate = date),
-        child: Container(
-          width: cellWidth,
-          height: cellHeight,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: isSel ? Colors.grey.shade300 : Colors.transparent,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.black,
-                fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+        return GestureDetector(
+          onTap: () => setState(() => _selectedDate = date),
+          child: Container(
+            width: cellWidth,
+            height: cellHeight,
+            alignment: Alignment.center,
+            child: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.black,
+                  fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                ),
+                children: [
+                  TextSpan(text: '$wd $mo '),
+                  TextSpan(
+                    text: d,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
-              children: [
-                TextSpan(text: '$wd $mo '),
-                TextSpan(text: d, style: const TextStyle(fontWeight: FontWeight.bold)),
-              ],
             ),
           ),
-        ),
-      );
-    }).toList(),
-  );
-}
-
+        );
+      }).toList(),
+    );
+  }
 
   void _goToToday() {
     final now = DateTime.now();
@@ -531,244 +527,372 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  // Generate 30 days from selected start date
-  final dates = _generateDatesFromStartDate(_currentStartDate, 30);
+  @override
+  Widget build(BuildContext context) {
+    // Generate 30 days from selected start date
+    final dates = _generateDatesFromStartDate(_currentStartDate, 30);
 
-  return Scaffold(
-    body: Row(
-      children: [
-        // 🧭 Sidebar
-        Container(
-          width: _sidebarExpanded ? 180 : 60,
-          color: const Color(0xFF291F16),
-          child: Column(
-            children: [
-              // Logo & Toggle
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (_sidebarExpanded)
-                      Image.asset('assets/images/PMS-logo-2.png', width: 30, height: 30),
-                    IconButton(
-                      icon: Icon(
-                        _sidebarExpanded ? Icons.chevron_left : Icons.chevron_right,
-                        size: 20,
-                        color: const Color(0xFF897249),
-                      ),
-                      onPressed: () => setState(() => _sidebarExpanded = !_sidebarExpanded),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Menu Items
-              Expanded(
-                child: Column(
-                  children: [
-                    _buildSidebarItem(Icons.calendar_today, 'Calendar'),
-                    _buildSidebarItem(Icons.bed, 'Guest Records', onTap: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/guestrecords',
-                        arguments: {'studentName': widget.studentName},
-                      );
-                    }),
-                    _buildSidebarItem(Icons.access_time, 'Activity Logs', onTap: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        '/activitylogs',
-                        arguments: {'studentName': widget.studentName},
-                      );
-                    }),
-                    _buildSidebarItem(Icons.check_box, 'Available Cell'),
-                    _buildSidebarItem(Icons.book_online, 'Reserve Cell', onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const ReservecellPage()));
-                    }),
-                    _buildSidebarItem(Icons.hotel, 'Occupied Cell', onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const OccupiedCellPage()));
-                    }),
-                  ],
-                ),
-              ),
-
-              // User Info
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: _sidebarExpanded ? MainAxisAlignment.spaceBetween : MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.account_circle, color: Color(0xFFFFFBF2), size: 20),
-                    if (_sidebarExpanded) ...[
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          widget.studentName,
-                          style: const TextStyle(
-                            color: Color(0xFFFFFBF2),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            overflow: TextOverflow.ellipsis,
-                          ),
+    return Scaffold(
+      body: Row(
+        children: [
+          // 🧭 Sidebar
+          Container(
+            width: _sidebarExpanded ? 180 : 60,
+            color: const Color(0xFF291F16),
+            child: Column(
+              children: [
+                // Logo & Toggle
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      if (_sidebarExpanded)
+                        Image.asset(
+                          'assets/images/PMS-logo-2.png',
+                          width: 30,
+                          height: 30,
+                        ),
+                      IconButton(
+                        icon: Icon(
+                          _sidebarExpanded
+                              ? Icons.chevron_left
+                              : Icons.chevron_right,
+                          size: 20,
+                          color: const Color(0xFF897249),
+                        ),
+                        onPressed: () => setState(
+                          () => _sidebarExpanded = !_sidebarExpanded,
                         ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.logout, size: 18, color: Color(0xFF897249)),
-                        onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                    ],
+                  ),
+                ),
+
+                // Menu Items
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildSidebarItem(Icons.calendar_today, 'Calendar'),
+                      _buildSidebarItem(
+                        Icons.bed,
+                        'Guest Records',
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/guestrecords',
+                            arguments: {'studentName': widget.studentName},
+                          );
+                        },
+                      ),
+                      _buildSidebarItem(
+                        Icons.access_time,
+                        'Activity Logs',
+                        onTap: () {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/activitylogs',
+                            arguments: {'studentName': widget.studentName},
+                          );
+                        },
+                      ),
+                      _buildSidebarItem(Icons.check_box, 'Available Cell'),
+                      _buildSidebarItem(
+                        Icons.book_online,
+                        'Reserve Cell',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ReservecellPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      _buildSidebarItem(
+                        Icons.hotel,
+                        'Occupied Cell',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const OccupiedCellPage(),
+                            ),
+                          );
                         },
                       ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ),
 
-        // 🧱 Main calendar area
-        Expanded(
-          child: Column(
-            children: [
-              // Header: title + date picker + toggle
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                width: double.infinity,
-                color: const Color(0xFFFFF1AB),
-                child: Row(
-                  children: [
-                    Text(
-                      'PROPERTY MANAGEMENT SYSTEM',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.brown.shade800,
+                // User Info
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: _sidebarExpanded
+                        ? MainAxisAlignment.spaceBetween
+                        : MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.account_circle,
+                        color: Color(0xFFFFFBF2),
+                        size: 20,
                       ),
-                    ),
-                    const Spacer(),
-                    Container(
-                      width: 300,
-                      alignment: Alignment.center,
-                      decoration: const BoxDecoration(
-                        border: Border(right: BorderSide(color: Colors.black26, width: 2)),
-                      ),
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey[100],
-                          foregroundColor: Colors.black87,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        ),
-                        icon: const Icon(Icons.calendar_today, color: Colors.black54),
-                        label: Text(
-                          "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                        onPressed: () async {
-                          final selectedDate = await showDatePicker(
-                            context: context,
-                            initialDate: _currentStartDate,
-                            firstDate: DateTime(_selectedYear - 5),
-                            lastDate: DateTime(_selectedYear + 5),
-                          );
-                          if (selectedDate != null) {
-                            setState(() {
-                              _currentStartDate = selectedDate;
-                              _selectedYear = selectedDate.year;
-                              _selectedMonth = selectedDate.month;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                    Radio<Mode>(
-                      value: Mode.bookRooms,
-                      groupValue: _mode,
-                      onChanged: (Mode? value) => setState(() => _mode = value!),
-                    ),
-                    const Text('Book Rooms', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-                    const SizedBox(width: 24),
-                    Radio<Mode>(
-                      value: Mode.housekeeping,
-                      groupValue: _mode,
-                      onChanged: (Mode? value) => setState(() => _mode = value!),
-                    ),
-                    const Text('Set Housekeeping Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              ),
-
-              // 🔄 Combined Scroll Area: vertical scroll sync
-              Expanded(
-                child: Scrollbar(
-                  controller: _verticalScrollController,
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    controller: _verticalScrollController,
-                    scrollDirection: Axis.vertical,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Room Column
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: cellHeight,
-                              width: roomColumnWidth,
-                              color: Colors.grey.shade100,
-                            ),
-                            _buildRoomColumn('STANDARD SINGLE ROOMS'),
-                            _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
-                            _buildRoomColumn('STANDARD DOUBLE ROOMS'),
-                            _buildRoomColumn('DELUXE ROOMS'),
-                            _buildRoomColumn('FAMILY ROOMS'),
-                            _buildRoomColumn('EXECUTIVE ROOMS'),
-                            _buildRoomColumn('SUITE ROOMS'),
-                          ],
-                        ),
-
-                        // Date Headers + Cells
+                      if (_sidebarExpanded) ...[
+                        const SizedBox(width: 6),
                         Expanded(
-                          child: Scrollbar(
-                            controller: _horizontalScrollController,
-                            thumbVisibility: true,
-                            child: SingleChildScrollView(
-                              controller: _horizontalScrollController,
-                              scrollDirection: Axis.horizontal,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  _buildDateHeaderRow(dates),
-                                  _buildDateRows('STANDARD SINGLE ROOMS', dates),
-                                  _buildDateRows('SUPERIOR SINGLE ROOMS', dates),
-                                  _buildDateRows('STANDARD DOUBLE ROOMS', dates),
-                                  _buildDateRows('DELUXE ROOMS', dates),
-                                  _buildDateRows('FAMILY ROOMS', dates),
-                                  _buildDateRows('EXECUTIVE ROOMS', dates),
-                                  _buildDateRows('SUITE ROOMS', dates),
-                                ],
-                              ),
+                          child: Text(
+                            widget.studentName,
+                            style: const TextStyle(
+                              color: Color(0xFFFFFBF2),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.logout,
+                            size: 18,
+                            color: Color(0xFF897249),
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              '/login',
+                              (route) => false,
+                            );
+                          },
+                        ),
                       ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // 🧱 Main calendar area
+          Expanded(
+            child: Column(
+              children: [
+                // Header: title + date picker + toggle
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 10,
+                  ),
+                  width: double.infinity,
+                  color: const Color(0xFFFFF1AB),
+                  child: Row(
+                    children: [
+                      Text(
+                        'PROPERTY MANAGEMENT SYSTEM',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.brown.shade800,
+                        ),
+                      ),
+                      const Spacer(),
+                      Container(
+                        width: 300,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          border: Border(
+                            right: BorderSide(color: Colors.black26, width: 2),
+                          ),
+                        ),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.grey[100],
+                            foregroundColor: Colors.black87,
+                            elevation: 0,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.calendar_today,
+                            color: Colors.black54,
+                          ),
+                          label: Text(
+                            "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          onPressed: () async {
+                            final selectedDate = await showDatePicker(
+                              context: context,
+                              initialDate: _currentStartDate,
+                              firstDate: DateTime(_selectedYear - 5),
+                              lastDate: DateTime(_selectedYear + 5),
+                            );
+                            if (selectedDate != null) {
+                              setState(() {
+                                _currentStartDate = selectedDate;
+                                _selectedYear = selectedDate.year;
+                                _selectedMonth = selectedDate.month;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      Radio<Mode>(
+                        value: Mode.bookRooms,
+                        groupValue: _mode,
+                        onChanged: (Mode? value) =>
+                            setState(() => _mode = value!),
+                      ),
+                      const Text(
+                        'Book Rooms',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+                      Radio<Mode>(
+                        value: Mode.housekeeping,
+                        groupValue: _mode,
+                        onChanged: (Mode? value) =>
+                            setState(() => _mode = value!),
+                      ),
+                      const Text(
+                        'Set Housekeeping Status',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // 🔄 Combined Scroll Area: vertical scroll sync
+                Expanded(
+                  child: Scrollbar(
+                    controller: _verticalScrollController,
+                    thumbVisibility: true,
+                    child: SingleChildScrollView(
+                      controller: _verticalScrollController,
+                      scrollDirection: Axis.vertical,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Room Column
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: cellHeight,
+                                width: roomColumnWidth,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.chevron_left),
+                                      onPressed: () {
+                                        setState(() {
+                                          _currentStartDate = _currentStartDate
+                                              .subtract(
+                                                const Duration(days: 1),
+                                              );
+                                          if (_selectedDate.isBefore(
+                                            _currentStartDate,
+                                          )) {
+                                            _selectedDate = _currentStartDate;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.chevron_right),
+                                      onPressed: () {
+                                        setState(() {
+                                          _currentStartDate = _currentStartDate
+                                              .add(const Duration(days: 1));
+                                          final lastDate = _currentStartDate
+                                              .add(const Duration(days: 29));
+                                          if (_selectedDate.isAfter(lastDate)) {
+                                            _selectedDate = lastDate;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              _buildRoomColumn('STANDARD SINGLE ROOMS'),
+                              _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
+                              _buildRoomColumn('STANDARD DOUBLE ROOMS'),
+                              _buildRoomColumn('DELUXE ROOMS'),
+                              _buildRoomColumn('FAMILY ROOMS'),
+                              _buildRoomColumn('EXECUTIVE ROOMS'),
+                              _buildRoomColumn('SUITE ROOMS'),
+                            ],
+                          ),
+
+                          // Date Headers + Cells
+                          Expanded(
+                            child: Scrollbar(
+                              controller: _horizontalScrollController,
+                              thumbVisibility: true,
+                              child: SingleChildScrollView(
+                                controller: _horizontalScrollController,
+                                scrollDirection: Axis.horizontal,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    _buildDateHeaderRow(dates),
+                                    _buildDateRows(
+                                      'STANDARD SINGLE ROOMS',
+                                      dates,
+                                    ),
+                                    _buildDateRows(
+                                      'SUPERIOR SINGLE ROOMS',
+                                      dates,
+                                    ),
+                                    _buildDateRows(
+                                      'STANDARD DOUBLE ROOMS',
+                                      dates,
+                                    ),
+                                    _buildDateRows('DELUXE ROOMS', dates),
+                                    _buildDateRows('FAMILY ROOMS', dates),
+                                    _buildDateRows('EXECUTIVE ROOMS', dates),
+                                    _buildDateRows('SUITE ROOMS', dates),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
+        ],
+      ),
+    );
+  }
 
   Widget _buildSidebarItem(IconData icon, String title, {VoidCallback? onTap}) {
     return InkWell(
@@ -881,71 +1005,76 @@ Widget build(BuildContext context) {
   }
 
   Widget _buildDateRows(String title, List<DateTime> dates) {
-  const Radius cornerRadius = Radius.circular(10);
-  final roomList = widget.rooms[title] ?? [];
+    const Radius cornerRadius = Radius.circular(10);
+    final roomList = widget.rooms[title] ?? [];
 
-  return Column(
-    children: [
-      // Header placeholder (aligned with date headers)
-      Row(
-        children: List.generate(
-          dates.length,
-          (_) => Container(
-            width: cellWidth,
-            height: headerCellHeight,
-            color: const Color(0xFF5B3A00),
+    return Column(
+      children: [
+        // Header placeholder (aligned with date headers)
+        Row(
+          children: List.generate(
+            dates.length,
+            (_) => Container(
+              width: cellWidth,
+              height: headerCellHeight,
+              color: const Color(0xFF5B3A00),
+            ),
           ),
         ),
-      ),
 
-      // Room rows
-      ...roomList.asMap().entries.map((entry) {
-        final isLastRoom = entry.key == roomList.length - 1;
-        final room = entry.value;
+        // Room rows
+        ...roomList.asMap().entries.map((entry) {
+          final isLastRoom = entry.key == roomList.length - 1;
+          final room = entry.value;
 
-        final bookingStart = _selectedStart[room];
-        final bookingEnd = _selectedEnd[room] ?? bookingStart;
+          final bookingStart = _selectedStart[room];
+          final bookingEnd = _selectedEnd[room] ?? bookingStart;
 
-        return Row(
-          children: dates.asMap().entries.map((dateEntry) {
-            final i = dateEntry.key;
+          return Row(
+            children: dates.asMap().entries.map((dateEntry) {
+              final i = dateEntry.key;
 
-            final hk = _housekeepingStatus[room]?[i];
-            final statusCode = hk?['status'];
-            Color? statusColor;
+              final hk = _housekeepingStatus[room]?[i];
+              final statusCode = hk?['status'];
+              Color? statusColor;
               if (statusCode != null) {
                 final statusInfo = roomStatusMap[statusCode];
                 statusColor = statusInfo?['color'] as Color?;
               }
 
+              final isBookingSelected =
+                  _mode == Mode.bookRooms &&
+                  bookingStart != null &&
+                  bookingEnd != null &&
+                  i >= bookingStart &&
+                  i <= bookingEnd;
 
-            final isBookingSelected = _mode == Mode.bookRooms &&
-                bookingStart != null &&
-                bookingEnd != null &&
-                i >= bookingStart &&
-                i <= bookingEnd;
+              final selStart = _hkSelectedStart[room];
+              final selEnd = _hkSelectedEnd[room];
+              final isHKPreview =
+                  _mode == Mode.housekeeping &&
+                  selStart != null &&
+                  selEnd != null &&
+                  i >= selStart &&
+                  i <= selEnd;
 
-            final selStart = _hkSelectedStart[room];
-            final selEnd = _hkSelectedEnd[room];
-            final isHKPreview = _mode == Mode.housekeeping &&
-                selStart != null &&
-                selEnd != null &&
-                i >= selStart &&
-                i <= selEnd;
-
-            BorderRadius? bookingRadius;
-            if (isBookingSelected) {
-              if (bookingStart == bookingEnd) {
-                bookingRadius = BorderRadius.circular(8);
-              } else if (i == bookingStart) {
-                bookingRadius = const BorderRadius.horizontal(left: cornerRadius);
-              } else if (i == bookingEnd) {
-                bookingRadius = const BorderRadius.horizontal(right: cornerRadius);
+              BorderRadius? bookingRadius;
+              if (isBookingSelected) {
+                if (bookingStart == bookingEnd) {
+                  bookingRadius = BorderRadius.circular(8);
+                } else if (i == bookingStart) {
+                  bookingRadius = const BorderRadius.horizontal(
+                    left: cornerRadius,
+                  );
+                } else if (i == bookingEnd) {
+                  bookingRadius = const BorderRadius.horizontal(
+                    right: cornerRadius,
+                  );
+                }
               }
-            }
 
-            // Calculate merged housekeeping range for block display
-               int? hkRangeStart;
+              // Calculate merged housekeeping range for block display
+              int? hkRangeStart;
               int? hkRangeEnd;
 
               if (statusCode != null) {
@@ -972,127 +1101,135 @@ Widget build(BuildContext context) {
                 }
               }
 
+              final isInsideHKRange =
+                  statusCode != null &&
+                  hkRangeStart != null &&
+                  hkRangeEnd != null &&
+                  i >= hkRangeStart &&
+                  i <= hkRangeEnd;
 
-            final isInsideHKRange = statusCode != null &&
-                hkRangeStart != null &&
-                hkRangeEnd != null &&
-                i >= hkRangeStart &&
-                i <= hkRangeEnd;
+              final isHKRangeStart = isInsideHKRange && i == hkRangeStart;
+              final isBookingRangeStart =
+                  isBookingSelected && i == bookingStart;
 
-            final isHKRangeStart = isInsideHKRange && i == hkRangeStart;
-            final isBookingRangeStart = isBookingSelected && i == bookingStart;
-
-            return MouseRegion(
-              cursor: ((_mode == Mode.bookRooms && (statusCode == null || statusCode == 'VR')) ||
-                      _mode == Mode.housekeeping)
-                  ? SystemMouseCursors.click
-                  : SystemMouseCursors.basic,
-              child: GestureDetector(
-                onTap: ((_mode == Mode.bookRooms && (statusCode == null || statusCode == 'VR')) ||
+              return MouseRegion(
+                cursor:
+                    ((_mode == Mode.bookRooms &&
+                            (statusCode == null || statusCode == 'VR')) ||
                         _mode == Mode.housekeeping)
-                    ? () => _onCellTap(title, room, i)
-                    : null,
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    // Booking highlight
-                    if (isBookingRangeStart)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: cellHeight,
-                        width: cellWidth * (bookingEnd! - bookingStart! + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.yellow[300],
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                      ),
-
-                    // Housekeeping preview (gray)
-                    if (isHKPreview &&
-                        selStart != null &&
-                        selEnd != null &&
-                        i == selStart &&
-                        (statusCode == null || statusCode != 'VR'))
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: cellHeight,
-                        width: cellWidth * (selEnd - selStart + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade400,
-                            borderRadius: const BorderRadius.horizontal(
-                              left: cornerRadius,
-                              right: cornerRadius,
+                    ? SystemMouseCursors.click
+                    : SystemMouseCursors.basic,
+                child: GestureDetector(
+                  onTap:
+                      ((_mode == Mode.bookRooms &&
+                              (statusCode == null || statusCode == 'VR')) ||
+                          _mode == Mode.housekeeping)
+                      ? () => _onCellTap(title, room, i)
+                      : null,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      // Booking highlight
+                      if (isBookingRangeStart)
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          height: cellHeight,
+                          width: cellWidth * (bookingEnd! - bookingStart! + 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.yellow[300],
+                              borderRadius: BorderRadius.circular(16),
                             ),
                           ),
                         ),
-                      ),
 
-                    // Final housekeeping status block (non-VR)
-                    if (isHKRangeStart && statusCode != null && statusCode != 'VR')
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: cellHeight,
-                        width: cellWidth * (hkRangeEnd! - hkRangeStart! + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: statusColor,
-                            borderRadius: const BorderRadius.horizontal(
-                              left: cornerRadius,
-                              right: cornerRadius,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            statusCode,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              letterSpacing: 2,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ),
-
-                    // The actual calendar cell
-                    Container(
-                      width: cellWidth,
-                      height: cellHeight,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: (isInsideHKRange && statusCode != 'VR') ||
-                                isBookingSelected ||
-                                (isHKPreview && statusCode != 'VR')
-                            ? null
-                            : Border(
-                                right: i == dates.length - 1
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
-                                bottom: isLastRoom
-                                    ? BorderSide.none
-                                    : BorderSide(color: Colors.grey.shade300),
+                      // Housekeeping preview (gray)
+                      if (isHKPreview &&
+                          selStart != null &&
+                          selEnd != null &&
+                          i == selStart &&
+                          (statusCode == null || statusCode != 'VR'))
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          height: cellHeight,
+                          width: cellWidth * (selEnd - selStart + 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade400,
+                              borderRadius: const BorderRadius.horizontal(
+                                left: cornerRadius,
+                                right: cornerRadius,
                               ),
-                        borderRadius: bookingRadius,
+                            ),
+                          ),
+                        ),
+
+                      // Final housekeeping status block (non-VR)
+                      if (isHKRangeStart &&
+                          statusCode != null &&
+                          statusCode != 'VR')
+                        Positioned(
+                          left: 0,
+                          top: 0,
+                          height: cellHeight,
+                          width: cellWidth * (hkRangeEnd! - hkRangeStart! + 1),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              borderRadius: const BorderRadius.horizontal(
+                                left: cornerRadius,
+                                right: cornerRadius,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              statusCode,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                letterSpacing: 2,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+
+                      // The actual calendar cell
+                      Container(
+                        width: cellWidth,
+                        height: cellHeight,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          border:
+                              (isInsideHKRange && statusCode != 'VR') ||
+                                  isBookingSelected ||
+                                  (isHKPreview && statusCode != 'VR')
+                              ? null
+                              : Border(
+                                  right: i == dates.length - 1
+                                      ? BorderSide.none
+                                      : BorderSide(color: Colors.grey.shade300),
+                                  bottom: isLastRoom
+                                      ? BorderSide.none
+                                      : BorderSide(color: Colors.grey.shade300),
+                                ),
+                          borderRadius: bookingRadius,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
-        );
-      }).toList(),
-    ],
-  );
-}
+              );
+            }).toList(),
+          );
+        }).toList(),
+      ],
+    );
+  }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
