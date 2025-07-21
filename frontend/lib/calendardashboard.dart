@@ -285,17 +285,29 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           });
 
           // 2. Show dialog AFTER UI update
-          final dates = _generateDatesForMonth(
-            _selectedYear,
-            _selectedMonth,
-            daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
+          final displayedDates = _generateDatesFromStartDate(
+            _currentStartDate,
+            30,
           );
-          final startDate = dates[newStart]['date'] ?? '';
-          final endDate = dates[newEnd]['date'] ?? '';
+
+          final startDt = displayedDates[newStart];
+          final endDt = displayedDates[newEnd];
+
+          final startDate = '${_monthAbbr(startDt.month)} ${startDt.day}';
+          final endDate = '${_monthAbbr(endDt.month)} ${endDt.day}';
 
           showDialog(
             context: context,
             builder: (context) {
+              final displayedDates = _generateDatesFromStartDate(
+                _currentStartDate,
+                30,
+              );
+              final startDt = displayedDates[newStart];
+              final endDt = displayedDates[newEnd];
+              final startDate = '${_monthAbbr(startDt.month)} ${startDt.day}';
+              final endDate = '${_monthAbbr(endDt.month)} ${endDt.day}';
+
               return AlertDialog(
                 title: const Text('Confirm Booking'),
                 content: Column(
@@ -304,7 +316,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   children: [
                     Text('Room: $room'),
                     const SizedBox(height: 8),
-                    Text('Date Range: $startDate - $endDate'),
+                    Text('Date Range: $startDate – $endDate'),
                   ],
                 ),
                 actions: [
@@ -328,15 +340,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           builder: (context) => AvailableCellPage(
                             roomType: roomType,
                             roomNumber: room,
+                            // you may also want to use displayedDates[newStart]/[newEnd] here
                             checkInDate: DateTime(
-                              _selectedYear,
-                              _selectedMonth,
-                              newStart + 1,
+                              startDt.year,
+                              startDt.month,
+                              startDt.day,
                             ),
                             checkOutDate: DateTime(
-                              _selectedYear,
-                              _selectedMonth,
-                              newEnd + 1,
+                              endDt.year,
+                              endDt.month,
+                              endDt.day,
                             ),
                           ),
                         ),
