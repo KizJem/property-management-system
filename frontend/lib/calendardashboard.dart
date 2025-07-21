@@ -70,6 +70,11 @@ const Map<String, Map<String, dynamic>> roomStatusMap = {
 };
 
 class _CalendarDashboardState extends State<CalendarDashboard> {
+  // ▶️ Define once at the top:
+  static const double cellWidth = 100.0;
+  static const double cellHeight = 50.0;
+  static const double headerCellHeight = 40.0;
+
   // Default mode is booking rooms
   Mode _mode = Mode.bookRooms;
 
@@ -180,17 +185,17 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       });
                     },
                     child: Container(
-                      width: 80,
-                      margin: const EdgeInsets.symmetric(horizontal: 2),
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 12,
-                        horizontal: 8,
-                      ),
+                      width: cellWidth,
+                      height: cellHeight,
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: isSelected ? Colors.grey.shade300 : null,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: RichText(
+                        textAlign: TextAlign.center,
                         text: TextSpan(
                           style: TextStyle(
                             color: isSelected
@@ -667,8 +672,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           setState(() {
                             _mode = value!;
                           });
-                          activeColor:
-                          Colors.blue;
                         },
                       ),
                       const Text(
@@ -686,8 +689,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           setState(() {
                             _mode = value!;
                           });
-                          activeColor:
-                          Colors.blue;
                         },
                       ),
                       const Text(
@@ -1058,8 +1059,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           children: List.generate(
             dates.length,
             (_) => Container(
-              width: 80,
-              height: 40,
+              width: cellWidth,
+              height: headerCellHeight,
               color: const Color(0xFF5B3A00), // same as left group header
             ),
           ),
@@ -1259,8 +1260,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
 
                       Container(
-                        width: 80,
-                        height: 50,
+                        width: cellWidth,
+                        height: cellHeight,
+                        alignment: Alignment.center,
                         decoration: BoxDecoration(
                           border: noBorder
                               ? null
