@@ -60,6 +60,7 @@ class AvailableCellPage extends StatefulWidget {
 }
 
 class AvailableCellPageState extends State<AvailableCellPage> {
+  bool _isReservation = false;
   int selectedGuests = 1;
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
@@ -769,16 +770,28 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                           ),
                         ),
                         const Spacer(),
-                        Radio(value: true, groupValue: true, onChanged: (_) {}),
+
+                        // Reservation
+                        Radio<bool>(
+                          value: true,
+                          groupValue: _isReservation,
+                          onChanged: (val) {
+                            setState(() => _isReservation = val!);
+                          },
+                        ),
                         const Text(
                           'Reservation',
                           style: TextStyle(fontSize: 12),
                         ),
                         const SizedBox(width: 10),
-                        Radio(
+
+                        // Check-In
+                        Radio<bool>(
                           value: false,
-                          groupValue: true,
-                          onChanged: (_) {},
+                          groupValue: _isReservation,
+                          onChanged: (val) {
+                            setState(() => _isReservation = val!);
+                          },
                         ),
                         const Text('Check-In', style: TextStyle(fontSize: 12)),
                       ],
