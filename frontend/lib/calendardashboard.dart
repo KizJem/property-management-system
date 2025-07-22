@@ -273,61 +273,119 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           showDialog(
             context: context,
             builder: (context) {
-              final displayedDates = _generateDatesFromStartDate(
-                _currentStartDate,
-                30,
-              );
-              final startDt = displayedDates[newStart];
-              final endDt = displayedDates[newEnd];
-              final startDate = '${_monthAbbr(startDt.month)} ${startDt.day}';
-              final endDate = '${_monthAbbr(endDt.month)} ${endDt.day}';
-
               return AlertDialog(
-                title: const Text('Confirm Booking'),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                insetPadding: EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 24,
+                ),
+                titlePadding: EdgeInsets.only(top: 24),
+                title: Center(
+                  child: Text(
+                    'Create New Booking?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                ),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Room: $room'),
-                    const SizedBox(height: 8),
-                    Text('Date Range: $startDate – $endDate'),
+                    Text(
+                      'Do you want to book Room $room from '
+                      '${_monthAbbr(startDt.month)} ${startDt.day} '
+                      'to ${_monthAbbr(endDt.month)} ${endDt.day}, ${endDt.year}?',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'This will take you to the Booking Page to '
+                      'enter guest details and confirm.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
+                actionsPadding: EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 16,
+                ),
                 actions: [
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedStart[room] = null;
-                        _selectedEnd[room] = null;
-                      });
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AvailableCellPage(
-                            roomType: roomType,
-                            roomNumber: room,
-                            checkInDate: DateTime(
-                              startDt.year,
-                              startDt.month,
-                              startDt.day,
+                  Row(
+                    children: [
+                      // ── Cancel button ──
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedStart[room] = null;
+                              _selectedEnd[room] = null;
+                            });
+                            Navigator.of(context).pop();
+                          },
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: Size.fromHeight(48),
+                            side: BorderSide(color: Colors.black, width: 1.2),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            checkOutDate: DateTime(
-                              endDt.year,
-                              endDt.month,
-                              endDt.day,
+                            padding: EdgeInsets.symmetric(horizontal: 32),
+                          ),
+                          child: Text('Cancel', style: TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // ── Create Booking button with .then(...) ──
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => AvailableCellPage(
+                                  roomType: roomType,
+                                  roomNumber: room,
+                                  checkInDate: DateTime(
+                                    startDt.year,
+                                    startDt.month,
+                                    startDt.day,
+                                  ),
+                                  checkOutDate: DateTime(
+                                    endDt.year,
+                                    endDt.month,
+                                    endDt.day,
+                                  ),
+                                ),
+                              ),
+                            ).then((_) {
+                              // Clear highlight on return
+                              setState(() {
+                                _selectedStart[room] = null;
+                                _selectedEnd[room] = null;
+                              });
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            minimumSize: Size.fromHeight(48),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
                             ),
+                            padding: EdgeInsets.symmetric(horizontal: 32),
+                          ),
+                          child: Text(
+                            'Create Booking',
+                            style: TextStyle(fontSize: 16, color: Colors.white),
                           ),
                         ),
-                      );
-                    },
-                    child: const Text('Continue'),
+                      ),
+                    ],
                   ),
                 ],
               );
