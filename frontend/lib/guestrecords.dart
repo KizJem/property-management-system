@@ -9,7 +9,7 @@ class GuestRecordsPage extends StatefulWidget {
 }
 
 class _GuestRecordsPageState extends State<GuestRecordsPage> {
-  bool _sidebarExpanded = true;
+  bool _sidebarExpanded = false;
 
   final List<Map<String, String>> guests = [
     {'guest': 'Juan Dela Cruz', 'bookings': '4', 'nights': '5', 'room': '101'},

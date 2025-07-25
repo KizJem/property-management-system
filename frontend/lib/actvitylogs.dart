@@ -12,7 +12,7 @@ class ActivityLogsPage extends StatefulWidget {
 }
 
 class _ActivityLogsPageState extends State<ActivityLogsPage> {
-  bool _sidebarExpanded = true;
+  bool _sidebarExpanded = false;
 
   final List<Map<String, String>> logs = [
     {

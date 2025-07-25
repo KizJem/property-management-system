@@ -615,7 +615,12 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 Expanded(
                   child: Column(
                     children: [
-                      _buildSidebarItem(Icons.calendar_today, 'Calendar'),
+                      _buildSidebarItem(
+                        Icons.calendar_today,
+                        'Calendar',
+                        onTap: null,
+                        isActive: true, // ✅ Highlights Calendar
+                      ),
                       _buildSidebarItem(
                         Icons.bed,
                         'Guest Records',
@@ -718,27 +723,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             ),
           ),
 
-          // Main content area
           Expanded(
             child: Column(
               children: [
-                // FIXED TOP HEADER (Yellow section)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 40,
                     vertical: 10,
                   ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFFF1AB),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
                   width: double.infinity,
+                  color: const Color(0xFFFFF1AB),
                   child: Row(
                     children: [
                       Text(
@@ -814,12 +808,138 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
                       ),
                       const SizedBox(width: 24),
+
                       Radio<Mode>(
                         value: Mode.housekeeping,
                         groupValue: _mode,
                         activeColor: const Color(0xFF9B2C13),
-                        onChanged: (Mode? value) =>
-                            _onHousekeepingToggle(value),
+                        onChanged: (Mode? newValue) async {
+                          if (newValue == Mode.housekeeping) {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                insetPadding: EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
+                                title: Padding(
+                                  padding: const EdgeInsets.only(top: 24.0),
+                                  child: Center(
+                                    child: Text(
+                                      'Switch to Housekeeping Mode?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "You're about to leave Booking Mode.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: const Color.fromARGB(
+                                          255,
+                                          46,
+                                          45,
+                                          45,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Unsaved selections or guest details will be cleared.\nDo you want to continue?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                actionsPadding: EdgeInsets.only(
+                                  left: 24,
+                                  right: 24,
+                                  bottom: 24,
+                                ),
+                                actions: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: BorderSide(
+                                              color: Colors.black,
+                                              width: 1.2,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 18,
+                                              horizontal: 32,
+                                            ),
+                                            minimumSize: Size.fromHeight(48),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 24),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.black,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 18,
+                                              horizontal: 32,
+                                            ),
+                                            minimumSize: Size.fromHeight(48),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: Text(
+                                            'Switch to Housekeeping',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+
+                            if (confirmed == true) {
+                              setState(() => _mode = Mode.housekeeping);
+                            }
+                          } else {
+                            setState(() => _mode = newValue!);
+                          }
+                        },
                       ),
                       const Text(
                         'Set Housekeeping Status',
@@ -832,119 +952,6 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   ),
                 ),
 
-                // FIXED DATE HEADER ROW
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFCF7FF),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
-                        blurRadius: 3,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  height: cellHeight,
-                  child: Row(
-                    children: [
-                      Container(
-                        width: roomColumnWidth,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.chevron_left),
-                              onPressed: () {
-                                setState(() {
-                                  _currentStartDate = _currentStartDate
-                                      .subtract(const Duration(days: 1));
-                                  if (_selectedDate.isBefore(
-                                    _currentStartDate,
-                                  )) {
-                                    _selectedDate = _currentStartDate;
-                                  }
-                                });
-                              },
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: const Icon(Icons.chevron_right),
-                              onPressed: () {
-                                setState(() {
-                                  _currentStartDate = _currentStartDate.add(
-                                    const Duration(days: 1),
-                                  );
-                                  final lastDate = _currentStartDate.add(
-                                    const Duration(days: 29),
-                                  );
-                                  if (_selectedDate.isAfter(lastDate)) {
-                                    _selectedDate = lastDate;
-                                  }
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Scrollbar(
-                          controller: _horizontalScrollController,
-                          thumbVisibility: true,
-                          child: SingleChildScrollView(
-                            controller: _horizontalScrollController,
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: dates.map((date) {
-                                final isSel =
-                                    date.year == _selectedDate.year &&
-                                    date.month == _selectedDate.month &&
-                                    date.day == _selectedDate.day;
-                                final weekday = [
-                                  'Sun',
-                                  'Mon',
-                                  'Tue',
-                                  'Wed',
-                                  'Thu',
-                                  'Fri',
-                                  'Sat',
-                                ][date.weekday % 7];
-                                final month = _monthAbbr(date.month);
-                                final day = date.day;
-                                return Container(
-                                  width: cellWidth,
-                                  alignment: Alignment.center,
-                                  child: RichText(
-                                    textAlign: TextAlign.center,
-                                    text: TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.black,
-                                        fontWeight: isSel
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
-                                      children: [
-                                        TextSpan(text: '$weekday $month '),
-                                        TextSpan(
-                                          text: '$day',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // SCROLLABLE ROOM GRID
                 Expanded(
                   child: Scrollbar(
                     controller: _verticalScrollController,
@@ -955,10 +962,51 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Room Column
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Container(height: 0, width: roomColumnWidth),
+                              Container(
+                                height: cellHeight,
+                                width: roomColumnWidth,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.chevron_left),
+                                      onPressed: () {
+                                        setState(() {
+                                          _currentStartDate = _currentStartDate
+                                              .subtract(
+                                                const Duration(days: 1),
+                                              );
+                                          if (_selectedDate.isBefore(
+                                            _currentStartDate,
+                                          )) {
+                                            _selectedDate = _currentStartDate;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(
+                                      icon: const Icon(Icons.chevron_right),
+                                      onPressed: () {
+                                        setState(() {
+                                          _currentStartDate = _currentStartDate
+                                              .add(const Duration(days: 1));
+                                          final lastDate = _currentStartDate
+                                              .add(const Duration(days: 29));
+                                          if (_selectedDate.isAfter(lastDate)) {
+                                            _selectedDate = lastDate;
+                                          }
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                               _buildRoomColumn('STANDARD SINGLE ROOMS'),
                               _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
                               _buildRoomColumn('STANDARD DOUBLE ROOMS'),
@@ -968,6 +1016,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                               _buildRoomColumn('SUITE ROOMS'),
                             ],
                           ),
+
+                          // Date Headers + Cells
                           Expanded(
                             child: Scrollbar(
                               controller: _horizontalScrollController,
@@ -978,6 +1028,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    _buildDateHeaderRow(dates),
                                     _buildDateRows(
                                       'STANDARD SINGLE ROOMS',
                                       dates,
@@ -1012,30 +1063,23 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
     );
   }
 
-  void _onHousekeepingToggle(Mode? value) {
-    if (value == Mode.housekeeping) {
-      setState(() {
-        _mode = Mode.housekeeping;
-        _activeBookingRoom = null;
-        _selectedStart.clear();
-        _selectedEnd.clear();
-      });
-    } else {
-      setState(() {
-        _mode = Mode.bookRooms;
-        _activeHKRoom = null;
-        _hkSelectedStart.clear();
-        _hkSelectedEnd.clear();
-      });
-    }
-  }
-
-  Widget _buildSidebarItem(IconData icon, String title, {VoidCallback? onTap}) {
+  Widget _buildSidebarItem(
+    IconData icon,
+    String title, {
+    VoidCallback? onTap,
+    bool isActive = false,
+  }) {
     return InkWell(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
+        decoration: BoxDecoration(
+          color: isActive ? const Color(0xFF3B2F25) : Colors.transparent,
+        ),
         child: Row(
+          mainAxisAlignment: _sidebarExpanded
+              ? MainAxisAlignment.start
+              : MainAxisAlignment.center,
           children: [
             Icon(icon, size: 20, color: const Color(0xFF897249)),
             if (_sidebarExpanded) ...[
@@ -1296,37 +1340,20 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           ),
                         ),
 
-                      // Housekeeping “first‐click” preview (single cell)
-                      if (_mode == Mode.housekeeping &&
-                          selStart != null &&
-                          selEnd == null &&
-                          i == selStart)
-                        Positioned(
-                          left: 0,
-                          top: 0,
-                          height: cellHeight,
-                          width: cellWidth,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.yellow[300],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
-
-                      // Housekeeping “second‐click” preview (range)
-                      if (_mode == Mode.housekeeping &&
+                      // Housekeeping preview (gray)
+                      if (isHKPreview &&
                           selStart != null &&
                           selEnd != null &&
-                          i == selStart)
+                          i == selStart &&
+                          (statusCode == null || statusCode != 'VR'))
                         Positioned(
                           left: 0,
                           top: 0,
                           height: cellHeight,
-                          width: cellWidth * (selEnd - selStart! + 1),
+                          width: cellWidth * (selEnd - selStart + 1),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.yellow[300],
+                              color: Colors.grey.shade400,
                               borderRadius: const BorderRadius.horizontal(
                                 left: cornerRadius,
                                 right: cornerRadius,
