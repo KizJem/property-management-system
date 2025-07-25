@@ -19,9 +19,9 @@ app.post('/api/v1/login', async (req, res) => {
 
   try {
     // Check if credentials match the default admin account
-    if (username !== 'admin@example.com' || password !== 'admin') {
-      return res.status(401).json({ message: 'Invalid credentials' });
-    }
+    if (username.trim() !== 'frontdesk' || password.trim() !== 'frontdeskpms') {
+  return res.status(401).json({ message: 'Invalid credentials' });
+}
 
     // Check if user with this name already exists
     db.get(
