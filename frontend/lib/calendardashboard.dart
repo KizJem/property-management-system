@@ -1062,12 +1062,32 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         ? const Color(0xFF9B2C13)
         : const Color(0xFF5B3A00);
 
+    // Handles both "100 Standard Single" and "Standard Single - Room No. 100"
+    String extractRoomNumber(String raw) {
+      if (raw.contains('Room No.')) {
+        final match = RegExp(r'Room No\. (\d+)').firstMatch(raw);
+        return match != null ? match.group(1)! : '???';
+      } else {
+        final parts = raw.split(' ');
+        return parts.isNotEmpty ? parts[0] : '???';
+      }
+    }
+
+    String extractRoomType(String raw) {
+      if (raw.contains('Room No.')) {
+        return raw.split(' - Room No.').first.trim();
+      } else {
+        final parts = raw.split(' ');
+        return parts.length > 1 ? parts.sublist(1).join(' ') : 'Unknown Type';
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Header Row (e.g. "STANDARD SINGLE ROOMS")
         Container(
           height: 40,
-          // width: 300,
           width: roomColumnWidth,
           color: headerBg,
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -1089,18 +1109,15 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           ),
         ),
 
+        // Room Rows
         ...roomList.asMap().entries.map((entry) {
           final isLast = entry.key == roomList.length - 1;
-          final roomFull = entry.value;
-
-          final match = RegExp(
-            r'(.+?)\s*-\s*Room No\. (\d+)$',
-          ).firstMatch(roomFull);
-          final roomType = match?.group(1)?.trim() ?? title;
-          final roomNumber = match?.group(2)?.trim() ?? '';
+          final rawRoom = entry.value;
+          final roomNumber = extractRoomNumber(rawRoom);
+          final roomType = extractRoomType(rawRoom);
 
           return Container(
-            width: 300,
+            width: roomColumnWidth,
             height: 50,
             decoration: BoxDecoration(
               color: Colors.white,
