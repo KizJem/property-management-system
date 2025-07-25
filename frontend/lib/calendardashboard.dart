@@ -718,345 +718,259 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             ),
           ),
 
-          Expanded(
-            child: Column(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 10,
-                  ),
-                  width: double.infinity,
+           // Main content area
+        Expanded(
+          child: Column(
+            children: [
+              // FIXED TOP HEADER (Yellow section)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                decoration: BoxDecoration(
                   color: const Color(0xFFFFF1AB),
-                  child: Row(
-                    children: [
-                      Text(
-                        'PROPERTY MANAGEMENT SYSTEM',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.brown.shade800,
-                        ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                width: double.infinity,
+                child: Row(
+                  children: [
+                    Text(
+                      'PROPERTY MANAGEMENT SYSTEM',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.brown.shade800,
                       ),
-                      const Spacer(),
-                      Container(
-                        width: 300,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            right: BorderSide(color: Colors.black26, width: 2),
-                          ),
-                        ),
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[100],
-                            foregroundColor: Colors.black87,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.calendar_today,
-                            color: Colors.black54,
-                          ),
-                          label: Text(
-                            "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          onPressed: () async {
-                            final selectedDate = await showDatePicker(
-                              context: context,
-                              initialDate: _currentStartDate,
-                              firstDate: DateTime(_selectedYear - 5),
-                              lastDate: DateTime(_selectedYear + 5),
-                            );
-                            if (selectedDate != null) {
-                              setState(() {
-                                _currentStartDate = selectedDate;
-                                _selectedYear = selectedDate.year;
-                                _selectedMonth = selectedDate.month;
-                              });
-                            }
-                          },
-                        ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      width: 300,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(
+                        border: Border(right: BorderSide(color: Colors.black26, width: 2)),
                       ),
-                      Radio<Mode>(
-                        value: Mode.bookRooms,
-                        groupValue: _mode,
-                        activeColor: const Color(0xFF664D21),
-                        onChanged: (Mode? value) =>
-                            setState(() => _mode = value!),
-                      ),
-                      const Text(
-                        'Book Rooms',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.grey[100],
+                          foregroundColor: Colors.black87,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
-                      ),
-                      const SizedBox(width: 24),
-
-                      Radio<Mode>(
-                        value: Mode.housekeeping,
-                        groupValue: _mode,
-                        activeColor: const Color(0xFF9B2C13),
-                        onChanged: (Mode? newValue) async {
-                          if (newValue == Mode.housekeeping) {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                insetPadding: EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                title: Padding(
-                                  padding: const EdgeInsets.only(top: 24.0),
-                                  child: Center(
-                                    child: Text(
-                                      'Switch to Housekeeping Mode?',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "You're about to leave Booking Mode.",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: const Color.fromARGB(
-                                          255,
-                                          46,
-                                          45,
-                                          45,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Unsaved selections or guest details will be cleared.\nDo you want to continue?',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                actionsPadding: EdgeInsets.only(
-                                  left: 24,
-                                  right: 24,
-                                  bottom: 24,
-                                ),
-                                actions: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: BorderSide(
-                                              color: Colors.black,
-                                              width: 1.2,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 18,
-                                              horizontal: 32,
-                                            ),
-                                            minimumSize: Size.fromHeight(48),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: Text(
-                                            'Cancel',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 24),
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.black,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            padding: EdgeInsets.symmetric(
-                                              vertical: 18,
-                                              horizontal: 32,
-                                            ),
-                                            minimumSize: Size.fromHeight(48),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: Text(
-                                            'Switch to Housekeeping',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
-
-                            if (confirmed == true) {
-                              setState(() => _mode = Mode.housekeeping);
-                            }
-                          } else {
-                            setState(() => _mode = newValue!);
+                        icon: const Icon(Icons.calendar_today, color: Colors.black54),
+                        label: Text(
+                          "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        onPressed: () async {
+                          final selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _currentStartDate,
+                            firstDate: DateTime(_selectedYear - 5),
+                            lastDate: DateTime(_selectedYear + 5),
+                          );
+                          if (selectedDate != null) {
+                            setState(() {
+                              _currentStartDate = selectedDate;
+                              _selectedYear = selectedDate.year;
+                              _selectedMonth = selectedDate.month;
+                            });
                           }
                         },
                       ),
-                      const Text(
-                        'Set Housekeeping Status',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Radio<Mode>(
+                      value: Mode.bookRooms,
+                      groupValue: _mode,
+                      activeColor: const Color(0xFF664D21),
+                      onChanged: (Mode? value) => setState(() => _mode = value!),
+                    ),
+                    const Text('Book Rooms', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                    const SizedBox(width: 24),
+                    Radio<Mode>(
+                      value: Mode.housekeeping,
+                      groupValue: _mode,
+                      activeColor: const Color(0xFF9B2C13),
+                      onChanged: (Mode? value) => _onHousekeepingToggle(value),
+                    ),
+                    const Text('Set Housekeeping Status', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+                  ],
                 ),
+              ),
 
-                Expanded(
-                  child: Scrollbar(
-                    controller: _verticalScrollController,
-                    thumbVisibility: true,
-                    child: SingleChildScrollView(
-                      controller: _verticalScrollController,
-                      scrollDirection: Axis.vertical,
+              // FIXED DATE HEADER ROW
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFCF7FF),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.08),
+                      blurRadius: 3,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                height: cellHeight,
+                child: Row(
+                  children: [
+                    Container(
+                      width: roomColumnWidth,
                       child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Room Column
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                height: cellHeight,
-                                width: roomColumnWidth,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.chevron_left),
-                                      onPressed: () {
-                                        setState(() {
-                                          _currentStartDate = _currentStartDate
-                                              .subtract(
-                                                const Duration(days: 1),
-                                              );
-                                          if (_selectedDate.isBefore(
-                                            _currentStartDate,
-                                          )) {
-                                            _selectedDate = _currentStartDate;
-                                          }
-                                        });
-                                      },
-                                    ),
-                                    const SizedBox(width: 8),
-                                    IconButton(
-                                      icon: const Icon(Icons.chevron_right),
-                                      onPressed: () {
-                                        setState(() {
-                                          _currentStartDate = _currentStartDate
-                                              .add(const Duration(days: 1));
-                                          final lastDate = _currentStartDate
-                                              .add(const Duration(days: 29));
-                                          if (_selectedDate.isAfter(lastDate)) {
-                                            _selectedDate = lastDate;
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              _buildRoomColumn('STANDARD SINGLE ROOMS'),
-                              _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
-                              _buildRoomColumn('STANDARD DOUBLE ROOMS'),
-                              _buildRoomColumn('DELUXE ROOMS'),
-                              _buildRoomColumn('FAMILY ROOMS'),
-                              _buildRoomColumn('EXECUTIVE ROOMS'),
-                              _buildRoomColumn('SUITE ROOMS'),
-                            ],
+                          IconButton(
+                            icon: const Icon(Icons.chevron_left),
+                            onPressed: () {
+                              setState(() {
+                                _currentStartDate = _currentStartDate.subtract(const Duration(days: 1));
+                                if (_selectedDate.isBefore(_currentStartDate)) {
+                                  _selectedDate = _currentStartDate;
+                                }
+                              });
+                            },
                           ),
-
-                          // Date Headers + Cells
-                          Expanded(
-                            child: Scrollbar(
-                              controller: _horizontalScrollController,
-                              thumbVisibility: true,
-                              child: SingleChildScrollView(
-                                controller: _horizontalScrollController,
-                                scrollDirection: Axis.horizontal,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    _buildDateHeaderRow(dates),
-                                    _buildDateRows(
-                                      'STANDARD SINGLE ROOMS',
-                                      dates,
-                                    ),
-                                    _buildDateRows(
-                                      'SUPERIOR SINGLE ROOMS',
-                                      dates,
-                                    ),
-                                    _buildDateRows(
-                                      'STANDARD DOUBLE ROOMS',
-                                      dates,
-                                    ),
-                                    _buildDateRows('DELUXE ROOMS', dates),
-                                    _buildDateRows('FAMILY ROOMS', dates),
-                                    _buildDateRows('EXECUTIVE ROOMS', dates),
-                                    _buildDateRows('SUITE ROOMS', dates),
-                                  ],
-                                ),
-                              ),
-                            ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.chevron_right),
+                            onPressed: () {
+                              setState(() {
+                                _currentStartDate = _currentStartDate.add(const Duration(days: 1));
+                                final lastDate = _currentStartDate.add(const Duration(days: 29));
+                                if (_selectedDate.isAfter(lastDate)) {
+                                  _selectedDate = lastDate;
+                                }
+                              });
+                            },
                           ),
                         ],
                       ),
                     ),
+                    Expanded(
+                      child: Scrollbar(
+                        controller: _horizontalScrollController,
+                        thumbVisibility: true,
+                        child: SingleChildScrollView(
+                          controller: _horizontalScrollController,
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: dates.map((date) {
+                              final isSel =
+                                  date.year == _selectedDate.year &&
+                                  date.month == _selectedDate.month &&
+                                  date.day == _selectedDate.day;
+                              final weekday = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.weekday % 7];
+                              final month = _monthAbbr(date.month);
+                              final day = date.day;
+                              return Container(
+                                width: cellWidth,
+                                alignment: Alignment.center,
+                                child: RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Colors.black,
+                                      fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                    children: [
+                                      TextSpan(text: '$weekday $month '),
+                                      TextSpan(
+                                        text: '$day',
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              // SCROLLABLE ROOM GRID
+              Expanded(
+                child: Scrollbar(
+                  controller: _verticalScrollController,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _verticalScrollController,
+                    scrollDirection: Axis.vertical,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(height: 0, width: roomColumnWidth),
+                            _buildRoomColumn('STANDARD SINGLE ROOMS'),
+                            _buildRoomColumn('SUPERIOR SINGLE ROOMS'),
+                            _buildRoomColumn('STANDARD DOUBLE ROOMS'),
+                            _buildRoomColumn('DELUXE ROOMS'),
+                            _buildRoomColumn('FAMILY ROOMS'),
+                            _buildRoomColumn('EXECUTIVE ROOMS'),
+                            _buildRoomColumn('SUITE ROOMS'),
+                          ],
+                        ),
+                        Expanded(
+                          child: Scrollbar(
+                            controller: _horizontalScrollController,
+                            thumbVisibility: true,
+                            child: SingleChildScrollView(
+                              controller: _horizontalScrollController,
+                              scrollDirection: Axis.horizontal,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _buildDateRows('STANDARD SINGLE ROOMS', dates),
+                                  _buildDateRows('SUPERIOR SINGLE ROOMS', dates),
+                                  _buildDateRows('STANDARD DOUBLE ROOMS', dates),
+                                  _buildDateRows('DELUXE ROOMS', dates),
+                                  _buildDateRows('FAMILY ROOMS', dates),
+                                  _buildDateRows('EXECUTIVE ROOMS', dates),
+                                  _buildDateRows('SUITE ROOMS', dates),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  );
+}
+
+void _onHousekeepingToggle(Mode? value) {
+  if (value == Mode.housekeeping) {
+    setState(() {
+      _mode = Mode.housekeeping;
+      _activeBookingRoom = null;
+      _selectedStart.clear();
+      _selectedEnd.clear();
+    });
+  } else {
+    setState(() {
+      _mode = Mode.bookRooms;
+      _activeHKRoom = null;
+      _hkSelectedStart.clear();
+      _hkSelectedEnd.clear();
+    });
   }
+}
 
   Widget _buildSidebarItem(IconData icon, String title, {VoidCallback? onTap}) {
     return InkWell(
