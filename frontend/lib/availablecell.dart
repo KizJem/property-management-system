@@ -119,6 +119,16 @@ class AvailableCellPageState extends State<AvailableCellPage> {
       final checkInFormatted = DateFormat.yMMMMd().format(widget.checkInDate);
       final checkOutFormatted = DateFormat.yMMMMd().format(widget.checkOutDate);
 
+      // inside _handleContinue(), right before showDialog:
+      // 1) grab the first integer you find in widget.roomNumber
+      final roomNumMatch = RegExp(r'(\d+)').firstMatch(widget.roomNumber);
+      final roomNum = roomNumMatch != null
+          ? roomNumMatch.group(1)!
+          : widget.roomNumber;
+
+      // 2) strip off the trailing " ROOMS" from the passed‐in category
+      final roomCat = widget.roomType.replaceAll(RegExp(r' ROOMS$'), '');
+
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -150,7 +160,7 @@ class AvailableCellPageState extends State<AvailableCellPage> {
                 _buildRow(
                   Icons.meeting_room,
                   'Room',
-                  'NO. ${widget.roomNumber.toUpperCase()}',
+                  'NO. $roomNum – ${roomCat.toUpperCase()}',
                 ),
                 _buildRow(Icons.price_change, 'Price', price.toUpperCase()),
                 _buildRow(Icons.notes, 'Special Requests', specialRequest),
