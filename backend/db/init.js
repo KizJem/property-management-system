@@ -3,96 +3,163 @@
 const db = require('./connection');
 
 const schema = `
+CREATE TABLE IF NOT EXISTS pms_admin (
+  admin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  admin_username TEXT UNIQUE,
+  admin_password TEXT,
+  name TEXT
+);
+
 CREATE TABLE IF NOT EXISTS pms_user (
   user_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_email TEXT,
+  username TEXT UNIQUE,
   password TEXT,
-  name TEXT UNIQUE
+  name TEXT
 );
 
 CREATE TABLE IF NOT EXISTS pms_guest (
   guest_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  first_name TEXT,
-  last_name TEXT,
-  guest_email TEXT
-);
-
-CREATE TABLE IF NOT EXISTS pms_room_type (
-  room_type_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  room_category TEXT,
-  description TEXT,
-  price INTEGER,
-  no_guest INTEGER,
-  additional_guest_price INTEGER
+  gfname TEXT,
+  glname TEXT,
+  gpnum TEXT,
+  gemail TEXT
 );
 
 CREATE TABLE IF NOT EXISTS pms_room (
-  room_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  room_type_id INTEGER,
-  room_number TEXT,
-  FOREIGN KEY (room_type_id) REFERENCES pms_room_type(room_type_id)
+  room_no TEXT PRIMARY KEY,
+  room_type TEXT,
+  price INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS pms_booking (
   booking_id INTEGER PRIMARY KEY AUTOINCREMENT,
   guest_id INTEGER,
-  room_id INTEGER,
-  user_id INTEGER,
+  transfer_id INTEGER,
+  extend_id INTEGER,
+  room_no TEXT,
   status TEXT,
-  check_in DATE,
-  check_out DATE,
-  no_days INTEGER,
-  guest_count INTEGER,
-  additional_guest INTEGER,
-  special_request TEXT,
-  original_bill INTEGER,
-  total_bill INTEGER,
-  discount INTEGER,
-  payment_method TEXT,
+  cidate DATE,
+  citime TEXT,
+  codate DATE,
+  cotime TEXT,
+  nodays INTEGER,
+  noguest INTEGER,
+  spcl_rqst TEXT,
   FOREIGN KEY (guest_id) REFERENCES pms_guest(guest_id),
-  FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
-  FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
+  FOREIGN KEY (transfer_id) REFERENCES pms_transfer(transfer_id),
+  FOREIGN KEY (extend_id) REFERENCES pms_extend(extend_id),
+  FOREIGN KEY (room_no) REFERENCES pms_room(room_no)
 );
 
-CREATE TABLE IF NOT EXISTS pms_room_status (
-  status_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  room_id INTEGER,
+CREATE TABLE IF NOT EXISTS pms_transfer (
+  transfer_id INTEGER PRIMARY KEY AUTOINCREMENT,
   booking_id INTEGER,
-  date DATE,
-  status TEXT,
-  housekeeping_status TEXT,
-  FOREIGN KEY (room_id) REFERENCES pms_room(room_id),
+  new_room TEXT,
   FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id)
 );
 
-CREATE TABLE IF NOT EXISTS pms_history (
-  history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS pms_extend (
+  extend_id INTEGER PRIMARY KEY AUTOINCREMENT,
   booking_id INTEGER,
+  new_date DATE,
+  new_cidate DATE,
+  new_codate DATE,
+  new_nodays INTEGER,
+  FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id)
+);
+
+CREATE TABLE IF NOT EXISTS pms_hkstatus (
+  hks_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  booking_no INTEGER,
+  room_no TEXT,
+  status TEXT,
+  fdate DATE,
+  ldate DATE,
+  FOREIGN KEY (booking_no) REFERENCES pms_booking(booking_id),
+  FOREIGN KEY (room_no) REFERENCES pms_room(room_no)
+);
+
+CREATE TABLE IF NOT EXISTS pms_grecords (
+  grecord_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  guest_id INTEGER,
+  total_bookings INTEGER,
+  most_usedroom TEXT,
+  booking_history TEXT,
+  FOREIGN KEY (guest_id) REFERENCES pms_guest(guest_id)
+);
+
+CREATE TABLE IF NOT EXISTS pms_activitylogs (
+  activitylog_id INTEGER PRIMARY KEY AUTOINCREMENT,
   user_id INTEGER,
-  action TEXT,
-  time DATETIME,
-  FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id),
+  timein DATETIME,
+  timeout DATETIME,
   FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS pms_useractivity (
+  activity_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  date DATE,
+  time TEXT,
+  action_type TEXT,
+  FOREIGN KEY (user_id) REFERENCES pms_user(user_id)
+);
+
+CREATE TABLE IF NOT EXISTS pms_billing (
+  billing_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  booking_id INTEGER,
+  date DATE,
+  time TEXT,
+  quantity INTEGER,
+  unit_price INTEGER,
+  total INTEGER,
+  total_amount_due INTEGER,
+  add_charge INTEGER,
+  mode_payment TEXT,
+  FOREIGN KEY (booking_id) REFERENCES pms_booking(booking_id)
 );
 `;
 
 const seed = `
-INSERT INTO pms_user (user_email, password, name)
-VALUES ('admin@example.com', 'admin', 'Front Desk Admin');
+INSERT INTO pms_user (user_id, username, password, name)
+VALUES (1, 'frontdesk', 'frontdeskpms', 'KC Bongato');
 
-INSERT INTO pms_guest (first_name, last_name, guest_email)
-VALUES ('John', 'Doe', 'john.doe@example.com');
+-- Standard Single Room: 100 - 104
+INSERT INTO pms_room (room_no, room_type, price) VALUES
+('100', 'Standard Single Room', 1500),
+('101', 'Standard Single Room', 1500),
+('102', 'Standard Single Room', 1500),
+('103', 'Standard Single Room', 1500),
+('104', 'Standard Single Room', 1500),
+('105', 'Superior Single Room', 2800),
+('106', 'Superior Single Room', 2800),
+('107', 'Superior Single Room', 2800),
+('108', 'Superior Single Room', 2800),
+('109', 'Superior Single Room', 2800),
+('200', 'Standard Double Room', 3000),
+('201', 'Standard Double Room', 3000),
+('202', 'Standard Double Room', 3000),
+('203', 'Standard Double Room', 3000),
+('204', 'Standard Double Room', 3000),
+('205', 'Deluxe Room', 3800),
+('206', 'Deluxe Room', 3800),
+('207', 'Deluxe Room', 3800),
+('208', 'Deluxe Room', 3800),
+('209', 'Deluxe Room', 3800),
+('300', 'Family Room', 4200),
+('301', 'Family Room', 4200),
+('302', 'Family Room', 4200),
+('303', 'Family Room', 4200),
+('304', 'Executive Room', 4800),
+('305', 'Executive Room', 4800),
+('306', 'Executive Room', 4800),
+('307', 'Executive Room', 4800),
+('308', 'Suite Room', 5500),
+('309', 'Suite Room', 5500);
 
-INSERT INTO pms_room_type (room_category, description, price, no_guest, additional_guest_price)
-VALUES
-  ('Single', 'Single room with 1 bed', 1000.00, 1, 200.00),
-  ('Double', 'Double room with 2 beds', 1500.00, 2, 300.00);
+INSERT INTO pms_admin (admin_id, admin_username, admin_password, name)
+VALUES (1, 'admin', 'adminpms', 'Arggie Roy Busalla');
 
-INSERT INTO pms_room (room_type_id, room_number)
-VALUES
-  (1, '101'),
-  (2, '102'),
-  (2, '103');
 `;
 
 db.serialize(() => {
