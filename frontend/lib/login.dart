@@ -24,8 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
       // Client-side validation for default credentials
-      final usernameCorrect = _usernameController.text == 'admin@example.com';
-      final passwordCorrect = _passwordController.text == 'admin';
+      final usernameCorrect = _usernameController.text == 'frontdesk';
+      final passwordCorrect = _passwordController.text == 'frontdeskpms';
 
       // Check all possible cases
       if (!usernameCorrect && !passwordCorrect) {
