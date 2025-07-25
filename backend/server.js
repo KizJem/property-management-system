@@ -18,44 +18,55 @@ app.post('/api/v1/login', async (req, res) => {
   }
 
   try {
-    // Check if credentials match the default admin account
-    if (username.trim() !== 'frontdesk' || password.trim() !== 'frontdeskpms') {
-  return res.status(401).json({ message: 'Invalid credentials' });
-}
+    // Validate default credentials
+    if (username !== 'frontdesk' || password !== 'frontdeskpms') {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
 
-    // Check if user with this name already exists
+    // Check if user with the same name already exists
     db.get(
-      'SELECT * FROM pms_user WHERE name = ?',
-      [name],
+      'SELECT * FROM pms_user WHERE name = ? AND username = ? AND password = ?',
+      [name, username, password],
       async (err, existingUser) => {
         if (err) {
+          console.error('Database error:', err.message);
           return res.status(500).json({ message: 'Database error' });
         }
 
         let userId;
-        
+
         if (existingUser) {
-          // User exists, use existing ID
+          // User already exists, use existing ID
           userId = existingUser.user_id;
         } else {
-          // Insert new user with default credentials but new name
-          const result = await new Promise((resolve, reject) => {
-            db.run(
-              'INSERT INTO pms_user (user_email, password, name) VALUES (?, ?, ?)',
-              [username, password, name],
-              function(err) {
-                if (err) reject(err);
-                else resolve(this.lastID);
+          // Insert new user with the default credentials
+          db.run(
+            'INSERT INTO pms_user (username, password, name) VALUES (?, ?, ?)',
+            [username, password, name],
+            function (err) {
+              if (err) {
+                console.error('Insert error:', err.message);
+                return res.status(500).json({ message: 'Insert failed' });
               }
-            );
-          });
-          userId = result;
+
+              userId = this.lastID;
+
+              const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
+
+              return res.json({
+                message: 'Login successful',
+                token,
+                user: { id: userId, name }
+              });
+            }
+          );
+          return;
         }
 
-        // Generate token
+        // If existing user found, return success
         const token = jwt.sign({ userId }, SECRET_KEY, { expiresIn: '1h' });
-        
-        return res.json({ 
+
+        return res.json({
           message: 'Login successful',
           token,
           user: { id: userId, name }
@@ -68,10 +79,11 @@ app.post('/api/v1/login', async (req, res) => {
   }
 });
 
+
 // Protected route example
 app.get('/api/v1/profile', authenticateToken, (req, res) => {
   db.get(
-    'SELECT user_id as id, user_email as username, name FROM pms_user WHERE user_id = ?',
+    'SELECT user_id as id, username as username, name FROM pms_user WHERE user_id = ?',
     [req.user.userId],
     (err, user) => {
       if (err || !user) {
