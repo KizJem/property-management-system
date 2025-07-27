@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'actvitylogs.dart';
 import 'calendardashboard.dart';
 import 'guestrecords.dart';
-import 'login.dart';
+import 'userlogin.dart';
+import 'landingpage.dart';
+import 'adminlogin.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: const LoginPage(),
+      home: const LandingPage(),
 
       // Static named routes
       routes: {'/login': (context) => const LoginPage()},
