@@ -178,9 +178,23 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 controller: _nameController,
                                 decoration: const InputDecoration(
                                   labelText: "Admin's Name",
-                                  prefixIcon: Icon(Icons.badge),
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  prefixIcon: Icon(
+                                    Icons.badge,
+                                    color: Colors.black,
+                                  ),
                                   border: OutlineInputBorder(),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 2,
+                                    ),
+                                  ),
                                 ),
+                                style: TextStyle(color: Colors.black),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Enter name';
@@ -244,9 +258,11 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           child: TextFormField(
             controller: controller,
             obscureText: isPassword ? !_isPasswordVisible : false,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               labelText: label,
-              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
+              labelStyle: const TextStyle(color: Colors.black), // Black label
+              prefixIcon: Icon(icon, color: Colors.black), // Black icon
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
@@ -262,17 +278,12 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                       },
                     )
                   : null,
-              labelStyle: TextStyle(color: isError ? Colors.red : null),
               border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.grey,
-                ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.blue,
-                ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 12,

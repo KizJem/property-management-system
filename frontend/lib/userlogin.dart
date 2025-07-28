@@ -176,42 +176,35 @@ class _LoginPageState extends State<LoginPage> {
           height: 60,
           child: TextFormField(
             controller: controller,
-            obscureText: isPassword
-                ? _obscurePassword
-                : false, // 👁️ Toggle password visibility if isPassword = true
+            obscureText: isPassword ? _obscurePassword : false,
+            style: const TextStyle(color: Colors.black), // black input text
             decoration: InputDecoration(
               labelText: label,
-              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
-              suffixIcon:
-                  isPassword // 👁️ Show toggle icon only for password fields
+              labelStyle: const TextStyle(
+                color: Colors.black,
+              ), // clean black label
+              prefixIcon: Icon(icon, color: Colors.black), // black icon
+              suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
                         _obscurePassword
-                            ? Icons
-                                  .visibility_off // 👁️ Show closed eye when hidden
-                            : Icons
-                                  .visibility, // 👁️ Show open eye when visible
-                        color: Colors.grey,
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.black,
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscurePassword =
-                              !_obscurePassword; // 👁️ Toggle password visibility
+                          _obscurePassword = !_obscurePassword;
                         });
                       },
                     )
                   : null,
-              labelStyle: TextStyle(color: isError ? Colors.red : null),
               border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.grey,
-                ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.blue,
-                ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 12,
@@ -389,9 +382,23 @@ class _LoginPageState extends State<LoginPage> {
                                 controller: _nameController,
                                 decoration: const InputDecoration(
                                   labelText: "Student's Name",
-                                  prefixIcon: Icon(Icons.badge),
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  prefixIcon: Icon(
+                                    Icons.badge,
+                                    color: Colors.black,
+                                  ),
                                   border: OutlineInputBorder(),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.black,
+                                      width: 2,
+                                    ),
+                                  ),
                                 ),
+                                style: TextStyle(color: Colors.black),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your name';
