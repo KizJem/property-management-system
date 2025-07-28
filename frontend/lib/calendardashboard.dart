@@ -185,7 +185,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.of(context).pop();
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -194,7 +194,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.black,
+                            backgroundColor: Color(
+                              0xFFFFBD00,
+                            ), // Yellow background
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
@@ -204,7 +206,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             'Log Out',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              color: Colors.white,
+                              color: Colors.white, // White text
                               fontSize: 14,
                             ),
                           ),
