@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   bool _invalidUsername = false;
   bool _invalidPassword = false;
+  bool _obscurePassword = true; // 👁️ Password visibility toggle
 
   Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
@@ -159,12 +160,99 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    bool isPassword = false,
+    bool isError = false,
+    required String errorText,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 500,
+          height: 60,
+          child: TextFormField(
+            controller: controller,
+            obscureText: isPassword ? _obscurePassword : false,
+            decoration: InputDecoration(
+              labelText: label,
+              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    )
+                  : null,
+              labelStyle: TextStyle(color: isError ? Colors.red : null),
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isError ? Colors.red : Colors.grey,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isError ? Colors.red : Colors.blue,
+                ),
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 12,
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter $label';
+              }
+              return null;
+            },
+          ),
+        ),
+        if (isError)
+          Transform.translate(
+            offset: const Offset(0, -8),
+            child: Container(
+              width: 500,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Text(
+                errorText,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+                textAlign: TextAlign.right,
+              ),
+            ),
+          ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Row(
         children: [
-          // LEFT COL (Image)
+          // LEFT PANEL
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(left: 30.0),
@@ -221,11 +309,10 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
 
-          // RIGHT COL (Sign In Form + Back Arrow)
+          // RIGHT PANEL
           Expanded(
             child: Stack(
               children: [
-                // Back Arrow
                 Positioned(
                   top: 16,
                   left: 16,
@@ -241,8 +328,6 @@ class _LoginPageState extends State<LoginPage> {
                     },
                   ),
                 ),
-
-                // Login Form Centered
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -251,7 +336,6 @@ class _LoginPageState extends State<LoginPage> {
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset(
                               'assets/images/PMS-logo-2.png',
@@ -263,10 +347,8 @@ class _LoginPageState extends State<LoginPage> {
                               'Sign In',
                               style: TextStyle(
                                 fontSize: 36,
-                                fontWeight: FontWeight.w600, // semi-bold
-                                color: Color(
-                                  0xFFFFBD00,
-                                ), // or use 0xFFA80504 for red variant
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFFFBD00),
                               ),
                             ),
                             const SizedBox(height: 12),
@@ -278,8 +360,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(height: 32),
-
-                            // Username
                             _buildTextField(
                               controller: _usernameController,
                               label: 'Username',
@@ -287,10 +367,6 @@ class _LoginPageState extends State<LoginPage> {
                               isError: _invalidUsername,
                               errorText: 'Invalid username',
                             ),
-
-                            const SizedBox(height: 2),
-
-                            // Password
                             _buildTextField(
                               controller: _passwordController,
                               label: 'Password',
@@ -299,10 +375,6 @@ class _LoginPageState extends State<LoginPage> {
                               isError: _invalidPassword,
                               errorText: 'Invalid password',
                             ),
-
-                            const SizedBox(height: 2),
-
-                            // Name
                             SizedBox(
                               width: 500,
                               height: 60,
@@ -322,8 +394,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(height: 15),
-
-                            // Sign In Button
                             _isLoading
                                 ? const CircularProgressIndicator()
                                 : SizedBox(
@@ -344,12 +414,7 @@ class _LoginPageState extends State<LoginPage> {
                                       child: const Text(
                                         'Sign In',
                                         style: TextStyle(
-                                          color: Color.fromARGB(
-                                            255,
-                                            255,
-                                            255,
-                                            255,
-                                          ),
+                                          color: Colors.white,
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                         ),
@@ -368,77 +433,5 @@ class _LoginPageState extends State<LoginPage> {
         ],
       ),
     );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool isPassword = false,
-    bool isError = false,
-    required String errorText,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 500,
-          height: 60,
-          child: TextFormField(
-            controller: controller,
-            obscureText: isPassword,
-            decoration: InputDecoration(
-              labelText: label,
-              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
-              labelStyle: TextStyle(color: isError ? Colors.red : null),
-              border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.grey,
-                ),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.blue,
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                vertical: 12,
-                horizontal: 12,
-              ),
-            ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter $label';
-              }
-              return null;
-            },
-          ),
-        ),
-        if (isError)
-          Transform.translate(
-            offset: const Offset(0, -8), // keep it close to the field
-            child: Container(
-              width: 500,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
-                errorText,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-                textAlign: TextAlign.right,
-              ),
-            ),
-          ),
-        const SizedBox(height: 8),
-      ],
-    );
-  }
-
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _nameController.dispose();
-    super.dispose();
   }
 }
