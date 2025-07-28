@@ -139,12 +139,13 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               'Sign In',
                               style: TextStyle(
                                 fontSize: 36,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600, // semi-bold
+                                color: Color(0xFFA80504),
                               ),
                             ),
                             const SizedBox(height: 12),
                             const Text(
-                              'Admin access to system reports, logs, and controls.',
+                              'Oversee students activity within the simulation environment.',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black87,
@@ -201,7 +202,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               child: ElevatedButton(
                                 onPressed: _login,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFFFDD41A),
+                                  backgroundColor: const Color(0xFFA80504),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -209,7 +210,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 child: const Text(
                                   'Sign In',
                                   style: TextStyle(
-                                    color: Color(0xFF171300),
+                                    color: Color.fromARGB(255, 255, 255, 255),
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),

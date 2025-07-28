@@ -263,12 +263,15 @@ class _LoginPageState extends State<LoginPage> {
                               'Sign In',
                               style: TextStyle(
                                 fontSize: 36,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600, // semi-bold
+                                color: Color(
+                                  0xFFFFBD00,
+                                ), // or use 0xFFA80504 for red variant
                               ),
                             ),
                             const SizedBox(height: 12),
                             const Text(
-                              'Your training in hotel operations begins here. Simulate real front desk operations and guest experiences.',
+                              'Simulate real front desk operations and guest experiences.',
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.black87,
@@ -330,7 +333,7 @@ class _LoginPageState extends State<LoginPage> {
                                       onPressed: _login,
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: const Color(
-                                          0xFFFDD41A,
+                                          0xFFFFBD00,
                                         ),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
@@ -341,7 +344,12 @@ class _LoginPageState extends State<LoginPage> {
                                       child: const Text(
                                         'Sign In',
                                         style: TextStyle(
-                                          color: Color(0xFF171300),
+                                          color: Color.fromARGB(
+                                            255,
+                                            255,
+                                            255,
+                                            255,
+                                          ),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                         ),
