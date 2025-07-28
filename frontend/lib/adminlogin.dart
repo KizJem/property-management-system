@@ -239,7 +239,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     required String errorText,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           width: 500,
@@ -262,6 +262,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   color: isError ? Colors.red : Colors.blue,
                 ),
               ),
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 12,
+                horizontal: 12,
+              ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -271,13 +275,21 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             },
           ),
         ),
-        if (isError) const SizedBox(height: 4),
         if (isError)
-          Text(
-            errorText,
-            textAlign: TextAlign.right,
-            style: const TextStyle(color: Colors.red, fontSize: 12),
+          Transform.translate(
+            offset: const Offset(0, -8), // keep it close to the field
+            child: Container(
+              width: 500,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 8.0),
+              child: Text(
+                errorText,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+                textAlign: TextAlign.right,
+              ),
+            ),
           ),
+        const SizedBox(height: 8),
       ],
     );
   }
