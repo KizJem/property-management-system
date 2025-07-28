@@ -8,6 +8,8 @@ class BillingForm extends StatefulWidget {
   State<BillingForm> createState() => _BillingFormState();
 }
 
+double _tipAmount = 0.0;
+
 class _BillingFormState extends State<BillingForm> {
   final List<Map<String, dynamic>> _charges = [
     {'description': 'Room Rate (per night)', 'quantity': 2, 'unitPrice': 3000},
@@ -42,7 +44,6 @@ class _BillingFormState extends State<BillingForm> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
               ),
-              contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               title: const Text(
                 'Add Charge',
                 style: TextStyle(
@@ -122,83 +123,241 @@ class _BillingFormState extends State<BillingForm> {
                   ),
                 ],
               ),
-              actionsPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 8,
-              ),
               actions: [
-                OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    side: const BorderSide(color: Colors.black),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 14,
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.pop(context),
+                          style: OutlinedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            side: const BorderSide(color: Colors.black),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            final desc = descController.text.trim();
+                            final int? qty = int.tryParse(
+                              qtyController.text.trim(),
+                            );
+                            final int? price = int.tryParse(
+                              priceController.text.trim(),
+                            );
+
+                            setModalState(() {
+                              descError = desc.isEmpty ? 'Required' : null;
+                              qtyError = (qty == null || qty <= 0)
+                                  ? 'Invalid Quantity'
+                                  : null;
+                              priceError = (price == null || price <= 0)
+                                  ? 'Invalid Unit Price'
+                                  : null;
+                            });
+
+                            final isValid =
+                                descError == null &&
+                                qtyError == null &&
+                                priceError == null;
+                            if (!isValid) return;
+
+                            setState(() {
+                              _charges.add({
+                                'description': desc,
+                                'quantity': qty!,
+                                'unitPrice': price!,
+                              });
+                            });
+
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            'Add to Bill',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showAddTipDialog() {
+    final TextEditingController tipController = TextEditingController(
+      text: _tipAmount > 0 ? _tipAmount.toStringAsFixed(0) : '',
+    );
+    final TextEditingController noteController = TextEditingController();
+    double localTip = _tipAmount;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Add Tip for Staff',
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                     ),
                   ),
-                  child: const Text(
-                    'Cancel',
+                  SizedBox(height: 4), // reduce space here
+                  Text(
+                    "100% of the tips go to the staff. We don’t deduct anything from it.",
                     style: TextStyle(
+                      fontSize: 12,
                       fontFamily: 'Poppins',
                       color: Colors.black,
                     ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    final desc = descController.text.trim();
-                    final int? qty = int.tryParse(qtyController.text.trim());
-                    final int? price = int.tryParse(
-                      priceController.text.trim(),
-                    );
+                ],
+              ),
 
-                    setModalState(() {
-                      descError = desc.isEmpty ? 'Required' : null;
-                      qtyError = (qty == null || qty <= 0)
-                          ? 'Invalid Quantity'
-                          : null;
-                      priceError = (price == null || price <= 0)
-                          ? 'Invalid Unit Price'
-                          : null;
-                    });
-
-                    final isValid =
-                        descError == null &&
-                        qtyError == null &&
-                        priceError == null;
-
-                    if (!isValid) return;
-
-                    setState(() {
-                      _charges.add({
-                        'description': desc,
-                        'quantity': qty!,
-                        'unitPrice': price!,
-                      });
-                    });
-
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 14,
-                    ),
-                  ),
-                  child: const Text(
-                    'Add to Bill',
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Input Tip Amount Label
+                  const Text(
+                    'Input Tip Amount',
                     style: TextStyle(
                       fontFamily: 'Poppins',
-                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: tipController,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: '₱0.00',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      final parsed = double.tryParse(value) ?? 0;
+                      setModalState(() {
+                        localTip = parsed;
+                      });
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Tip Preview
+                  Text(
+                    'Total Tip: ₱ ${NumberFormat('#,##0.00').format(localTip)}',
+                    style: const TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              actions: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.black),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          final entered = tipController.text.trim();
+                          final double? tipValue = double.tryParse(entered);
+                          if (tipValue != null) {
+                            setState(() {
+                              _tipAmount = tipValue;
+
+                              // Remove existing tip if any
+                              _charges.removeWhere(
+                                (charge) =>
+                                    charge['description'] == 'Staff Tip',
+                              );
+
+                              // If new tip is greater than 0, add it back
+                              if (tipValue > 0) {
+                                _charges.add({
+                                  'description': 'Staff Tip',
+                                  'quantity': 1,
+                                  'unitPrice': tipValue,
+                                });
+                              }
+                            });
+                          }
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFBD00),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             );
@@ -210,8 +369,10 @@ class _BillingFormState extends State<BillingForm> {
 
   void _showCheckoutConfirmationDialog() {
     double total = _charges.fold(
-      0,
-      (sum, item) => sum + (item['quantity'] * item['unitPrice']),
+      0.0,
+      (sum, item) =>
+          sum +
+          ((item['quantity'] as num) * (item['unitPrice'] as num)).toDouble(),
     );
 
     final currencyFormatter = NumberFormat('#,##0', 'en_US');
@@ -221,106 +382,110 @@ class _BillingFormState extends State<BillingForm> {
       builder: (context) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         insetPadding: const EdgeInsets.all(24),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                'Confirm this check-out?',
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+        child: SizedBox(
+          width: 500,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Confirm this check-out?',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              // Guest Info
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black12),
-                  borderRadius: BorderRadius.circular(12),
+                // Guest Info
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildRow(Icons.person, 'Guest Name:', 'Juan dela Cruz'),
+                      _buildRow(
+                        Icons.calendar_today,
+                        'Arrival and Departure Dates:',
+                        'June 5–6, 2025',
+                        boldValue: true,
+                      ),
+                      _buildRow(Icons.people, 'No. of Guests:', '1'),
+                      _buildRow(
+                        Icons.attach_money,
+                        'Total Amount Paid:',
+                        currencyFormatter.format(total),
+                        boldValue: true,
+                      ),
+                    ],
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                const SizedBox(height: 24),
+
+                // Buttons
+                Row(
                   children: [
-                    _buildRow(Icons.person, 'Guest Name:', 'Juan dela Cruz'),
-                    _buildRow(
-                      Icons.calendar_today,
-                      'Arrival and Departure Dates:',
-                      'June 5–6, 2025',
-                      boldValue: true,
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.black),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: const Text(
+                          'Cancel',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.black,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     ),
-                    _buildRow(Icons.people, 'No. of Guests:', '1'),
-                    _buildRow(
-                      Icons.attach_money,
-                      'Total Amount Paid:',
-                      currencyFormatter.format(total),
-                      boldValue: true,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          // Proceed with PDF/export or navigate to Calendar
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/calendar',
+                            arguments: {'updateRoom': '101', 'newStatus': 'VD'},
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Colors.black),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: const Text(
-                        'Cancel',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        // Proceed with PDF/export or navigate to Calendar
-                        Navigator.pushReplacementNamed(
-                          context,
-                          '/calendar',
-                          arguments: {'updateRoom': '101', 'newStatus': 'VD'},
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                      ),
-                      child: const Text(
-                        'Confirm',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -345,7 +510,7 @@ class _BillingFormState extends State<BillingForm> {
                 text: '$label ',
                 style: const TextStyle(
                   fontSize: 13,
-                  color: Colors.black54,
+                  color: Colors.black,
                   fontFamily: 'Poppins',
                 ),
                 children: [
@@ -464,10 +629,10 @@ class _BillingFormState extends State<BillingForm> {
             Expanded(
               child: Container(
                 padding: const EdgeInsets.only(
-                  top: 20,
-                  left: 20,
-                  right: 20,
-                  bottom: 10,
+                  top: 30,
+                  left: 50,
+                  right: 50,
+                  bottom: 30,
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -542,7 +707,7 @@ class _BillingFormState extends State<BillingForm> {
                                 TextSpan(
                                   text: 'First Name: ',
                                   style: TextStyle(
-                                    color: Colors.black38,
+                                    color: Colors.black,
                                     fontSize: 14,
                                   ),
                                   children: [
@@ -560,7 +725,7 @@ class _BillingFormState extends State<BillingForm> {
                                 TextSpan(
                                   text: 'Last Name: ',
                                   style: TextStyle(
-                                    color: Colors.black38,
+                                    color: Colors.black,
                                     fontSize: 14,
                                   ),
                                   children: [
@@ -578,7 +743,7 @@ class _BillingFormState extends State<BillingForm> {
                                 TextSpan(
                                   text: 'Phone Number: ',
                                   style: TextStyle(
-                                    color: Colors.black38,
+                                    color: Colors.black,
                                     fontSize: 14,
                                   ),
                                   children: [
@@ -609,8 +774,8 @@ class _BillingFormState extends State<BillingForm> {
                               const SizedBox(height: 12),
                               const Text.rich(
                                 TextSpan(
-                                  text: '  Arrival & Departure Date: ',
-                                  style: TextStyle(color: Colors.black38),
+                                  text: 'Arrival & Departure Date: ',
+                                  style: TextStyle(color: Colors.black),
                                   children: [
                                     TextSpan(
                                       text: 'June 5, 2025 - June 8, 2025',
@@ -624,8 +789,8 @@ class _BillingFormState extends State<BillingForm> {
                               ),
                               const Text.rich(
                                 TextSpan(
-                                  text: '  Room: ',
-                                  style: TextStyle(color: Colors.black38),
+                                  text: 'Room: ',
+                                  style: TextStyle(color: Colors.black),
                                   children: [
                                     TextSpan(
                                       text: 'Standard Room Single - No. 101',
@@ -639,8 +804,8 @@ class _BillingFormState extends State<BillingForm> {
                               ),
                               const Text.rich(
                                 TextSpan(
-                                  text: '  No. of Guests: ',
-                                  style: TextStyle(color: Colors.black38),
+                                  text: 'No. of Guests: ',
+                                  style: TextStyle(color: Colors.black),
                                   children: [
                                     TextSpan(
                                       text: '1',
@@ -657,25 +822,73 @@ class _BillingFormState extends State<BillingForm> {
                                 alignment: Alignment.centerRight,
                                 child: Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
-                                  child: ElevatedButton.icon(
-                                    onPressed: _showAddChargeDialog,
-                                    icon: const Icon(Icons.add_circle_outline),
-                                    label: const Text('Add Charge'),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.black,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 20,
-                                        vertical: 12,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        width: 140,
+                                        child: ElevatedButton.icon(
+                                          onPressed: _showAddChargeDialog,
+                                          icon: const Icon(
+                                            Icons.add_circle_outline,
+                                            color: Color(0xFF9B000A),
+                                          ),
+                                          label: const Text(
+                                            'Add Charge',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Poppins',
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFFFFBD00,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      textStyle: const TextStyle(
-                                        fontFamily: 'Poppins',
-                                        fontWeight: FontWeight.w500,
+                                      const SizedBox(width: 12),
+                                      SizedBox(
+                                        width: 140,
+                                        child: ElevatedButton.icon(
+                                          onPressed: _showAddTipDialog,
+                                          icon: const Icon(
+                                            Icons.volunteer_activism_outlined,
+                                            color: Color(0xFF9B000A),
+                                          ),
+                                          label: const Text(
+                                            'Add Tip',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontFamily: 'Poppins',
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFFFFBD00,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 12,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -749,7 +962,7 @@ class _BillingFormState extends State<BillingForm> {
                                 'Total Amount Due',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12,
+                                  fontSize: 16,
                                   fontFamily: 'Poppins',
                                 ),
                               ),
@@ -757,7 +970,7 @@ class _BillingFormState extends State<BillingForm> {
                                 '₱ ${currencyFormatter.format(total)}',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: 16,
                                   fontFamily: 'Poppins',
                                 ),
                               ),
@@ -771,51 +984,54 @@ class _BillingFormState extends State<BillingForm> {
               ),
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
+            Align(
+              alignment: Alignment.centerRight,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  OutlinedButton(
                     onPressed: () {},
                     style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      fixedSize: const Size(250, 40),
+                      backgroundColor: Colors.white,
                       side: const BorderSide(color: Colors.black),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
+                      padding: EdgeInsets.zero,
                     ),
                     child: const Text(
                       'Cancel',
                       style: TextStyle(
                         fontFamily: 'Poppins',
+                        fontSize: 16,
                         color: Colors.black,
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
+                  const SizedBox(width: 12),
+                  ElevatedButton(
                     onPressed: _showCheckoutConfirmationDialog,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      fixedSize: const Size(250, 40),
+                      backgroundColor: const Color(0xFFFFBD00),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30), // more rounded
+                        borderRadius: BorderRadius.circular(20),
                       ),
+                      padding: EdgeInsets.zero,
                       elevation: 0,
                     ),
                     child: const Text(
                       'Check-out',
                       style: TextStyle(
                         fontFamily: 'Poppins',
-                        fontWeight: FontWeight.w500,
                         fontSize: 16,
                         color: Colors.white,
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
