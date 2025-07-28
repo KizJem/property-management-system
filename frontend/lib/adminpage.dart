@@ -1,16 +1,19 @@
+// adminpage.dart
 import 'package:flutter/material.dart';
 import 'adminlogin.dart';
+import 'roomsview.dart';
 
 class AdminPage extends StatefulWidget {
   final String adminName;
-
-  const AdminPage({Key? key, required this.adminName}) : super(key: key);
+  const AdminPage({super.key, required this.adminName});
 
   @override
   State<AdminPage> createState() => _AdminPageState();
 }
 
 class _AdminPageState extends State<AdminPage> {
+  int _selectedTab = 0;
+
   void _showLogoutConfirmation() {
     showDialog(
       context: context,
@@ -21,7 +24,7 @@ class _AdminPageState extends State<AdminPage> {
             borderRadius: BorderRadius.circular(20),
           ),
           child: SizedBox(
-            width: 400, // 👈 Smaller dialog box width
+            width: 400,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
               child: Column(
@@ -55,7 +58,6 @@ class _AdminPageState extends State<AdminPage> {
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               color: Colors.black,
-                              fontSize: 14,
                             ),
                           ),
                         ),
@@ -64,7 +66,7 @@ class _AdminPageState extends State<AdminPage> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.of(context).pop(); // Close dialog
+                            Navigator.of(context).pop();
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
@@ -84,7 +86,6 @@ class _AdminPageState extends State<AdminPage> {
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               color: Colors.white,
-                              fontSize: 14,
                             ),
                           ),
                         ),
@@ -105,53 +106,176 @@ class _AdminPageState extends State<AdminPage> {
     return Scaffold(
       body: Column(
         children: [
-          // Yellow header
           Container(
-            color: const Color(0xFFFFF1AB),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            color: const Color(0xFFA80504),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             child: Row(
               children: [
-                const Expanded(
-                  child: Text(
-                    'PROPERTY MANAGEMENT SYSTEM',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                      letterSpacing: 1.2,
-                    ),
+                Image.asset('assets/images/PMS-white-logo.png', width: 50),
+                const SizedBox(width: 16),
+                const Text(
+                  'PROPERTY MANAGEMENT SYSTEM\nHello, Admin!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
                 ),
+                const Spacer(),
                 DropdownButtonHideUnderline(
                   child: DropdownButton<String>(
                     value: widget.adminName,
-                    icon: const Icon(Icons.arrow_drop_down),
+                    icon: const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                    ),
+                    dropdownColor: Colors.white,
                     items: <String>[widget.adminName].map((String value) {
                       return DropdownMenuItem<String>(
                         value: value,
-                        child: Text(
-                          value,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        child: const Text('Log Out'),
                       );
                     }).toList(),
-                    onChanged: (val) {
-                      _showLogoutConfirmation();
-                    },
+                    onChanged: (val) => _showLogoutConfirmation(),
                   ),
                 ),
               ],
             ),
           ),
 
-          // Body (replace this later with Activity Logs)
-          Expanded(
-            child: Center(
-              child: Text(
-                'Welcome to Admin Dashboard, ${widget.adminName}',
-                style: const TextStyle(fontSize: 24),
-              ),
+          // Tabs
+          Container(
+            color: const Color(0xFFA80504),
+            child: Row(
+              children: [_buildTab("Activity Logs", 0), _buildTab("Rooms", 1)],
             ),
           ),
+
+          // Content
+          Expanded(
+            child: Container(
+              color: Colors.white,
+              child: _selectedTab == 0
+                  ? _buildActivityLogsView()
+                  : const RoomsView(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTab(String label, int index) {
+    final bool isSelected = _selectedTab == index;
+    return InkWell(
+      onTap: () => setState(() => _selectedTab = index),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFFBD00) : const Color(0xFFA80504),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(index == 0 ? 12 : 0),
+            topRight: Radius.circular(index == 1 ? 12 : 0),
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.black : Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActivityLogsView() {
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text('STUDENT'),
+                    SizedBox(height: 4),
+                    TextField(
+                      decoration: InputDecoration(
+                        hintText: 'Search ...',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text('DATE RANGE'),
+                    SizedBox(height: 4),
+                    TextField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.all(8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          const Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'DATE',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'NAME',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'LOG IN',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  'LOG OUT',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(),
+          const Expanded(child: Center(child: Text('No logs available.'))),
         ],
       ),
     );
