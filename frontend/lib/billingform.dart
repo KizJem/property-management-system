@@ -540,7 +540,7 @@ class _BillingFormState extends State<BillingForm> {
                               SizedBox(height: 12),
                               Text.rich(
                                 TextSpan(
-                                  text: '  First Name: ',
+                                  text: 'First Name: ',
                                   style: TextStyle(
                                     color: Colors.black38,
                                     fontSize: 14,
@@ -558,7 +558,7 @@ class _BillingFormState extends State<BillingForm> {
                               ),
                               Text.rich(
                                 TextSpan(
-                                  text: '  Last Name: ',
+                                  text: 'Last Name: ',
                                   style: TextStyle(
                                     color: Colors.black38,
                                     fontSize: 14,
@@ -576,7 +576,7 @@ class _BillingFormState extends State<BillingForm> {
                               ),
                               Text.rich(
                                 TextSpan(
-                                  text: '  Phone Number: ',
+                                  text: 'Phone Number: ',
                                   style: TextStyle(
                                     color: Colors.black38,
                                     fontSize: 14,
