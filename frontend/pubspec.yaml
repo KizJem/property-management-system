@@ -72,6 +72,7 @@ flutter:
     - assets/images/cba-header.png
     - assets/images/pms-header.png
     - assets/images/frontdesk.png
+    - assets/images/landing-page-bg.png
 
   fonts:
     - family: Poppins

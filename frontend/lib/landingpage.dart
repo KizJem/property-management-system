@@ -8,95 +8,115 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // White outer background
+      backgroundColor: Colors.white, // Outer background
       body: Padding(
         padding: const EdgeInsets.all(32.0), // Outer white margin
-        child: Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF9B111E), // Deep red inner content
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
             children: [
-              // LEFT PANEL
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(80, 60, 80, 100),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // CBA HEADER IMAGE
-                      Image.asset('assets/images/cba-header.png', width: 500),
-                      const SizedBox(height: 50),
-
-                      // PMS HEADER IMAGE
-                      Image.asset('assets/images/pms-header.png', width: 500),
-                      const SizedBox(height: 16),
-
-                      // Buttons
-                      Row(
-                        children: [
-                          _buildButton(
-                            label: 'Student',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const LoginPage(),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 16),
-                          _buildButton(
-                            label: 'Admin',
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const AdminLoginPage(),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(width: 16),
-                          _buildCircleButton(
-                            onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (_) => AlertDialog(
-                                  title: const Text('About'),
-                                  content: const Text(
-                                    'This Property Management System is a simulation platform for Hospitality Management students.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.pop(context),
-                                      child: const Text('OK'),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+              // Background image
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/landing-page-bg.png',
+                  fit: BoxFit.cover,
                 ),
               ),
 
-              // RIGHT PANEL: Front desk illustration
-              Expanded(
+              // Red overlay with 80% opacity
+              Positioned.fill(
                 child: Container(
-                  padding: const EdgeInsets.only(top: 60, right: 100),
-                  alignment: Alignment.topRight,
-                  child: Image.asset(
-                    'assets/images/frontdesk.png',
-                    width: 420,
-                    fit: BoxFit.contain,
-                  ),
+                  color: const Color(0xCC9B111E), // 80% opacity red
                 ),
+              ),
+
+              // Foreground content
+              Row(
+                children: [
+                  // LEFT PANEL
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(120, 60, 20, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.asset(
+                            'assets/images/cba-header.png',
+                            width: 400,
+                          ),
+                          const SizedBox(height: 30),
+                          Image.asset(
+                            'assets/images/pms-header.png',
+                            width: 450,
+                          ),
+                          const SizedBox(height: 32),
+                          Row(
+                            children: [
+                              _buildButton(
+                                label: 'Student',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const LoginPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 16),
+                              _buildButton(
+                                label: 'Admin',
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AdminLoginPage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 16),
+                              _buildCircleButton(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      title: const Text('About'),
+                                      content: const Text(
+                                        'This Property Management System is a simulation platform for Hospitality Management students.',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // RIGHT PANEL
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 0, right: 100),
+                      alignment: Alignment.topRight,
+                      child: Image.asset(
+                        'assets/images/frontdesk.png',
+                        width: 480,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -116,14 +136,14 @@ class LandingPage extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          padding: EdgeInsets.zero, // Prevent extra padding
+          padding: EdgeInsets.zero,
         ),
         child: Text(
           label,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
-            color: Color(0xFFFFFFFF),
+            color: Colors.white,
           ),
         ),
       ),
@@ -138,10 +158,10 @@ class LandingPage extends StatelessWidget {
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFFFBD00),
-          shape: const CircleBorder(), // Circle shape
-          padding: EdgeInsets.zero, // Remove extra space
+          shape: const CircleBorder(),
+          padding: EdgeInsets.zero,
         ),
-        child: const Icon(Icons.info_outline, color: Color(0xFFFFFFFF)),
+        child: const Icon(Icons.info_outline, color: Colors.white),
       ),
     );
   }
