@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'availablecell.dart';
 import 'occupiedcell.dart';
 import 'reservecell.dart';
+import 'userlogin.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -43,7 +44,7 @@ enum Mode { bookRooms, housekeeping }
 const Map<String, Map<String, dynamic>> roomStatusMap = {
   // AVAILABLE
   'VD': {'color': Color(0xFF7F5226), 'label': 'Vacant Dirty'},
-  'VR': {'color': Color(0xFFFFC904), 'label': 'Vacant Ready'}, 
+  'VR': {'color': Color(0xFFFFC904), 'label': 'Vacant Ready'},
   // OCCUPIED
   'OC': {'color': Color(0xFF527E03), 'label': 'Occupied Clean'},
   'OD': {'color': Color(0xFFFD9B06), 'label': 'Occupied Dirty'},
@@ -129,6 +130,95 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
       'Dec',
     ];
     return months[month - 1];
+  }
+
+  void _showLogoutPrompt() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: const Color(0xFFF8F3FA),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: SizedBox(
+            width: 400,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    'Log Out?',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Are you sure you want to log out?',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 14),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            side: const BorderSide(color: Colors.black),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const LoginPage(),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.black,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Text(
+                            'Log Out',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _buildDateHeaderRow(List<DateTime> dates) {
@@ -707,13 +797,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                             size: 18,
                             color: Color(0xFF710100),
                           ),
-                          onPressed: () {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              '/login',
-                              (route) => false,
-                            );
-                          },
+                          onPressed:
+                              _showLogoutPrompt, // ⬅️ Show the dialog instead
                         ),
                       ],
                     ],
@@ -794,210 +879,310 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
                       ),
                       Radio<Mode>(
-                      value: Mode.bookRooms,
-                      groupValue: _mode,
-                      activeColor: const Color(0xFFFFBD00), // yellow when selected
-                      fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-                        if (states.contains(MaterialState.selected)) {
-                          return const Color(0xFFFFBD00); // yellow inner circle
-                        }
-                        return Colors.white; // white ring when unselected
-                      }),
-                      overlayColor: MaterialStateProperty.all(Colors.transparent),
-                      onChanged: (Mode? value) async {
-                        if (value == Mode.bookRooms) {
-                          final confirmed = await showDialog<bool>(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-                              title: const Padding(
-                                padding: EdgeInsets.only(top: 24.0),
-                                child: Center(
-                                  child: Text(
-                                    'Switch to Booking Mode?',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                                  ),
+                        value: Mode.bookRooms,
+                        groupValue: _mode,
+                        activeColor: const Color(
+                          0xFFFFBD00,
+                        ), // yellow when selected
+                        fillColor: MaterialStateProperty.resolveWith<Color>((
+                          states,
+                        ) {
+                          if (states.contains(MaterialState.selected)) {
+                            return const Color(
+                              0xFFFFBD00,
+                            ); // yellow inner circle
+                          }
+                          return Colors.white; // white ring when unselected
+                        }),
+                        overlayColor: MaterialStateProperty.all(
+                          Colors.transparent,
+                        ),
+                        onChanged: (Mode? value) async {
+                          if (value == Mode.bookRooms) {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
                                 ),
-                              ),
-                              content: const Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "You're about to leave Housekeeping Mode.",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 14, color: Color(0xFF2E2D2D)),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Unsaved housekeeping status selections will be cleared.\nDo you want to continue?',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                              actionsPadding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                              actions: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Color(0xFF000000), width: 1.2),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(vertical: 18),
-                                          minimumSize: const Size.fromHeight(48),
-                                        ),
-                                        onPressed: () => Navigator.of(context).pop(false),
-                                        child: const Text('Cancel', style: TextStyle(fontSize: 16, color: Colors.black)),
+                                insetPadding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
+                                title: const Padding(
+                                  padding: EdgeInsets.only(top: 24.0),
+                                  child: Center(
+                                    child: Text(
+                                      'Switch to Booking Mode?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(width: 24),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFFFFBD00),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(vertical: 18),
-                                          minimumSize: const Size.fromHeight(48),
-                                        ),
-                                        onPressed: () => Navigator.of(context).pop(true),
-                                        child: const Text('Switch to Booking', style: TextStyle(fontSize: 16, color: Colors.white)),
+                                  ),
+                                ),
+                                content: const Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "You're about to leave Housekeeping Mode.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF2E2D2D),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Unsaved housekeeping status selections will be cleared.\nDo you want to continue?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          );
-
-                          if (confirmed == true) {
-                            setState(() => _mode = Mode.bookRooms);
-                          }
-                        }
-                      },
-                    ),
-                    const Text(
-                      'Book Rooms',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 254, 254, 254),
-                      ),
-                    ),
-                    const SizedBox(width: 24),
-
-                    Radio<Mode>(
-                      value: Mode.housekeeping,
-                      groupValue: _mode,
-                      activeColor: const Color(0xFFFFBD00),
-                      fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-                        if (states.contains(MaterialState.selected)) {
-                          return const Color(0xFFFFBD00);
-                        }
-                        return Colors.white;
-                      }),
-                      overlayColor: MaterialStateProperty.all(Colors.transparent),
-                      onChanged: (Mode? newValue) async {
-                        if (newValue == Mode.housekeeping) {
-                          final confirmed = await showDialog<bool>(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(24),
-                              ),
-                              insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-                              title: const Padding(
-                                padding: EdgeInsets.only(top: 24.0),
-                                child: Center(
-                                  child: Text(
-                                    'Switch to Housekeeping Mode?',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
-                                  ),
+                                actionsPadding: const EdgeInsets.only(
+                                  left: 24,
+                                  right: 24,
+                                  bottom: 24,
                                 ),
-                              ),
-                              content: const Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    "You're about to leave Booking Mode.",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 14, color: Color(0xFF2E2D2D)),
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Unsaved selections or guest details will be cleared.\nDo you want to continue?',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                actions: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: const BorderSide(
+                                              color: Color(0xFF000000),
+                                              width: 1.2,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 18,
+                                            ),
+                                            minimumSize: const Size.fromHeight(
+                                              48,
+                                            ),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: const Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 24),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFFFFBD00,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 18,
+                                            ),
+                                            minimumSize: const Size.fromHeight(
+                                              48,
+                                            ),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: const Text(
+                                            'Switch to Booking',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              actionsPadding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                              actions: [
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: OutlinedButton(
-                                        style: OutlinedButton.styleFrom(
-                                          side: const BorderSide(color: Color(0xFF000000), width: 1.2),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(vertical: 18),
-                                          minimumSize: const Size.fromHeight(48),
-                                        ),
-                                        onPressed: () => Navigator.of(context).pop(false),
-                                        child: const Text('Cancel', style: TextStyle(fontSize: 16, color: Colors.black)),
+                            );
+
+                            if (confirmed == true) {
+                              setState(() => _mode = Mode.bookRooms);
+                            }
+                          }
+                        },
+                      ),
+                      const Text(
+                        'Book Rooms',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color.fromARGB(255, 254, 254, 254),
+                        ),
+                      ),
+                      const SizedBox(width: 24),
+
+                      Radio<Mode>(
+                        value: Mode.housekeeping,
+                        groupValue: _mode,
+                        activeColor: const Color(0xFFFFBD00),
+                        fillColor: MaterialStateProperty.resolveWith<Color>((
+                          states,
+                        ) {
+                          if (states.contains(MaterialState.selected)) {
+                            return const Color(0xFFFFBD00);
+                          }
+                          return Colors.white;
+                        }),
+                        overlayColor: MaterialStateProperty.all(
+                          Colors.transparent,
+                        ),
+                        onChanged: (Mode? newValue) async {
+                          if (newValue == Mode.housekeeping) {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                insetPadding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                ),
+                                title: const Padding(
+                                  padding: EdgeInsets.only(top: 24.0),
+                                  child: Center(
+                                    child: Text(
+                                      'Switch to Housekeeping Mode?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 28,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    const SizedBox(width: 24),
-                                    Expanded(
-                                      child: ElevatedButton(
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: const Color(0xFFFFBD00),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                          padding: const EdgeInsets.symmetric(vertical: 18),
-                                          minimumSize: const Size.fromHeight(48),
-                                        ),
-                                        onPressed: () => Navigator.of(context).pop(true),
-                                        child: const Text('Switch to Housekeeping', style: TextStyle(fontSize: 16, color: Colors.white)),
+                                  ),
+                                ),
+                                content: const Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      "You're about to leave Booking Mode.",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Color(0xFF2E2D2D),
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Unsaved selections or guest details will be cleared.\nDo you want to continue?',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          );
+                                actionsPadding: const EdgeInsets.only(
+                                  left: 24,
+                                  right: 24,
+                                  bottom: 24,
+                                ),
+                                actions: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            side: const BorderSide(
+                                              color: Color(0xFF000000),
+                                              width: 1.2,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 18,
+                                            ),
+                                            minimumSize: const Size.fromHeight(
+                                              48,
+                                            ),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(false),
+                                          child: const Text(
+                                            'Cancel',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 24),
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: const Color(
+                                              0xFFFFBD00,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 18,
+                                            ),
+                                            minimumSize: const Size.fromHeight(
+                                              48,
+                                            ),
+                                          ),
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(true),
+                                          child: const Text(
+                                            'Switch to Housekeeping',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
 
-                          if (confirmed == true) {
-                            setState(() => _mode = Mode.housekeeping);
+                            if (confirmed == true) {
+                              setState(() => _mode = Mode.housekeeping);
+                            }
                           }
-                        }
-                      },
-                    ),
-                    const Text(
-                      'Set Housekeeping Status',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Color.fromARGB(255, 254, 254, 254),
+                        },
                       ),
-                    ),
+                      const Text(
+                        'Set Housekeeping Status',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Color.fromARGB(255, 254, 254, 254),
+                        ),
+                      ),
 
-                    const SizedBox(width: 24),
-                  ],
+                      const SizedBox(width: 24),
+                    ],
                   ),
                 ),
 
