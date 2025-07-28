@@ -18,6 +18,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   bool _invalidUsername = false;
   bool _invalidPassword = false;
+  bool _isPasswordVisible = false; // 👁️ toggle
 
   void _login() {
     final username = _usernameController.text.trim();
@@ -43,7 +44,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     return Scaffold(
       body: Row(
         children: [
-          // LEFT COL (Image) - copied from userlogin.dart
+          // Left Column - Image
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(left: 30.0),
@@ -100,11 +101,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             ),
           ),
 
-          // RIGHT COL (Form + Back Arrow)
+          // Right Column - Form
           Expanded(
             child: Stack(
               children: [
-                // Back Button
                 Positioned(
                   top: 16,
                   left: 16,
@@ -118,8 +118,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     },
                   ),
                 ),
-
-                // Login Form
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -139,7 +137,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               'Sign In',
                               style: TextStyle(
                                 fontSize: 36,
-                                fontWeight: FontWeight.w600, // semi-bold
+                                fontWeight: FontWeight.w600,
                                 color: Color(0xFFA80504),
                               ),
                             ),
@@ -153,7 +151,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                             ),
                             const SizedBox(height: 32),
 
-                            // Username Field
+                            // Username
                             _buildTextField(
                               controller: _usernameController,
                               label: 'Username',
@@ -161,9 +159,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               isError: _invalidUsername,
                               errorText: 'Invalid username',
                             ),
-                            const SizedBox(height: 2),
 
-                            // Password Field
+                            // Password with toggle
                             _buildTextField(
                               controller: _passwordController,
                               label: 'Password',
@@ -172,9 +169,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               isError: _invalidPassword,
                               errorText: 'Invalid password',
                             ),
-                            const SizedBox(height: 2),
 
-                            // Admin Name Field
+                            // Admin Name
                             SizedBox(
                               width: 500,
                               height: 60,
@@ -210,7 +206,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 child: const Text(
                                   'Sign In',
                                   style: TextStyle(
-                                    color: Color.fromARGB(255, 255, 255, 255),
+                                    color: Colors.white,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -247,10 +243,25 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           height: 60,
           child: TextFormField(
             controller: controller,
-            obscureText: isPassword,
+            obscureText: isPassword ? !_isPasswordVisible : false,
             decoration: InputDecoration(
               labelText: label,
               prefixIcon: Icon(icon, color: isError ? Colors.red : null),
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordVisible = !_isPasswordVisible;
+                        });
+                      },
+                    )
+                  : null,
               labelStyle: TextStyle(color: isError ? Colors.red : null),
               border: const OutlineInputBorder(),
               enabledBorder: OutlineInputBorder(
@@ -278,7 +289,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         ),
         if (isError)
           Transform.translate(
-            offset: const Offset(0, -8), // keep it close to the field
+            offset: const Offset(0, -8),
             child: Container(
               width: 500,
               alignment: Alignment.centerRight,

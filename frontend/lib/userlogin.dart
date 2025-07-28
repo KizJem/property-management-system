@@ -176,21 +176,27 @@ class _LoginPageState extends State<LoginPage> {
           height: 60,
           child: TextFormField(
             controller: controller,
-            obscureText: isPassword ? _obscurePassword : false,
+            obscureText: isPassword
+                ? _obscurePassword
+                : false, // 👁️ Toggle password visibility if isPassword = true
             decoration: InputDecoration(
               labelText: label,
               prefixIcon: Icon(icon, color: isError ? Colors.red : null),
-              suffixIcon: isPassword
+              suffixIcon:
+                  isPassword // 👁️ Show toggle icon only for password fields
                   ? IconButton(
                       icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility_off
-                            : Icons.visibility,
+                            ? Icons
+                                  .visibility_off // 👁️ Show closed eye when hidden
+                            : Icons
+                                  .visibility, // 👁️ Show open eye when visible
                         color: Colors.grey,
                       ),
                       onPressed: () {
                         setState(() {
-                          _obscurePassword = !_obscurePassword;
+                          _obscurePassword =
+                              !_obscurePassword; // 👁️ Toggle password visibility
                         });
                       },
                     )
@@ -371,7 +377,8 @@ class _LoginPageState extends State<LoginPage> {
                               controller: _passwordController,
                               label: 'Password',
                               icon: Icons.lock,
-                              isPassword: true,
+                              isPassword:
+                                  true, // 👁️ Enables password visibility toggle
                               isError: _invalidPassword,
                               errorText: 'Invalid password',
                             ),
