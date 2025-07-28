@@ -68,6 +68,11 @@ flutter:
     - assets/images/PMS-white-logo.png
     - assets/images/cba-logo.png
     - assets/images/PMS-logo-2.png
+    - assets/images/landing-page-bg.png
+    - assets/images/cba-header.png
+    - assets/images/pms-header.png
+    - assets/images/frontdesk.png
+
   fonts:
     - family: Poppins
       fonts:

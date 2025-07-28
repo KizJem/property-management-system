@@ -1,9 +1,7 @@
-// adminlogin.dart
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'adminpage.dart';
+import 'package:flutter/material.dart';
 import 'landingpage.dart';
+import 'adminpage.dart';
 
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
@@ -21,7 +19,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   bool _invalidUsername = false;
   bool _invalidPassword = false;
 
-  void _login() async {
+  void _login() {
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     final name = _nameController.text.trim();
@@ -45,6 +43,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     return Scaffold(
       body: Row(
         children: [
+          // LEFT COL (Image) - copied from userlogin.dart
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(left: 30.0),
@@ -53,26 +52,64 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 width: 650,
                 height: 650,
                 decoration: BoxDecoration(
+                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Image.asset(
-                    'assets/images/sign-in-left.jpg',
-                    fit: BoxFit.fill,
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          'assets/images/sign-in-left.jpg',
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                      Positioned(
+                        top: 20,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/cba-logo.png',
+                            width: 200,
+                          ),
+                        ),
+                      ),
+                      Center(
+                        child: Image.asset(
+                          'assets/images/PMS-white-logo.png',
+                          width: 250,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 20,
+                        left: 0,
+                        right: 0,
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/tagline.png',
+                            width: 250,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
           ),
+
+          // RIGHT COL (Form + Back Arrow)
           Expanded(
             child: Stack(
               children: [
+                // Back Button
                 Positioned(
                   top: 16,
                   left: 16,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back),
+                    icon: const Icon(Icons.arrow_back, size: 28),
                     onPressed: () {
                       Navigator.pushReplacement(
                         context,
@@ -81,6 +118,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     },
                   ),
                 ),
+
+                // Login Form
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -106,9 +145,14 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                             const SizedBox(height: 12),
                             const Text(
                               'Admin access to system reports, logs, and controls.',
-                              style: TextStyle(fontSize: 16),
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black87,
+                              ),
                             ),
                             const SizedBox(height: 32),
+
+                            // Username Field
                             _buildTextField(
                               controller: _usernameController,
                               label: 'Username',
@@ -117,6 +161,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               errorText: 'Invalid username',
                             ),
                             const SizedBox(height: 2),
+
+                            // Password Field
                             _buildTextField(
                               controller: _passwordController,
                               label: 'Password',
@@ -126,21 +172,31 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               errorText: 'Invalid password',
                             ),
                             const SizedBox(height: 2),
-                            TextFormField(
-                              controller: _nameController,
-                              decoration: const InputDecoration(
-                                labelText: "Admin's Name",
-                                prefixIcon: Icon(Icons.badge),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (value) =>
-                                  value == null || value.isEmpty
-                                  ? 'Enter name'
-                                  : null,
-                            ),
-                            const SizedBox(height: 20),
+
+                            // Admin Name Field
                             SizedBox(
-                              width: double.infinity,
+                              width: 500,
+                              height: 60,
+                              child: TextFormField(
+                                controller: _nameController,
+                                decoration: const InputDecoration(
+                                  labelText: "Admin's Name",
+                                  prefixIcon: Icon(Icons.badge),
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Enter name';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Sign In Button
+                            SizedBox(
+                              width: 500,
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: _login,
@@ -154,6 +210,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                   'Sign In',
                                   style: TextStyle(
                                     color: Color(0xFF171300),
+                                    fontSize: 16,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -181,15 +238,47 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     bool isError = false,
     required String errorText,
   }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon),
-        errorText: isError ? errorText : null,
-        border: const OutlineInputBorder(),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        SizedBox(
+          width: 500,
+          height: 60,
+          child: TextFormField(
+            controller: controller,
+            obscureText: isPassword,
+            decoration: InputDecoration(
+              labelText: label,
+              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
+              labelStyle: TextStyle(color: isError ? Colors.red : null),
+              border: const OutlineInputBorder(),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isError ? Colors.red : Colors.grey,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isError ? Colors.red : Colors.blue,
+                ),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter $label';
+              }
+              return null;
+            },
+          ),
+        ),
+        if (isError) const SizedBox(height: 4),
+        if (isError)
+          Text(
+            errorText,
+            textAlign: TextAlign.right,
+            style: const TextStyle(color: Colors.red, fontSize: 12),
+          ),
+      ],
     );
   }
 

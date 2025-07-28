@@ -8,136 +8,141 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Row(
-        children: [
-          // Left Side: Illustration
-          Expanded(
-            child: Container(
-              color: const Color(0xFFFFF1AB),
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(
-                      'assets/images/frontdesk-illustration.png',
-                      width: 400,
-                    ),
-                  ],
+      backgroundColor: Colors.white, // White outer background
+      body: Padding(
+        padding: const EdgeInsets.all(32.0), // Outer white margin
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF9B111E), // Deep red inner content
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              // LEFT PANEL
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(80, 60, 80, 100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // CBA HEADER IMAGE
+                      Image.asset('assets/images/cba-header.png', width: 500),
+                      const SizedBox(height: 50),
+
+                      // PMS HEADER IMAGE
+                      Image.asset('assets/images/pms-header.png', width: 500),
+                      const SizedBox(height: 16),
+
+                      // Buttons
+                      Row(
+                        children: [
+                          _buildButton(
+                            label: 'Student',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const LoginPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 16),
+                          _buildButton(
+                            label: 'Admin',
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AdminLoginPage(),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 16),
+                          _buildCircleButton(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: const Text('About'),
+                                  content: const Text(
+                                    'This Property Management System is a simulation platform for Hospitality Management students.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('OK'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ),
 
-          // Right Side: Welcome Text + Buttons (centered)
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 60.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Logo + College
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset('assets/images/cba-logo.png', width: 50),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'College of Business Administration',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Welcome
-                    const Text(
-                      'WELCOME',
-                      style: TextStyle(
-                        fontSize: 64,
-                        fontWeight: FontWeight.w900,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const Text(
-                      'Property Management System',
-                      style: TextStyle(fontSize: 20),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Sign in as',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Role Selection Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildRoleButton(
-                          context,
-                          label: 'Admin',
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AdminLoginPage(),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 32),
-                        _buildRoleButton(
-                          context,
-                          label: 'User',
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LoginPage(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+              // RIGHT PANEL: Front desk illustration
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.only(top: 60, right: 100),
+                  alignment: Alignment.topRight,
+                  child: Image.asset(
+                    'assets/images/frontdesk.png',
+                    width: 420,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildRoleButton(
-    BuildContext context, {
-    required String label,
-    required VoidCallback onTap,
-  }) {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.person, size: 60),
+  Widget _buildButton({required String label, required VoidCallback onTap}) {
+    return SizedBox(
+      width: 200,
+      height: 48,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFFBD00),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: EdgeInsets.zero, // Prevent extra padding
+        ),
+        child: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Color(0xFFFFFFFF),
           ),
         ),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 16)),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildCircleButton({required VoidCallback onTap}) {
+    return SizedBox(
+      width: 40,
+      height: 40,
+      child: ElevatedButton(
+        onPressed: onTap,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFFFFBD00),
+          shape: const CircleBorder(), // Circle shape
+          padding: EdgeInsets.zero, // Remove extra space
+        ),
+        child: const Icon(Icons.info_outline, color: Color(0xFFFFFFFF)),
+      ),
     );
   }
 }
