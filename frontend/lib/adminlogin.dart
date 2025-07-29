@@ -20,9 +20,12 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   bool _invalidPassword = false;
 
   void _login() {
+    final isValid = _formKey.currentState?.validate() ?? false;
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     final name = _nameController.text.trim();
+
+    if (!isValid) return;
 
     if (username != 'admin' || password != 'adminpms') {
       setState(() {
@@ -135,122 +138,27 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               ),
                             ),
                             const SizedBox(height: 32),
+
                             // Username Field
-                            SizedBox(
-                              width: double.infinity,
-                              height: 60,
-                              child: TextFormField(
-                                controller: _usernameController,
-                                decoration: InputDecoration(
-                                  labelText: 'Username',
-                                  labelStyle: TextStyle(
-                                    color: _invalidUsername
-                                        ? Colors.red
-                                        : Colors.black,
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.person,
-                                    color: _invalidUsername
-                                        ? Colors.red
-                                        : Colors.black,
-                                  ),
-                                  border: const OutlineInputBorder(),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _invalidUsername
-                                          ? Colors.red
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _invalidUsername
-                                          ? Colors.red
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Username';
-                                  }
-                                  return null;
-                                },
-                              ),
+                            _buildTextField(
+                              controller: _usernameController,
+                              label: 'Username',
+                              icon: Icons.person,
+                              isError: _invalidUsername,
+                              errorText: 'Invalid username',
                             ),
-
-                            if (_invalidUsername)
-                              const Padding(
-                                padding: EdgeInsets.only(top: 4, left: 4),
-                                child: Text(
-                                  'Invalid username',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 2),
 
                             // Password Field
-                            SizedBox(
-                              width: double.infinity,
-                              height: 60,
-                              child: TextFormField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  labelText: 'Password',
-                                  labelStyle: TextStyle(
-                                    color: _invalidPassword
-                                        ? Colors.red
-                                        : Colors.black,
-                                  ),
-                                  prefixIcon: Icon(
-                                    Icons.lock,
-                                    color: _invalidPassword
-                                        ? Colors.red
-                                        : Colors.black,
-                                  ),
-                                  border: const OutlineInputBorder(),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _invalidPassword
-                                          ? Colors.red
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: _invalidPassword
-                                          ? Colors.red
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter Password';
-                                  }
-                                  return null;
-                                },
-                              ),
+                            _buildTextField(
+                              controller: _passwordController,
+                              label: 'Password',
+                              icon: Icons.lock,
+                              isPassword: true,
+                              isError: _invalidPassword,
+                              errorText: 'Invalid password',
                             ),
-
-                            if (_invalidPassword)
-                              const Padding(
-                                padding: EdgeInsets.only(top: 4, left: 4),
-                                child: Text(
-                                  'Invalid password',
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
-
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 2),
                             const SizedBox(height: 2),
                             SizedBox(
                               width: double.infinity,
@@ -394,25 +302,22 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 500,
+          width: double.infinity,
           height: 60,
           child: TextFormField(
             controller: controller,
             obscureText: isPassword,
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               labelText: label,
-              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
-              labelStyle: TextStyle(color: isError ? Colors.red : null),
+              labelStyle: const TextStyle(color: Colors.black),
+              prefixIcon: Icon(icon, color: Colors.black),
               border: const OutlineInputBorder(),
-              enabledBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.grey,
-                ),
+              enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
               ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: isError ? Colors.red : Colors.blue,
-                ),
+              focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black, width: 2),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 12,
@@ -423,24 +328,14 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               if (value == null || value.isEmpty) {
                 return 'Please enter $label';
               }
+              if ((label == 'Username' && _invalidUsername) ||
+                  (label == 'Password' && _invalidPassword)) {
+                return errorText;
+              }
               return null;
             },
           ),
         ),
-        if (isError)
-          Transform.translate(
-            offset: const Offset(0, -8), // keep it close to the field
-            child: Container(
-              width: 500,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Text(
-                errorText,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
-                textAlign: TextAlign.right,
-              ),
-            ),
-          ),
         const SizedBox(height: 8),
       ],
     );
