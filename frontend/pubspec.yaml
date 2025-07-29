@@ -73,6 +73,10 @@ flutter:
     - assets/images/pms-header.png
     - assets/images/frontdesk.png
     - assets/images/landing-page-bg.png
+    - assets/images/login-bg.png
+    - assets/images/pms-logo-red.png
+    - assets/images/pms-logo-white.png
+    - assets/images/pms-logo-yellow.png
 
   fonts:
     - family: Poppins

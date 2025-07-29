@@ -18,7 +18,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   bool _invalidUsername = false;
   bool _invalidPassword = false;
-  bool _isPasswordVisible = false; // 👁️ toggle
 
   void _login() {
     final username = _usernameController.text.trim();
@@ -44,7 +43,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     return Scaffold(
       body: Row(
         children: [
-          // Left Column - Image
+          // LEFT COL (Image)
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(left: 30.0),
@@ -53,44 +52,41 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 width: 650,
                 height: 650,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Stack(
                     children: [
+                      // Background Image
                       Positioned.fill(
                         child: Image.asset(
-                          'assets/images/sign-in-left.jpg',
-                          fit: BoxFit.fill,
+                          'assets/images/login-bg.png',
+                          fit: BoxFit.fitHeight,
+                          alignment: Alignment.centerLeft,
                         ),
                       ),
-                      Positioned(
-                        top: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/cba-logo.png',
-                            width: 200,
-                          ),
+
+                      Positioned.fill(
+                        child: Container(
+                          color: const Color(0xCC9B000A), // 80% opacity red
                         ),
                       ),
-                      Center(
-                        child: Image.asset(
-                          'assets/images/PMS-white-logo.png',
-                          width: 250,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/tagline.png',
-                            width: 250,
+
+                      // Welcome Text at bottom-left
+                      const Positioned(
+                        left: 32,
+                        bottom: 32,
+                        child: Text(
+                          'Welcome,\nAdmin!',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 48,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            // letterSpacing: -1,
+                            height: 1.1,
                           ),
                         ),
                       ),
@@ -101,23 +97,12 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             ),
           ),
 
-          // Right Column - Form
+          // RIGHT COL (Form + Back Arrow)
           Expanded(
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, size: 28),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LandingPage()),
-                      );
-                    },
-                  ),
-                ),
+                // Login Form
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -128,7 +113,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Image.asset(
-                              'assets/images/PMS-logo-2.png',
+                              'assets/images/pms-logo-red.png',
                               width: 100,
                               height: 100,
                             ),
@@ -150,51 +135,150 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               ),
                             ),
                             const SizedBox(height: 32),
-
-                            // Username
-                            _buildTextField(
-                              controller: _usernameController,
-                              label: 'Username',
-                              icon: Icons.person,
-                              isError: _invalidUsername,
-                              errorText: 'Invalid username',
-                            ),
-
-                            // Password with toggle
-                            _buildTextField(
-                              controller: _passwordController,
-                              label: 'Password',
-                              icon: Icons.lock,
-                              isPassword: true,
-                              isError: _invalidPassword,
-                              errorText: 'Invalid password',
-                            ),
-
-                            // Admin Name
+                            // Username Field
                             SizedBox(
-                              width: 500,
+                              width: double.infinity,
                               height: 60,
                               child: TextFormField(
-                                controller: _nameController,
-                                decoration: const InputDecoration(
-                                  labelText: "Admin's Name",
-                                  labelStyle: TextStyle(color: Colors.black),
-                                  prefixIcon: Icon(
-                                    Icons.badge,
-                                    color: Colors.black,
+                                controller: _usernameController,
+                                decoration: InputDecoration(
+                                  labelText: 'Username',
+                                  labelStyle: TextStyle(
+                                    color: _invalidUsername
+                                        ? Colors.red
+                                        : Colors.black,
                                   ),
-                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(
+                                    Icons.person,
+                                    color: _invalidUsername
+                                        ? Colors.red
+                                        : Colors.black,
+                                  ),
+                                  border: const OutlineInputBorder(),
                                   enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.black),
+                                    borderSide: BorderSide(
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : Colors.black,
+                                    ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: Colors.black,
-                                      width: 2,
+                                      color: _invalidUsername
+                                          ? Colors.red
+                                          : Colors.black,
                                     ),
                                   ),
                                 ),
-                                style: TextStyle(color: Colors.black),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Username';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+
+                            if (_invalidUsername)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 4, left: 4),
+                                child: Text(
+                                  'Invalid username',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+
+                            const SizedBox(height: 10),
+
+                            // Password Field
+                            SizedBox(
+                              width: double.infinity,
+                              height: 60,
+                              child: TextFormField(
+                                controller: _passwordController,
+                                obscureText: true,
+                                decoration: InputDecoration(
+                                  labelText: 'Password',
+                                  labelStyle: TextStyle(
+                                    color: _invalidPassword
+                                        ? Colors.red
+                                        : Colors.black,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.lock,
+                                    color: _invalidPassword
+                                        ? Colors.red
+                                        : Colors.black,
+                                  ),
+                                  border: const OutlineInputBorder(),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: _invalidPassword
+                                          ? Colors.red
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter Password';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+
+                            if (_invalidPassword)
+                              const Padding(
+                                padding: EdgeInsets.only(top: 4, left: 4),
+                                child: Text(
+                                  'Invalid password',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+
+                            const SizedBox(height: 10),
+                            const SizedBox(height: 2),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 60,
+                              child: TextFormField(
+                                controller: _nameController,
+                                decoration: InputDecoration(
+                                  labelText: "Admin's Name",
+                                  labelStyle: TextStyle(
+                                    color: _nameController.text.isEmpty
+                                        ? Colors.black
+                                        : Colors.black,
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.badge,
+                                    color: _nameController.text.isEmpty
+                                        ? Colors.black
+                                        : Colors.black,
+                                  ),
+                                  border: const OutlineInputBorder(),
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderSide: BorderSide(color: Colors.black),
+                                  ),
+                                ),
+
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Enter name';
@@ -204,10 +288,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               ),
                             ),
                             const SizedBox(height: 15),
-
-                            // Sign In Button
                             SizedBox(
-                              width: 500,
+                              width: double.infinity,
                               height: 50,
                               child: ElevatedButton(
                                 onPressed: _login,
@@ -227,7 +309,66 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 ),
                               ),
                             ),
+                            Transform.translate(
+                              offset: const Offset(0, 25), // overlap upwards
+                              child: Container(
+                                width: double.infinity,
+                                height: 100,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFFFBD00),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(200),
+                                    topRight: Radius.circular(200),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LandingPage()),
+                      );
+                    },
+                    child: Container(
+                      width: 450,
+                      height: 200,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFBD00),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(80),
+                        ),
+                      ),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 50.0,
+                            right: 100.0,
+                          ),
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFFA80504),
+                            ),
+                            child: const Icon(
+                              Icons.chevron_left,
+                              size: 35,
+                              color: Color(0xFFFFBD00),
+                            ),
+                          ),
                         ),
                       ),
                     ),
@@ -257,33 +398,21 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           height: 60,
           child: TextFormField(
             controller: controller,
-            obscureText: isPassword ? !_isPasswordVisible : false,
-            style: const TextStyle(color: Colors.black),
+            obscureText: isPassword,
             decoration: InputDecoration(
               labelText: label,
-              labelStyle: const TextStyle(color: Colors.black), // Black label
-              prefixIcon: Icon(icon, color: Colors.black), // Black icon
-              suffixIcon: isPassword
-                  ? IconButton(
-                      icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: Colors.black,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
-                    )
-                  : null,
+              prefixIcon: Icon(icon, color: isError ? Colors.red : null),
+              labelStyle: TextStyle(color: isError ? Colors.red : null),
               border: const OutlineInputBorder(),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isError ? Colors.red : Colors.grey,
+                ),
               ),
-              focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 2),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: isError ? Colors.red : Colors.blue,
+                ),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 12,
@@ -300,7 +429,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         ),
         if (isError)
           Transform.translate(
-            offset: const Offset(0, -8),
+            offset: const Offset(0, -8), // keep it close to the field
             child: Container(
               width: 500,
               alignment: Alignment.centerRight,
