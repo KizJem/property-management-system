@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                         left: 32,
                         bottom: 32,
                         child: Text(
-                          'Welcome,\nAdmin!',
+                          'Welcome,\nStudent!',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontFamily: 'Poppins',
