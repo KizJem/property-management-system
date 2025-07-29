@@ -526,13 +526,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           // Show housekeeping dialog
           final startIdx = _hkSelectedStart[room]!;
           final endIdx = _hkSelectedEnd[room]!;
-          final dates = _generateDatesForMonth(
-            _selectedYear,
-            _selectedMonth,
-            daysToShow: DateTime(_selectedYear, _selectedMonth + 1, 0).day,
+          final displayedDates = _generateDatesFromStartDate(
+            _currentStartDate,
+            30,
           );
-          final startDate = dates[startIdx]['date'] ?? '';
-          final endDate = dates[endIdx]['date'] ?? '';
+          final startDt = displayedDates[startIdx];
+          final endDt = displayedDates[endIdx];
+
+          final startDate = '${_monthAbbr(startDt.month)} ${startDt.day}';
+          final endDate =
+              '${_monthAbbr(endDt.month)} ${endDt.day}, ${endDt.year}';
           final roomNumber = room;
           String? selectedStatus;
           TextEditingController notesController = TextEditingController();
@@ -1665,23 +1668,25 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
 
                       // Housekeeping preview (gray)
-                      if (isHKPreview &&
+                      if (_mode == Mode.housekeeping &&
                           selStart != null &&
-                          selEnd != null &&
-                          i == selStart &&
+                          i ==
+                              selStart && // Render only once (like booking highlight)
                           (statusCode == null || statusCode != 'VR'))
                         Positioned(
                           left: 0,
                           top: 0,
                           height: cellHeight,
-                          width: cellWidth * (selEnd - selStart + 1),
+                          width:
+                              cellWidth * ((selEnd ?? selStart) - selStart + 1),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey.shade400,
-                              borderRadius: const BorderRadius.horizontal(
-                                left: cornerRadius,
-                                right: cornerRadius,
-                              ),
+                              color: const Color(
+                                0xFFD9D9D9,
+                              ), // Use light gray or your preferred color
+                              borderRadius: BorderRadius.circular(
+                                16,
+                              ), // Match booking style
                             ),
                           ),
                         ),
