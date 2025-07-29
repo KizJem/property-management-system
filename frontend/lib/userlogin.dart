@@ -282,7 +282,7 @@ class _LoginPageState extends State<LoginPage> {
                         left: 32,
                         bottom: 32,
                         child: Text(
-                          'Welcome,\nStudent!',
+                          'Welcome,\nFrontdesk!',
                           textAlign: TextAlign.left,
                           style: TextStyle(
                             fontFamily: 'Poppins',
@@ -358,14 +358,14 @@ class _LoginPageState extends State<LoginPage> {
                               errorText: 'Invalid password',
                             ),
 
-                            // STUDENT NAME FIELD
+                            // FRONTDESK FULL NAME FIELD
                             SizedBox(
                               width: double.infinity,
                               height: 60,
                               child: TextFormField(
                                 controller: _nameController,
                                 decoration: const InputDecoration(
-                                  labelText: "Student's Name",
+                                  labelText: "Full Name",
                                   labelStyle: TextStyle(color: Colors.black),
                                   prefixIcon: Icon(
                                     Icons.badge,

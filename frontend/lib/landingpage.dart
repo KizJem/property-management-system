@@ -53,7 +53,7 @@ class LandingPage extends StatelessWidget {
                           Row(
                             children: [
                               _buildButton(
-                                label: 'Student',
+                                label: 'Frontdesk',
                                 onTap: () {
                                   Navigator.push(
                                     context,
