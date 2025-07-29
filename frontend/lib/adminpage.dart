@@ -143,21 +143,33 @@ class _AdminPageState extends State<AdminPage> {
                     ],
                   ),
                 ),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: widget.adminName,
-                    icon: const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.white,
+
+                // ▼ Log Out with dropdown menu
+                PopupMenuButton<String>(
+                  onSelected: (value) {
+                    if (value == 'logout') {
+                      _showLogoutConfirmation();
+                    }
+                  },
+                  color: Colors.white,
+                  itemBuilder: (BuildContext context) => [
+                    const PopupMenuItem<String>(
+                      value: 'logout',
+                      child: Text('Log Out'),
                     ),
-                    dropdownColor: Colors.white,
-                    items: <String>[widget.adminName].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: const Text('Log Out'),
-                      );
-                    }).toList(),
-                    onChanged: (val) => _showLogoutConfirmation(),
+                  ],
+                  child: Row(
+                    children: const [
+                      Text(
+                        'Log Out',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Icon(Icons.arrow_drop_down, color: Colors.white),
+                    ],
                   ),
                 ),
               ],
