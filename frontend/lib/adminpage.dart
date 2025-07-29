@@ -13,7 +13,7 @@ class AdminPage extends StatefulWidget {
 
 class _AdminPageState extends State<AdminPage> {
   int _selectedTab = 0;
-  DateTimeRange? selectedRange;
+  DateTime? selectedDate;
 
   void _showLogoutConfirmation() {
     showDialog(
@@ -286,19 +286,19 @@ class _AdminPageState extends State<AdminPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('DATE RANGE', style: TextStyle(fontSize: 12)),
+                  const Text('FILTER DATE', style: TextStyle(fontSize: 12)),
                   const SizedBox(height: 4),
                   GestureDetector(
                     onTap: () async {
-                      final DateTimeRange? picked = await showDateRangePicker(
+                      DateTime? picked = await showDatePicker(
                         context: context,
+                        initialDate: selectedDate ?? DateTime.now(),
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
-                        initialDateRange: selectedRange,
                         builder: (context, child) {
                           return Theme(
                             data: Theme.of(context).copyWith(
-                              colorScheme: ColorScheme.light(
+                              colorScheme: const ColorScheme.light(
                                 primary: Colors.black,
                                 onPrimary: Colors.white,
                                 onSurface: Colors.black,
@@ -308,9 +308,9 @@ class _AdminPageState extends State<AdminPage> {
                           );
                         },
                       );
-                      if (picked != null && picked != selectedRange) {
+                      if (picked != null) {
                         setState(() {
-                          selectedRange = picked;
+                          selectedDate = picked;
                         });
                       }
                     },
@@ -327,9 +327,11 @@ class _AdminPageState extends State<AdminPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            selectedRange == null
-                                ? 'Select dates'
-                                : '${DateFormat('yyyy-MM-dd').format(selectedRange!.start)} → ${DateFormat('yyyy-MM-dd').format(selectedRange!.end)}',
+                            selectedDate == null
+                                ? 'Select date'
+                                : DateFormat(
+                                    'EEE, MMM d, yyyy',
+                                  ).format(selectedDate!),
                             style: const TextStyle(fontSize: 12),
                           ),
                           const Icon(Icons.calendar_today, size: 16),
