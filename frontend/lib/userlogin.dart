@@ -202,7 +202,7 @@ class _LoginPageState extends State<LoginPage> {
                 borderSide: BorderSide(color: Colors.black),
               ),
               focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 2),
+                borderSide: BorderSide(color: Colors.black),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 12,
@@ -376,10 +376,7 @@ class _LoginPageState extends State<LoginPage> {
                                     borderSide: BorderSide(color: Colors.black),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.black,
-                                      width: 2,
-                                    ),
+                                    borderSide: BorderSide(color: Colors.black),
                                   ),
                                 ),
                                 style: const TextStyle(color: Colors.black),

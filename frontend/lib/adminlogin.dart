@@ -18,6 +18,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   bool _invalidUsername = false;
   bool _invalidPassword = false;
+  bool _obscurePassword = true; // 👁️ Password visibility toggle
 
   void _login() {
     final isValid = _formKey.currentState?.validate() ?? false;
@@ -306,18 +307,33 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           height: 60,
           child: TextFormField(
             controller: controller,
-            obscureText: isPassword,
+            obscureText: isPassword ? _obscurePassword : false,
             style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               labelText: label,
               labelStyle: const TextStyle(color: Colors.black),
               prefixIcon: Icon(icon, color: Colors.black),
+              suffixIcon: isPassword
+                  ? IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    )
+                  : null,
               border: const OutlineInputBorder(),
               enabledBorder: const OutlineInputBorder(
                 borderSide: BorderSide(color: Colors.black),
               ),
               focusedBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black, width: 2),
+                borderSide: BorderSide(color: Colors.black),
               ),
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 12,
