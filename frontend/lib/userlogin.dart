@@ -172,18 +172,16 @@ class _LoginPageState extends State<LoginPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: 500,
+          width: double.infinity, // changed from 500 to full width
           height: 60,
           child: TextFormField(
             controller: controller,
             obscureText: isPassword ? _obscurePassword : false,
-            style: const TextStyle(color: Colors.black), // black input text
+            style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               labelText: label,
-              labelStyle: const TextStyle(
-                color: Colors.black,
-              ), // clean black label
-              prefixIcon: Icon(icon, color: Colors.black), // black icon
+              labelStyle: const TextStyle(color: Colors.black),
+              prefixIcon: Icon(icon, color: Colors.black),
               suffixIcon: isPassword
                   ? IconButton(
                       icon: Icon(
@@ -223,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
           Transform.translate(
             offset: const Offset(0, -8),
             child: Container(
-              width: 500,
+              width: double.infinity,
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 8.0),
               child: Text(
@@ -260,44 +258,38 @@ class _LoginPageState extends State<LoginPage> {
                 width: 650,
                 height: 650,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
                   child: Stack(
                     children: [
+                      // Background Image
                       Positioned.fill(
                         child: Image.asset(
-                          'assets/images/sign-in-left.jpg',
-                          fit: BoxFit.fill,
+                          'assets/images/login-bg.png',
+                          fit: BoxFit.fitHeight,
+                          alignment: Alignment.centerLeft,
                         ),
                       ),
-                      Positioned(
-                        top: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/cba-logo.png',
-                            width: 200,
-                          ),
-                        ),
+
+                      Positioned.fill(
+                        child: Container(color: const Color(0xCCFFBD00)),
                       ),
-                      Center(
-                        child: Image.asset(
-                          'assets/images/PMS-white-logo.png',
-                          width: 250,
-                        ),
-                      ),
-                      Positioned(
-                        bottom: 20,
-                        left: 0,
-                        right: 0,
-                        child: Center(
-                          child: Image.asset(
-                            'assets/images/tagline.png',
-                            width: 250,
+
+                      // Welcome Text at bottom-left
+                      const Positioned(
+                        left: 32,
+                        bottom: 32,
+                        child: Text(
+                          'Welcome,\nAdmin!',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 48,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            height: 1.1,
                           ),
                         ),
                       ),
@@ -311,22 +303,9 @@ class _LoginPageState extends State<LoginPage> {
           // RIGHT PANEL
           Expanded(
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, size: 28),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LandingPage(),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                // Login Form
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -337,7 +316,7 @@ class _LoginPageState extends State<LoginPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Image.asset(
-                              'assets/images/PMS-logo-2.png',
+                              'assets/images/pms-logo-yellow.png',
                               width: 100,
                               height: 100,
                             ),
@@ -359,6 +338,8 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             const SizedBox(height: 32),
+
+                            // USERNAME FIELD
                             _buildTextField(
                               controller: _usernameController,
                               label: 'Username',
@@ -366,17 +347,20 @@ class _LoginPageState extends State<LoginPage> {
                               isError: _invalidUsername,
                               errorText: 'Invalid username',
                             ),
+
+                            // PASSWORD FIELD
                             _buildTextField(
                               controller: _passwordController,
                               label: 'Password',
                               icon: Icons.lock,
-                              isPassword:
-                                  true, // 👁️ Enables password visibility toggle
+                              isPassword: true,
                               isError: _invalidPassword,
                               errorText: 'Invalid password',
                             ),
+
+                            // STUDENT NAME FIELD
                             SizedBox(
-                              width: 500,
+                              width: double.infinity,
                               height: 60,
                               child: TextFormField(
                                 controller: _nameController,
@@ -398,7 +382,7 @@ class _LoginPageState extends State<LoginPage> {
                                     ),
                                   ),
                                 ),
-                                style: TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Colors.black),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your name';
@@ -407,11 +391,14 @@ class _LoginPageState extends State<LoginPage> {
                                 },
                               ),
                             ),
+
                             const SizedBox(height: 15),
+
+                            // SIGN IN BUTTON
                             _isLoading
                                 ? const CircularProgressIndicator()
                                 : SizedBox(
-                                    width: 500,
+                                    width: double.infinity,
                                     height: 50,
                                     child: ElevatedButton(
                                       onPressed: _login,
@@ -435,7 +422,69 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                   ),
+
+                            // Rounded Yellow Bottom
+                            Transform.translate(
+                              offset: const Offset(0, 25),
+                              child: Container(
+                                width: double.infinity,
+                                height: 100,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFA80504),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(200),
+                                    topRight: Radius.circular(200),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // TOP RIGHT BACK BUTTON & YELLOW PANEL
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LandingPage()),
+                      );
+                    },
+                    child: Container(
+                      width: 450,
+                      height: 200,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFA80504),
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(80),
+                        ),
+                      ),
+                      child: Align(
+                        alignment: Alignment.topRight,
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 50.0,
+                            right: 100.0,
+                          ),
+                          child: Container(
+                            width: 50,
+                            height: 50,
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Color(0xFFFFBD00),
+                            ),
+                            child: const Icon(
+                              Icons.chevron_left,
+                              size: 35,
+                              color: Color(0xFFA80504),
+                            ),
+                          ),
                         ),
                       ),
                     ),
