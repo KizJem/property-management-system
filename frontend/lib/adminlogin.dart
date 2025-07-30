@@ -76,7 +76,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         child: const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Welcome,\nStudent!',
+                            'Welcome,\nAdmin!',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 56,
