@@ -49,53 +49,46 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         children: [
           // LEFT COL (Image)
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(left: 30.0),
-              alignment: Alignment.center,
-              child: Container(
-                width: 650,
-                height: 650,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Stack(
-                    children: [
-                      // Background Image
-                      Positioned.fill(
-                        child: Image.asset(
-                          'assets/images/login-bg.png',
-                          fit: BoxFit.fitHeight,
+            child: Padding(
+              padding: const EdgeInsets.all(30),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Image.asset(
+                        'assets/images/login-bg.png',
+                        fit: BoxFit.fitHeight,
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ),
+
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        height: 200,
+                        width: double.infinity,
+                        color: const Color(0xCC9B000A), // 80% opacity red
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 20,
+                        ),
+                        child: const Align(
                           alignment: Alignment.centerLeft,
-                        ),
-                      ),
-
-                      Positioned.fill(
-                        child: Container(
-                          color: const Color(0xCC9B000A), // 80% opacity red
-                        ),
-                      ),
-
-                      // Welcome Text at bottom-left
-                      const Positioned(
-                        left: 32,
-                        bottom: 32,
-                        child: Text(
-                          'Welcome,\nAdmin!',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontFamily: 'Poppins',
-                            fontSize: 48,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            // letterSpacing: -1,
-                            height: 1.1,
+                          child: Text(
+                            'Welcome,\nStudent!',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 56,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                              height: 1.2,
+                            ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
