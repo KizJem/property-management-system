@@ -22,7 +22,7 @@ class RoomDetail {
 final Map<String, RoomDetail> roomDetails = {
   'STANDARD SINGLE ROOMS': RoomDetail(
     name: 'Standard Single Room',
-    imageAsset: 'assets/images/single-standard-room.jpg',
+    imageAsset: 'assets/images/standard-single-room.jpg',
     price: '₱ 4,000',
     description:
         'Basic yet functional, the Standard Single Room is perfect for one person. It includes a single or twin bed, private bathroom, air-conditioning or fan, and basic amenities. This is the most affordable room type and does not allow extra beds.',
@@ -85,7 +85,7 @@ final Map<String, RoomDetail> roomDetails = {
 
   'DELUXE ROOMS': RoomDetail(
     name: 'Deluxe Room',
-    imageAsset: 'assets/images/standard-double-room.jpg',
+    imageAsset: 'assets/images/deluxe-room.jpg',
     price: '₱ 6,000',
     description:
         'The Deluxe Room offers more space and upgraded interiors. Perfect for two guests, it features premium amenities, possibly a minibar, luxurious toiletries, and a better view. One extra bed is allowed.',
@@ -106,7 +106,7 @@ final Map<String, RoomDetail> roomDetails = {
 
   'FAMILY ROOMS': RoomDetail(
     name: 'Family Room',
-    imageAsset: 'assets/images/standard-double-room.jpg',
+    imageAsset: 'assets/images/family-room.jpg',
     price: '₱ 7,000',
     description:
         'Perfect for families, this room includes multiple beds or bunk beds and a larger space. It offers family-friendly comfort and is suitable for up to five persons.',
@@ -127,7 +127,7 @@ final Map<String, RoomDetail> roomDetails = {
 
   'EXECUTIVE ROOMS': RoomDetail(
     name: 'Executive Room',
-    imageAsset: 'assets/images/standard-double-room.jpg',
+    imageAsset: 'assets/images/executive-room.jpg',
     price: '₱ 8,000',
     description:
         'Tailored for professionals, the Executive Room features business-friendly amenities and upgraded room comforts. It accommodates two persons with a queen-size bed and one extra bed allowed.',
@@ -148,7 +148,7 @@ final Map<String, RoomDetail> roomDetails = {
 
   'SUITE ROOMS': RoomDetail(
     name: 'Suite Room',
-    imageAsset: 'assets/images/standard-double-room.jpg',
+    imageAsset: 'assets/images/suite-room.jpg',
     price: '₱ 10,000',
     description:
         'The Suite Room features luxury furnishings, a king-size bed, and separate areas for living and sleeping. Often includes dining space or a kitchenette. Good for 2 persons with 1 extra bed allowed.',

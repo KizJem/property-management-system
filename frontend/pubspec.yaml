@@ -59,9 +59,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/single-standard-room.jpg
-    - assets/images/superior-single-room.jpg
-    - assets/images/standard-double-room.jpg
     - assets/images/sign-in-left.jpg
     - assets/images/PMS-logo.png
     - assets/images/tagline.png
@@ -77,6 +74,13 @@ flutter:
     - assets/images/pms-logo-red.png
     - assets/images/pms-logo-white.png
     - assets/images/pms-logo-yellow.png
+    - assets/images/deluxe-room.jpg
+    - assets/images/executive-room.jpg
+    - assets/images/family-room.jpg
+    - assets/images/standard-double-room.jpg
+    - assets/images/standard-single-room.jpg
+    - assets/images/suite-room.jpg
+    - assets/images/superior-single-room.jpg
 
   fonts:
     - family: Poppins
