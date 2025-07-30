@@ -57,7 +57,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   children: [
                     Positioned.fill(
                       child: Image.asset(
-                        'assets/images/login-bg.png',
+                        'assets/images/login-bg.jpg',
                         fit: BoxFit.fitHeight,
                         alignment: Alignment.centerLeft,
                       ),

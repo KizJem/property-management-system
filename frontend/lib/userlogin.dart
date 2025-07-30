@@ -259,7 +259,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Positioned.fill(
                       child: Image.asset(
-                        'assets/images/login-bg.png',
+                        'assets/images/login-bg.jpg',
                         fit: BoxFit.fitHeight,
                         alignment: Alignment.centerLeft,
                       ),
