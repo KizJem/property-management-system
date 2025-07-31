@@ -53,7 +53,7 @@ class LandingPage extends StatelessWidget {
                           Row(
                             children: [
                               _buildButton(
-                                label: 'Frontdesk',
+                                label: 'Student',
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -105,15 +105,29 @@ class LandingPage extends StatelessWidget {
                   ),
 
                   // RIGHT PANEL
+                  // RIGHT PANEL
                   Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 0, right: 100),
-                      alignment: Alignment.topRight,
-                      child: Image.asset(
-                        'assets/images/frontdesk.png',
-                        width: 480,
-                        fit: BoxFit.contain,
-                      ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        double imageWidth =
+                            constraints.maxWidth * 0.85; // use 85% of space
+                        imageWidth = imageWidth > 480
+                            ? 480
+                            : imageWidth; // cap at 480px
+
+                        return Container(
+                          padding: const EdgeInsets.only(
+                            top: 0,
+                            right: 20,
+                          ), // reduced
+                          alignment: Alignment.topRight,
+                          child: Image.asset(
+                            'assets/images/Frontdesk.png',
+                            width: imageWidth,
+                            fit: BoxFit.contain,
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -127,22 +141,22 @@ class LandingPage extends StatelessWidget {
 
   Widget _buildButton({required String label, required VoidCallback onTap}) {
     return SizedBox(
-      width: 200,
-      height: 48,
+      width: 150,
+      height: 45,
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFFBD00),
+          backgroundColor: const Color(0xFFFFD700),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
           ),
           padding: EdgeInsets.zero,
         ),
         child: Text(
           label,
           style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
         ),
@@ -157,11 +171,11 @@ class LandingPage extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFFBD00),
+          backgroundColor: const Color(0xFFFFD700),
           shape: const CircleBorder(),
           padding: EdgeInsets.zero,
         ),
-        child: const Icon(Icons.info_outline, color: Colors.white),
+        child: const Icon(Icons.info_outline, size: 30, color: Colors.white),
       ),
     );
   }
