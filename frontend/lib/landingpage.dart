@@ -122,7 +122,7 @@ class LandingPage extends StatelessWidget {
                           ), // reduced
                           alignment: Alignment.topRight,
                           child: Image.asset(
-                            'assets/images/Frontdesk.png',
+                            'assets/images/frontdesk.png',
                             width: imageWidth,
                             fit: BoxFit.contain,
                           ),
