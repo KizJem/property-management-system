@@ -172,7 +172,7 @@ class _LoginPageState extends State<LoginPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
-          width: double.infinity, // changed from 500 to full width
+          width: double.infinity,
           height: 60,
           child: TextFormField(
             controller: controller,
@@ -264,13 +264,12 @@ class _LoginPageState extends State<LoginPage> {
                         alignment: Alignment.centerLeft,
                       ),
                     ),
-
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
                         height: 200,
                         width: double.infinity,
-                        color: const Color(0xCCFFBD00), // 80% opacity yellow
+                        color: const Color(0xCCFFBD00),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 20,
@@ -278,7 +277,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: const Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Welcome,\nStudent!',
+                            'Welcome,\nFrontdesk',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 56,
@@ -305,18 +304,13 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 60),
+                      padding: const EdgeInsets.only(left: 30, right: 60),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.asset(
-                              'assets/images/pms-logo-yellow.png',
-                              width: 100,
-                              height: 100,
-                            ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 50),
                             const Text(
                               'Sign In',
                               style: TextStyle(
@@ -415,22 +409,6 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                     ),
                                   ),
-
-                            // Rounded Yellow Bottom
-                            Transform.translate(
-                              offset: const Offset(0, 25),
-                              child: Container(
-                                width: double.infinity,
-                                height: 100,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFA80504),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(200),
-                                    topRight: Radius.circular(200),
-                                  ),
-                                ),
-                              ),
-                            ),
                           ],
                         ),
                       ),
@@ -438,48 +416,82 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
 
-                // TOP RIGHT BACK BUTTON & YELLOW PANEL
                 Positioned(
-                  top: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LandingPage()),
-                      );
-                    },
+                  bottom: 0,
+                  left: 10,
+                  right: 30,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
                     child: Container(
-                      width: 450,
-                      height: 200,
+                      width: 700,
+                      height: 100,
                       decoration: const BoxDecoration(
                         color: Color(0xFFA80504),
                         borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(80),
+                          topLeft: Radius.circular(200),
+                          topRight: Radius.circular(200),
                         ),
                       ),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 50.0,
-                            right: 100.0,
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    width: 450,
+                    height: 200,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFA80504),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(80),
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 20,
+                          child: Image.asset(
+                            'assets/images/pms-logo-white.png',
+                            width: 200,
+                            height: 200,
                           ),
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFFFBD00),
-                            ),
-                            child: const Icon(
-                              Icons.chevron_left,
-                              size: 35,
-                              color: Color(0xFFA80504),
+                        ),
+
+                        // — Red circular back button —
+                        Positioned(
+                          top: 50,
+                          right: 50,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LandingPage(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFFFFBD00),
+                                ),
+                                child: const Icon(
+                                  Icons.chevron_left,
+                                  size: 35,
+                                  color: Color(0xFFA80504),
+                                ),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 ),

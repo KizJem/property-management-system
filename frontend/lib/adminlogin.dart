@@ -18,14 +18,13 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   bool _invalidUsername = false;
   bool _invalidPassword = false;
-  bool _obscurePassword = true; // 👁️ Password visibility toggle
+  bool _obscurePassword = true;
 
   void _login() {
     final isValid = _formKey.currentState?.validate() ?? false;
     final username = _usernameController.text.trim();
     final password = _passwordController.text.trim();
     final name = _nameController.text.trim();
-
     if (!isValid) return;
 
     if (username != 'admin' || password != 'adminpms') {
@@ -62,13 +61,12 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         alignment: Alignment.centerLeft,
                       ),
                     ),
-
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Container(
                         height: 200,
                         width: double.infinity,
-                        color: const Color(0xCC9B000A), // 80% opacity red
+                        color: const Color(0xCC9B000A),
                         padding: const EdgeInsets.symmetric(
                           horizontal: 24,
                           vertical: 20,
@@ -94,7 +92,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             ),
           ),
 
-          // RIGHT COL (Form + Back Arrow)
+          // RIGHT COL
           Expanded(
             child: Stack(
               clipBehavior: Clip.none,
@@ -103,18 +101,13 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 Center(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 60),
+                      padding: const EdgeInsets.only(left: 30, right: 60),
                       child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Image.asset(
-                              'assets/images/pms-logo-red.png',
-                              width: 100,
-                              height: 100,
-                            ),
-                            const SizedBox(height: 10),
+                            const SizedBox(height: 50),
                             const Text(
                               'Sign In',
                               style: TextStyle(
@@ -132,8 +125,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               ),
                             ),
                             const SizedBox(height: 32),
-
-                            // Username Field
+                            // Username
                             _buildTextField(
                               controller: _usernameController,
                               label: 'Username',
@@ -142,8 +134,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               errorText: 'Invalid username',
                             ),
                             const SizedBox(height: 2),
-
-                            // Password Field
+                            // Password
                             _buildTextField(
                               controller: _passwordController,
                               label: 'Password',
@@ -153,38 +144,33 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               errorText: 'Invalid password',
                             ),
                             const SizedBox(height: 2),
-                            const SizedBox(height: 2),
+                            // Admin's Name
                             SizedBox(
                               width: double.infinity,
                               height: 60,
                               child: TextFormField(
                                 controller: _nameController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   labelText: "Admin's Name",
-                                  labelStyle: TextStyle(
-                                    color: _nameController.text.isEmpty
-                                        ? Colors.black
-                                        : Colors.black,
+                                  labelStyle: TextStyle(color: Colors.black),
+                                  floatingLabelStyle: TextStyle(
+                                    color: Colors.black,
                                   ),
                                   prefixIcon: Icon(
                                     Icons.badge,
-                                    color: _nameController.text.isEmpty
-                                        ? Colors.black
-                                        : Colors.black,
+                                    color: Colors.black,
                                   ),
-                                  border: const OutlineInputBorder(),
-                                  enabledBorder: const OutlineInputBorder(
+                                  border: OutlineInputBorder(),
+                                  enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.black),
                                   ),
-                                  focusedBorder: const OutlineInputBorder(
+                                  focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(color: Colors.black),
                                   ),
                                 ),
-
                                 validator: (value) {
-                                  if (value == null || value.isEmpty) {
+                                  if (value == null || value.isEmpty)
                                     return 'Enter name';
-                                  }
                                   return null;
                                 },
                               ),
@@ -211,21 +197,27 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 ),
                               ),
                             ),
-                            Transform.translate(
-                              offset: const Offset(0, 25), // overlap upwards
-                              child: Container(
-                                width: double.infinity,
-                                height: 100,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFFFFBD00),
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(200),
-                                    topRight: Radius.circular(200),
-                                  ),
-                                ),
-                              ),
-                            ),
                           ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                Positioned(
+                  bottom: 0,
+                  left: 10,
+                  right: 30,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: 700,
+                      height: 100,
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFBD00),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(200),
+                          topRight: Radius.circular(200),
                         ),
                       ),
                     ),
@@ -235,44 +227,59 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 Positioned(
                   top: 0,
                   right: 0,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const LandingPage()),
-                      );
-                    },
-                    child: Container(
-                      width: 450,
-                      height: 200,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFFBD00),
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(80),
-                        ),
+                  child: Container(
+                    width: 450,
+                    height: 200,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFFFBD00),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(80),
                       ),
-                      child: Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: const EdgeInsets.only(
-                            top: 50.0,
-                            right: 100.0,
-                          ),
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Color(0xFFA80504),
-                            ),
-                            child: const Icon(
-                              Icons.chevron_left,
-                              size: 35,
-                              color: Color(0xFFFFBD00),
-                            ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 20,
+                          child: Image.asset(
+                            'assets/images/pms-logo-white.png',
+                            width: 200,
+                            height: 200,
                           ),
                         ),
-                      ),
+
+                        // — Red circular back button —
+                        Positioned(
+                          top: 50,
+                          right: 50,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LandingPage(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: const BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Color(0xFFA80504),
+                                ),
+                                child: const Icon(
+                                  Icons.chevron_left,
+                                  size: 35,
+                                  color: Color(0xFFFFBD00),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -301,6 +308,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           child: TextFormField(
             controller: controller,
             obscureText: isPassword ? _obscurePassword : false,
+            textAlignVertical: TextAlignVertical.center,
             style: const TextStyle(color: Colors.black),
             decoration: InputDecoration(
               labelText: label,
