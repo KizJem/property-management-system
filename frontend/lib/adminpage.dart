@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'adminlogin.dart';
 import 'roomsview.dart';
+import 'billingreport.dart';
 
 class AdminPage extends StatefulWidget {
   final String adminName;
@@ -143,8 +144,6 @@ class _AdminPageState extends State<AdminPage> {
                     ],
                   ),
                 ),
-
-                // ▼ Log Out with dropdown menu
                 PopupMenuButton<String>(
                   onSelected: (value) {
                     if (value == 'logout') {
@@ -206,7 +205,8 @@ class _AdminPageState extends State<AdminPage> {
                       child: Row(
                         children: [
                           _buildTab("Activity Logs", 0),
-                          _buildTab("Rooms", 1),
+                          _buildTab("Billing Report", 1),
+                          _buildTab("Rooms", 2),
                         ],
                       ),
                     ),
@@ -215,6 +215,8 @@ class _AdminPageState extends State<AdminPage> {
                         padding: const EdgeInsets.all(24.0),
                         child: _selectedTab == 0
                             ? _buildActivityLogsView()
+                            : _selectedTab == 1
+                            ? _buildBillingReportView()
                             : const RoomsView(),
                       ),
                     ),
@@ -269,7 +271,7 @@ class _AdminPageState extends State<AdminPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
-                  Text('STUDENT', style: TextStyle(fontSize: 12)),
+                  Text('RECEPTIONIST', style: TextStyle(fontSize: 12)),
                   SizedBox(height: 4),
                   TextField(
                     style: TextStyle(color: Colors.black),
@@ -357,49 +359,81 @@ class _AdminPageState extends State<AdminPage> {
           ],
         ),
         const SizedBox(height: 24),
-        const Row(
+
+        // DOUBLE LINE HEADER
+        Column(
           children: [
-            Expanded(
-              child: Text(
-                'DATE',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
+            const Divider(height: 1, color: Colors.grey),
+            Container(
+              decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.grey)),
               ),
-            ),
-            Expanded(
-              child: Text(
-                'NAME',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                'LOG IN',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                'LOG OUT',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: const Row(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'DATE',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'NAME',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'LOG IN',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'LOG OUT',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-        const Divider(),
-        const Expanded(child: Center(child: Text('No logs available.'))),
+
+        const Expanded(
+          child: Center(
+            child: Text(
+              'No logs available.',
+              style: TextStyle(color: Colors.black, fontSize: 14),
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  Widget _buildBillingReportView() {
+    return const BillingReportPage();
   }
 }
