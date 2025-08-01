@@ -40,16 +40,19 @@ class LandingPage extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // THIS PART
                           Image.asset(
                             'assets/images/cba-header.png',
                             width: 400,
                           ),
                           const SizedBox(height: 30),
+                          // THIS PART
                           Image.asset(
                             'assets/images/pms-header.png',
                             width: 450,
                           ),
                           const SizedBox(height: 32),
+                          // THIS PART
                           Row(
                             children: [
                               _buildButton(
@@ -63,6 +66,7 @@ class LandingPage extends StatelessWidget {
                                   );
                                 },
                               ),
+                              // T
                               const SizedBox(width: 16),
                               _buildButton(
                                 label: 'Admin',
@@ -105,7 +109,6 @@ class LandingPage extends StatelessWidget {
                   ),
 
                   // RIGHT PANEL
-                  // RIGHT PANEL
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, constraints) {
@@ -117,9 +120,8 @@ class LandingPage extends StatelessWidget {
 
                         return Container(
                           padding: const EdgeInsets.only(
-                            top: 0,
-                            right: 20,
-                          ), // reduced
+                            right: 100,
+                          ), // ✅ right side spacing only
                           alignment: Alignment.topRight,
                           child: Image.asset(
                             'assets/images/frontdesk.png',
