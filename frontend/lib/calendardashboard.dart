@@ -1779,20 +1779,16 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 }
 
 
-  Widget _buildDateRows(String title, List<DateTime> dates) {
+Widget _buildDateRows(String title, List<DateTime> dates) {
   const Radius cornerRadius = Radius.circular(10);
   final roomList = widget.rooms[title] ?? [];
-
-  // Hide this entire section if the room type is collapsed
-  if (_expandedRoomTypes[title] != true) {
-    return const SizedBox();
-  }
 
   final placeholderBg = _mode == Mode.housekeeping
       ? const Color(0xFF9B000A)
       : const Color(0xFF9B000A);
 
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       // Red spacer to align with red room header
       Row(
@@ -1806,17 +1802,18 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         ),
       ),
 
-      // Row per room
-      ...roomList.asMap().entries.map((entry) {
-        final isLastRoom = entry.key == roomList.length - 1;
-        final room = entry.value;
+      // Conditionally render room rows
+      if (_expandedRoomTypes[title] == true)
+        ...roomList.asMap().entries.map((entry) {
+          final isLastRoom = entry.key == roomList.length - 1;
+          final room = entry.value;
 
-        final bookingStart = _selectedStart[room];
-        final bookingEnd = _selectedEnd[room] ?? bookingStart;
+          final bookingStart = _selectedStart[room];
+          final bookingEnd = _selectedEnd[room] ?? bookingStart;
 
-        return Row(
-          children: dates.asMap().entries.map((dateEntry) {
-            final i = dateEntry.key;
+          return Row(
+            children: dates.asMap().entries.map((dateEntry) {
+              final i = dateEntry.key;
 
             final hk = _housekeepingStatus[room]?[i];
             final statusCode = hk?['status'];
