@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'availablecell.dart';
+import 'checkin.dart';
 
 class RoomDetail {
   final String name;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'actvitylogs.dart';
 import 'calendardashboard.dart';
 import 'guestrecords.dart';
 import 'userlogin.dart';
@@ -105,12 +104,6 @@ class MyApp extends StatelessWidget {
           return MaterialPageRoute(
             builder: (_) =>
                 GuestRecordsPage(studentName: args['studentName'] ?? 'Guest'),
-          );
-        } else if (settings.name == '/activitylogs') {
-          final args = settings.arguments as Map<String, dynamic>? ?? {};
-          return MaterialPageRoute(
-            builder: (_) =>
-                ActivityLogsPage(studentName: args['studentName'] ?? 'Guest'),
           );
         }
 

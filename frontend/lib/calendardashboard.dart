@@ -1,6 +1,5 @@
-import 'package:flutter/foundation.dart'; 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'availablecell.dart';
 import 'occupiedcell.dart';
 import 'reservecell.dart';
 import 'userlogin.dart';
@@ -55,15 +54,17 @@ const Map<String, Map<String, dynamic>> roomStatusMap = {
 };
 
 class _CalendarDashboardState extends State<CalendarDashboard> {
-Map<String, bool> _expandedRoomTypes = {};
+  Map<String, bool> _expandedRoomTypes = {};
 
-double get cellWidth {
-  double screenWidth = MediaQuery.of(context).size.width;
-  return (screenWidth - roomColumnWidth) / _viewDays;
-}
+  double get cellWidth {
+    double screenWidth = MediaQuery.of(context).size.width;
+    return (screenWidth - roomColumnWidth) / _viewDays;
+  }
+
   double get sidebarWidth {
     return _sidebarExpanded ? _sidebarWidth : _sidebarCollapsedWidth;
-}
+  }
+
   int _viewDays = 28; // Default
   static const double cellHeight = 50.0;
   static const double headerCellHeight = 50.0;
@@ -89,10 +90,11 @@ double get cellWidth {
   int? _housekeepingStart;
   int? _housekeepingEnd;
 
-String _shortWeekday(int weekday) {
-  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  return weekdays[(weekday - 1) % 7];
-}
+  String _shortWeekday(int weekday) {
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return weekdays[(weekday - 1) % 7];
+  }
+
   int get _currentStartMonth => _currentStartDate.month;
 
   int get _currentStartDay => _currentStartDate.day;
@@ -106,31 +108,31 @@ String _shortWeekday(int weekday) {
   int _selectedYear = DateTime.now().year;
 
   @override
-void initState() {
-  super.initState();
-  _horizontalScrollController.addListener(() {
-    if (_headerScrollController.hasClients) {
-      _headerScrollController.jumpTo(_horizontalScrollController.offset);
-    }
-  });
-  _headerScrollController.addListener(() {
-    if (_horizontalScrollController.hasClients) {
-      _horizontalScrollController.jumpTo(_headerScrollController.offset);
-    }
-  });
+  void initState() {
+    super.initState();
+    _horizontalScrollController.addListener(() {
+      if (_headerScrollController.hasClients) {
+        _headerScrollController.jumpTo(_horizontalScrollController.offset);
+      }
+    });
+    _headerScrollController.addListener(() {
+      if (_horizontalScrollController.hasClients) {
+        _horizontalScrollController.jumpTo(_headerScrollController.offset);
+      }
+    });
 
-  _selectedMonth = widget.currentMonth;
-  _selectedYear = widget.currentYear;
-  _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
-  _selectedDate = _currentStartDate;
+    _selectedMonth = widget.currentMonth;
+    _selectedYear = widget.currentYear;
+    _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
+    _selectedDate = _currentStartDate;
 
-  // Expand all room types by default
-  for (var key in widget.rooms.keys) {
-    _expandedRoomTypes[key] = true;
+    // Expand all room types by default
+    for (var key in widget.rooms.keys) {
+      _expandedRoomTypes[key] = true;
+    }
+
+    _sidebarExpanded = false;
   }
-
-  _sidebarExpanded = false;
-}
 
   DateTime _selectedDate = DateTime.now();
 
@@ -141,16 +143,19 @@ void initState() {
     return List.generate(daysToShow, (i) => startDate.add(Duration(days: i)));
   }
 
-List<String> _splitTitle(String title) {
-  final cleaned = title.replaceAll("ROOMS", "").trim();
-  final parts = cleaned.split(" ");
+  List<String> _splitTitle(String title) {
+    final cleaned = title.replaceAll("ROOMS", "").trim();
+    final parts = cleaned.split(" ");
 
-  if (parts.length == 1) {
-    return [parts.first, '']; // e.g., "Deluxe"
-  } else {
-    return [parts.first, parts.sublist(1).join(" ")]; // e.g., "Standard Single"
+    if (parts.length == 1) {
+      return [parts.first, '']; // e.g., "Deluxe"
+    } else {
+      return [
+        parts.first,
+        parts.sublist(1).join(" "),
+      ]; // e.g., "Standard Single"
+    }
   }
-}
 
   String _monthAbbr(int month) {
     const months = [
@@ -262,53 +267,53 @@ List<String> _splitTitle(String title) {
   }
 
   Widget _buildDateHeaderRow(List<DateTime> dates) {
-  return Row(
-    children: dates.map((date) {
-      final weekday = _shortWeekday(date.weekday);
-      final day = date.day.toString().padLeft(2, '0');
-      final month = _monthAbbr(date.month);
+    return Row(
+      children: dates.map((date) {
+        final weekday = _shortWeekday(date.weekday);
+        final day = date.day.toString().padLeft(2, '0');
+        final month = _monthAbbr(date.month);
 
-      return GestureDetector(
-        onTap: () => setState(() => _selectedDate = date),
-        child: Container(
-          width: cellWidth,
-          height: cellHeight,
-          color: const Color(0xFFFFBD00),
-          alignment: Alignment.center,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                weekday,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+        return GestureDetector(
+          onTap: () => setState(() => _selectedDate = date),
+          child: Container(
+            width: cellWidth,
+            height: cellHeight,
+            color: const Color(0xFFFFBD00),
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  weekday,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                day,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                Text(
+                  day,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              Text(
-                month,
-                style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                Text(
+                  month,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    }).toList(),
-  );
-}
+        );
+      }).toList(),
+    );
+  }
 
   void _goToToday() {
     final now = DateTime.now();
@@ -476,51 +481,6 @@ List<String> _splitTitle(String title) {
                         ),
                       ),
                       const SizedBox(width: 16),
-                      // ── Create Booking button with .then(...) ──
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => AvailableCellPage(
-                                  roomType: roomType,
-                                  roomNumber: room,
-                                  checkInDate: DateTime(
-                                    startDt.year,
-                                    startDt.month,
-                                    startDt.day,
-                                  ),
-                                  checkOutDate: DateTime(
-                                    endDt.year,
-                                    endDt.month,
-                                    endDt.day,
-                                  ),
-                                ),
-                              ),
-                            ).then((_) {
-                              // Clear highlight on return
-                              setState(() {
-                                _selectedStart[room] = null;
-                                _selectedEnd[room] = null;
-                              });
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFFFBD00),
-                            minimumSize: Size.fromHeight(48),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: EdgeInsets.symmetric(horizontal: 32),
-                          ),
-                          child: Text(
-                            'Create Booking',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -785,10 +745,6 @@ List<String> _splitTitle(String title) {
                               },
                             ),
                             _buildSidebarItem(
-                              Icons.check_box,
-                              'Available Cell',
-                            ),
-                            _buildSidebarItem(
                               Icons.book_online,
                               'Reserve Cell',
                               onTap: () {
@@ -944,26 +900,29 @@ List<String> _splitTitle(String title) {
                       ),
 
                       DropdownButton<int>(
-                      value: _viewDays,
-                      dropdownColor: Colors.white,
-                      icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-                      underline: const SizedBox(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        value: _viewDays,
+                        dropdownColor: Colors.white,
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                        ),
+                        underline: const SizedBox(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _viewDays = value!;
+                          });
+                        },
+                        items: const [
+                          DropdownMenuItem(value: 7, child: Text("7 Days")),
+                          DropdownMenuItem(value: 14, child: Text("14 Days")),
+                          DropdownMenuItem(value: 28, child: Text("28 Days")),
+                        ],
                       ),
-                      onChanged: (value) {
-                        setState(() {
-                          _viewDays = value!;
-                        });
-                      },
-                      items: const [
-                        DropdownMenuItem(value: 7, child: Text("7 Days")),
-                        DropdownMenuItem(value: 14, child: Text("14 Days")),
-                        DropdownMenuItem(value: 28, child: Text("28 Days")),
-                      ],
-                    ),
 
                       Radio<Mode>(
                         value: Mode.bookRooms,
@@ -1497,90 +1456,91 @@ List<String> _splitTitle(String title) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-      Container(
-  width: roomColumnWidth,
-  height: 50,
-  color: headerBg,
-  child: Stack(
-    children: [
-      Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              _splitTitle(title).first,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
+        Container(
+          width: roomColumnWidth,
+          height: 50,
+          color: headerBg,
+          child: Stack(
+            children: [
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _splitTitle(title).first,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                    Text(
+                      _splitTitle(title).last,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            Text(
-              _splitTitle(title).last,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  padding: const EdgeInsets.all(4),
+                  icon: Icon(
+                    _expandedRoomTypes[title] == true
+                        ? Icons.expand_less
+                        : Icons.expand_more,
+                    color: Colors.white,
+                    size: 18,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _expandedRoomTypes[title] =
+                          !(_expandedRoomTypes[title] ?? true);
+                    });
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-      Positioned(
-        top: 0,
-        right: 0,
-        child: IconButton(
-          padding: const EdgeInsets.all(4),
-          icon: Icon(
-            _expandedRoomTypes[title] == true
-                ? Icons.expand_less
-                : Icons.expand_more,
-            color: Colors.white,
-            size: 18,
-          ),
-          onPressed: () {
-            setState(() {
-              _expandedRoomTypes[title] = !(_expandedRoomTypes[title] ?? true);
-            });
-          },
-        ),
-      ),
-    ],
-  ),
-),
-
-if (_expandedRoomTypes[title] == true) ...[
-  ...roomList.asMap().entries.map((entry) {
-    final isLast = entry.key == roomList.length - 1;
-    final rawRoom = entry.value;
-    final roomNumber = extractRoomNumber(rawRoom);
-
-    return Container(
-      width: roomColumnWidth,
-      height: 50,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(
-          bottom: isLast
-              ? BorderSide.none
-              : BorderSide(color: Colors.grey.shade300),
-        ),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      alignment: Alignment.centerLeft,
-      child: Center(
-        child: Text(
-          roomNumber,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-            color: Colors.black,
+            ],
           ),
         ),
-      ),
-    );
-  }),
-]
+
+        if (_expandedRoomTypes[title] == true) ...[
+          ...roomList.asMap().entries.map((entry) {
+            final isLast = entry.key == roomList.length - 1;
+            final rawRoom = entry.value;
+            final roomNumber = extractRoomNumber(rawRoom);
+
+            return Container(
+              width: roomColumnWidth,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: isLast
+                      ? BorderSide.none
+                      : BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              alignment: Alignment.centerLeft,
+              child: Center(
+                child: Text(
+                  roomNumber,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
       ],
     );
   }
@@ -1589,9 +1549,9 @@ if (_expandedRoomTypes[title] == true) ...[
     const Radius cornerRadius = Radius.circular(10);
     final roomList = widget.rooms[title] ?? [];
 
-      if (_expandedRoomTypes[title] != true) {
+    if (_expandedRoomTypes[title] != true) {
       return const SizedBox(); // Hide date rows if room type is collapsed
-      }
+    }
 
     final placeholderBg = _mode == Mode.housekeeping
         ? const Color(0xFF9B000A)
