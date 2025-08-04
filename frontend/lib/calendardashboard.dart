@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'occupiedcell.dart';
 import 'reservecell.dart';
 import 'userlogin.dart';
@@ -414,76 +415,285 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           showDialog(
             context: context,
             builder: (context) {
-              return AlertDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                insetPadding: EdgeInsets.symmetric(
+              String action = 'Check-In';
+              String roomNumberOnly =
+                  RegExp(r'(\d+)').firstMatch(room)?.group(1) ?? room;
+              String formattedRoomType =
+                  roomType
+                      .replaceAll('ROOMS', '')
+                      .trim()
+                      .toLowerCase()
+                      .split(RegExp(r'\s+'))
+                      .where((w) => w.isNotEmpty)
+                      .map((w) => w[0].toUpperCase() + w.substring(1))
+                      .join(' ') +
+                  ' Room';
+              final double nightlyRate = 1500;
+              final priceText = NumberFormat.currency(
+                locale: 'en_PH',
+                symbol: '₱ ',
+                decimalDigits: 0,
+              ).format(nightlyRate);
+
+              return Dialog(
+                backgroundColor:
+                    Colors.transparent, // allow custom rounded container
+                insetPadding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 24,
                 ),
-                titlePadding: EdgeInsets.only(top: 24),
-                title: Center(
-                  child: Text(
-                    'Create New Booking?',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                content: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Do you want to book Room $room from '
-                      '${_monthAbbr(startDt.month)} ${startDt.day} '
-                      'to ${_monthAbbr(endDt.month)} ${endDt.day}, ${endDt.year}?',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'This will take you to the Booking Page to '
-                      'enter guest details and confirm.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-                actionsPadding: EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 16,
-                ),
-                actions: [
-                  Row(
-                    children: [
-                      // ── Cancel button ──
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedStart[room] = null;
-                              _selectedEnd[room] = null;
-                            });
-                            Navigator.of(context).pop();
-                          },
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: Size.fromHeight(48),
-                            side: BorderSide(color: Colors.black, width: 1.2),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                child: StatefulBuilder(
+                  builder: (context, setStateDialog) {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(
+                        20,
+                      ), // enforced rounding
+                      child: Container(
+                        width: 500,
+                        color: Colors.white, // dialog background
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 24,
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              'Confirm Action',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            padding: EdgeInsets.symmetric(horizontal: 32),
-                          ),
-                          child: Text('Cancel', style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 8),
+                            const Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Would you like to proceed with:',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () => setStateDialog(
+                                      () => action = 'Check-In',
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Radio<String>(
+                                          value: 'Check-In',
+                                          groupValue: action,
+                                          onChanged: (v) =>
+                                              setStateDialog(() => action = v!),
+                                          activeColor: const Color(0xFFB71C1C),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Text(
+                                          'Check-In',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () => setStateDialog(
+                                      () => action = 'Reservation',
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Radio<String>(
+                                          value: 'Reservation',
+                                          groupValue: action,
+                                          onChanged: (v) =>
+                                              setStateDialog(() => action = v!),
+                                          activeColor: const Color(0xFFB71C1C),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        const Text(
+                                          'Reservation',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            // room detail card with rounded corners
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F5F8),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 16,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '$roomNumberOnly - $formattedRoomType',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        // Check In row
+                                        // Check In row
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(
+                                                'Check In',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                '${_monthAbbr(startDt.month)} ${startDt.day} ${startDt.year}',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+
+                                        // Check Out row
+                                        Row(
+                                          children: [
+                                            SizedBox(
+                                              width: 100,
+                                              child: Text(
+                                                'Check Out',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.normal,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                '${_monthAbbr(endDt.month)} ${endDt.day} ${endDt.year}',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '$priceText / night',
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xFFB71C1C),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedStart[room] = null;
+                                        _selectedEnd[room] = null;
+                                      });
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: OutlinedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      minimumSize: const Size.fromHeight(48),
+                                      side: const BorderSide(
+                                        color: Colors.black,
+                                        width: 1.2,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 32,
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Cancel',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFFFBD00),
+                                      minimumSize: const Size.fromHeight(48),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(30),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Continue',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 16),
-                    ],
-                  ),
-                ],
+                    );
+                  },
+                ),
               );
             },
           );
