@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'; 
 import 'package:flutter/material.dart';
 import 'availablecell.dart';
 import 'occupiedcell.dart';
@@ -55,10 +55,19 @@ const Map<String, Map<String, dynamic>> roomStatusMap = {
 };
 
 class _CalendarDashboardState extends State<CalendarDashboard> {
-  static const double cellWidth = 100.0;
+Map<String, bool> _expandedRoomTypes = {};
+
+double get cellWidth {
+  double screenWidth = MediaQuery.of(context).size.width;
+  return (screenWidth - roomColumnWidth) / _viewDays;
+}
+  double get sidebarWidth {
+    return _sidebarExpanded ? _sidebarWidth : _sidebarCollapsedWidth;
+}
+  int _viewDays = 28; // Default
   static const double cellHeight = 50.0;
-  static const double headerCellHeight = 40.0;
-  static const double roomColumnWidth = 300;
+  static const double headerCellHeight = 50.0;
+  static const double roomColumnWidth = 90.0;
   static const double roomColumnHeaderHeight = 50.0;
 
   final ScrollController _horizontalScrollController = ScrollController();
@@ -80,12 +89,11 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   int? _housekeepingStart;
   int? _housekeepingEnd;
 
-  String _getHeaderDateString() {
-    final day = _currentStartDay;
-    final date = DateTime(_selectedYear, _selectedMonth, day);
-    final monthName = _monthAbbr(date.month);
-    return "$day $monthName ${date.year}";
-  }
+String _shortWeekday(int weekday) {
+  const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return weekdays[(weekday - 1) % 7];
+}
+  int get _currentStartMonth => _currentStartDate.month;
 
   int get _currentStartDay => _currentStartDate.day;
   bool _sidebarExpanded = false;
@@ -98,27 +106,31 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   int _selectedYear = DateTime.now().year;
 
   @override
-  void initState() {
-    super.initState();
-    _horizontalScrollController.addListener(() {
-      if (_headerScrollController.hasClients) {
-        _headerScrollController.jumpTo(_horizontalScrollController.offset);
-      }
-    });
-    _headerScrollController.addListener(() {
-      if (_horizontalScrollController.hasClients) {
-        _horizontalScrollController.jumpTo(_headerScrollController.offset);
-      }
-    });
+void initState() {
+  super.initState();
+  _horizontalScrollController.addListener(() {
+    if (_headerScrollController.hasClients) {
+      _headerScrollController.jumpTo(_horizontalScrollController.offset);
+    }
+  });
+  _headerScrollController.addListener(() {
+    if (_horizontalScrollController.hasClients) {
+      _horizontalScrollController.jumpTo(_headerScrollController.offset);
+    }
+  });
 
-    _selectedMonth = widget.currentMonth;
-    _selectedYear = widget.currentYear;
-    _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
-    _selectedDate = _currentStartDate;
+  _selectedMonth = widget.currentMonth;
+  _selectedYear = widget.currentYear;
+  _currentStartDate = DateTime(widget.currentYear, widget.currentMonth, 1);
+  _selectedDate = _currentStartDate;
 
-    // Ensure sidebar starts collapsed
-    _sidebarExpanded = false;
+  // Expand all room types by default
+  for (var key in widget.rooms.keys) {
+    _expandedRoomTypes[key] = true;
   }
+
+  _sidebarExpanded = false;
+}
 
   DateTime _selectedDate = DateTime.now();
 
@@ -128,6 +140,17 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   ) {
     return List.generate(daysToShow, (i) => startDate.add(Duration(days: i)));
   }
+
+List<String> _splitTitle(String title) {
+  final cleaned = title.replaceAll("ROOMS", "").trim();
+  final parts = cleaned.split(" ");
+
+  if (parts.length == 1) {
+    return [parts.first, '']; // e.g., "Deluxe"
+  } else {
+    return [parts.first, parts.sublist(1).join(" ")]; // e.g., "Standard Single"
+  }
+}
 
   String _monthAbbr(int month) {
     const months = [
@@ -239,47 +262,53 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   }
 
   Widget _buildDateHeaderRow(List<DateTime> dates) {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  return Row(
+    children: dates.map((date) {
+      final weekday = _shortWeekday(date.weekday);
+      final day = date.day.toString().padLeft(2, '0');
+      final month = _monthAbbr(date.month);
 
-    return Row(
-      children: dates.map((date) {
-        final isSel =
-            date.year == _selectedDate.year &&
-            date.month == _selectedDate.month &&
-            date.day == _selectedDate.day;
-
-        final wd = weekdays[date.weekday - 1];
-        final mo = _monthAbbr(date.month);
-        final d = date.day.toString();
-
-        return GestureDetector(
-          onTap: () => setState(() => _selectedDate = date),
-          child: Container(
-            width: cellWidth,
-            height: cellHeight,
-            alignment: Alignment.center,
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.black,
-                  fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+      return GestureDetector(
+        onTap: () => setState(() => _selectedDate = date),
+        child: Container(
+          width: cellWidth,
+          height: cellHeight,
+          color: const Color(0xFFFFBD00),
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                weekday,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
-                children: [
-                  TextSpan(text: '$wd $mo '),
-                  TextSpan(
-                    text: d,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                ],
               ),
-            ),
+              Text(
+                day,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                month,
+                style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
-        );
-      }).toList(),
-    );
-  }
+        ),
+      );
+    }).toList(),
+  );
+}
 
   void _goToToday() {
     final now = DateTime.now();
@@ -680,9 +709,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // Generate 30 days from selected start date
-    final dates = _generateDatesFromStartDate(_currentStartDate, 30);
-
+    final dates = _generateDatesFromStartDate(_currentStartDate, _viewDays);
     return Scaffold(
       body: Row(
         children: [
@@ -915,6 +942,29 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                           },
                         ),
                       ),
+
+                      DropdownButton<int>(
+                      value: _viewDays,
+                      dropdownColor: Colors.white,
+                      icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                      underline: const SizedBox(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _viewDays = value!;
+                        });
+                      },
+                      items: const [
+                        DropdownMenuItem(value: 7, child: Text("7 Days")),
+                        DropdownMenuItem(value: 14, child: Text("14 Days")),
+                        DropdownMenuItem(value: 28, child: Text("28 Days")),
+                      ],
+                    ),
+
                       Radio<Mode>(
                         value: Mode.bookRooms,
                         groupValue: _mode,
@@ -1433,10 +1483,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
         ? const Color(0xFF9B000A)
         : const Color(0xFF9B000A);
 
-    // Handles both "100 Standard Single" and "Standard Single - Room No. 100"
+    // Handles both "100"
     String extractRoomNumber(String raw) {
-      if (raw.contains('Room No.')) {
-        final match = RegExp(r'Room No\. (\d+)').firstMatch(raw);
+      if (raw.contains('')) {
+        final match = RegExp(r'(\d+)').firstMatch(raw);
         return match != null ? match.group(1)! : '???';
       } else {
         final parts = raw.split(' ');
@@ -1444,84 +1494,93 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
       }
     }
 
-    String extractRoomType(String raw) {
-      if (raw.contains('Room No.')) {
-        return raw.split(' - Room No.').first.trim();
-      } else {
-        final parts = raw.split(' ');
-        return parts.length > 1 ? parts.sublist(1).join(' ') : 'Unknown Type';
-      }
-    }
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Header Row (e.g. "STANDARD SINGLE ROOMS")
-        Container(
-          height: 40,
-          width: roomColumnWidth,
-          color: headerBg,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          alignment: Alignment.centerLeft,
-          child: Row(
-            children: [
-              const Icon(Icons.hotel, color: Colors.white, size: 20),
-              const SizedBox(width: 8),
-              Text(
-                title.toUpperCase(),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                  fontSize: 14,
-                ),
+      Container(
+  width: roomColumnWidth,
+  height: 50,
+  color: headerBg,
+  child: Stack(
+    children: [
+      Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              _splitTitle(title).first,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
               ),
-            ],
+            ),
+            Text(
+              _splitTitle(title).last,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+            ),
+          ],
+        ),
+      ),
+      Positioned(
+        top: 0,
+        right: 0,
+        child: IconButton(
+          padding: const EdgeInsets.all(4),
+          icon: Icon(
+            _expandedRoomTypes[title] == true
+                ? Icons.expand_less
+                : Icons.expand_more,
+            color: Colors.white,
+            size: 18,
+          ),
+          onPressed: () {
+            setState(() {
+              _expandedRoomTypes[title] = !(_expandedRoomTypes[title] ?? true);
+            });
+          },
+        ),
+      ),
+    ],
+  ),
+),
+
+if (_expandedRoomTypes[title] == true) ...[
+  ...roomList.asMap().entries.map((entry) {
+    final isLast = entry.key == roomList.length - 1;
+    final rawRoom = entry.value;
+    final roomNumber = extractRoomNumber(rawRoom);
+
+    return Container(
+      width: roomColumnWidth,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: isLast
+              ? BorderSide.none
+              : BorderSide(color: Colors.grey.shade300),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      alignment: Alignment.centerLeft,
+      child: Center(
+        child: Text(
+          roomNumber,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: Colors.black,
           ),
         ),
-
-        // Room Rows
-        ...roomList.asMap().entries.map((entry) {
-          final isLast = entry.key == roomList.length - 1;
-          final rawRoom = entry.value;
-          final roomNumber = extractRoomNumber(rawRoom);
-          final roomType = extractRoomType(rawRoom);
-
-          return Container(
-            width: roomColumnWidth,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: isLast
-                    ? BorderSide.none
-                    : BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            alignment: Alignment.centerLeft,
-            child: Row(
-              children: [
-                Text(
-                  roomNumber,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    roomType,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
+      ),
+    );
+  }),
+]
       ],
     );
   }
@@ -1529,6 +1588,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   Widget _buildDateRows(String title, List<DateTime> dates) {
     const Radius cornerRadius = Radius.circular(10);
     final roomList = widget.rooms[title] ?? [];
+
+      if (_expandedRoomTypes[title] != true) {
+      return const SizedBox(); // Hide date rows if room type is collapsed
+      }
 
     final placeholderBg = _mode == Mode.housekeeping
         ? const Color(0xFF9B000A)
