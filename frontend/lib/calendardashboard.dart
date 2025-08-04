@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'occupiedcell.dart';
 import 'reservecell.dart';
 import 'userlogin.dart';
+import 'roomdetails.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -416,9 +417,9 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
             context: context,
             builder: (context) {
               String action = 'Check-In';
-              String roomNumberOnly =
+              final roomNumberOnly =
                   RegExp(r'(\d+)').firstMatch(room)?.group(1) ?? room;
-              String formattedRoomType =
+              final formattedRoomType =
                   roomType
                       .replaceAll('ROOMS', '')
                       .trim()
@@ -428,7 +429,20 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                       .map((w) => w[0].toUpperCase() + w.substring(1))
                       .join(' ') +
                   ' Room';
-              final double nightlyRate = 1500;
+
+              // get price dynamically from roomDetails
+              final roomDetail = roomDetails[roomType];
+              double nightlyRate;
+              if (roomDetail != null) {
+                final rawDigits = roomDetail.price.replaceAll(
+                  RegExp(r'[^0-9]'),
+                  '',
+                );
+                nightlyRate = double.tryParse(rawDigits) ?? 0;
+              } else {
+                nightlyRate = 0;
+              }
+
               final priceText = NumberFormat.currency(
                 locale: 'en_PH',
                 symbol: '₱ ',
@@ -436,8 +450,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
               ).format(nightlyRate);
 
               return Dialog(
-                backgroundColor:
-                    Colors.transparent, // allow custom rounded container
+                backgroundColor: Colors.transparent,
                 insetPadding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 24,
@@ -445,12 +458,10 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 child: StatefulBuilder(
                   builder: (context, setStateDialog) {
                     return ClipRRect(
-                      borderRadius: BorderRadius.circular(
-                        20,
-                      ), // enforced rounding
+                      borderRadius: BorderRadius.circular(20),
                       child: Container(
                         width: 500,
-                        color: Colors.white, // dialog background
+                        color: Colors.white,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 32,
                           vertical: 24,
@@ -529,7 +540,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                               ],
                             ),
                             const SizedBox(height: 20),
-                            // room detail card with rounded corners
+                            // room detail card
                             Container(
                               decoration: BoxDecoration(
                                 color: const Color(0xFFF5F5F8),
@@ -556,15 +567,13 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        // Check In row
-                                        // Check In row
                                         Row(
                                           children: [
                                             SizedBox(
                                               width: 100,
-                                              child: Text(
+                                              child: const Text(
                                                 'Check In',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.normal,
                                                   color: Colors.black,
@@ -583,15 +592,14 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                             ),
                                           ],
                                         ),
-
-                                        // Check Out row
+                                        const SizedBox(height: 4),
                                         Row(
                                           children: [
                                             SizedBox(
                                               width: 100,
-                                              child: Text(
+                                              child: const Text(
                                                 'Check Out',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 12,
                                                   fontWeight: FontWeight.normal,
                                                   color: Colors.black,
@@ -669,6 +677,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                   child: ElevatedButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
+                                      // proceed based on action
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFFFFBD00),
