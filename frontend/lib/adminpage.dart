@@ -207,6 +207,7 @@ class _AdminPageState extends State<AdminPage> {
                           _buildTab("Activity Logs", 0),
                           _buildTab("Billing Report", 1),
                           _buildTab("Rooms", 2),
+                          _buildTab("Housekeeping", 3),
                         ],
                       ),
                     ),
@@ -217,7 +218,9 @@ class _AdminPageState extends State<AdminPage> {
                             ? _buildActivityLogsView()
                             : _selectedTab == 1
                             ? _buildBillingReportView()
-                            : const RoomsView(),
+                            : _selectedTab == 2
+                            ? const RoomsView()
+                            : _buildEmptyHousekeepingView(),
                       ),
                     ),
                   ],
@@ -430,6 +433,19 @@ class _AdminPageState extends State<AdminPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildEmptyHousekeepingView() {
+    return const Center(
+      child: Text(
+        'No content yet.',
+        style: TextStyle(
+          fontSize: 16,
+          color: Colors.black54,
+          fontFamily: 'Poppins',
+        ),
+      ),
     );
   }
 
