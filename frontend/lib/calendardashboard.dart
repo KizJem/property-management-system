@@ -281,7 +281,17 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           child: Container(
             width: cellWidth,
             height: cellHeight,
-            color: const Color(0xFFFFBD00),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF7FF), // Light background
+              border: Border(
+                bottom: BorderSide(
+                  color: Color(0xFFFFD700), // Red bottom border
+                  width: 2.0,
+                ),
+                right: BorderSide(color: Colors.grey.shade300),
+              ),
+            ),
+
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -289,25 +299,28 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                 Text(
                   weekday,
                   style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    color: Color.fromARGB(255, 31, 30, 30),
                   ),
                 ),
                 Text(
                   day,
                   style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
                 Text(
                   month,
                   style: const TextStyle(
+                    fontFamily: 'Poppins',
                     fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    color: Color.fromARGB(255, 31, 30, 30),
                   ),
                 ),
               ],
@@ -486,60 +499,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                               ),
                             ),
                             const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () => setStateDialog(
-                                      () => action = 'Check-In',
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Radio<String>(
-                                          value: 'Check-In',
-                                          groupValue: action,
-                                          onChanged: (v) =>
-                                              setStateDialog(() => action = v!),
-                                          activeColor: const Color(0xFFB71C1C),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        const Text(
-                                          'Check-In',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: InkWell(
-                                    onTap: () => setStateDialog(
-                                      () => action = 'Reservation',
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        Radio<String>(
-                                          value: 'Reservation',
-                                          groupValue: action,
-                                          onChanged: (v) =>
-                                              setStateDialog(() => action = v!),
-                                          activeColor: const Color(0xFFB71C1C),
-                                        ),
-                                        const SizedBox(width: 4),
-                                        const Text(
-                                          'Reservation',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                            // --- Removed radio buttons for action selection ---
                             const SizedBox(height: 20),
                             // room detail card
                             Container(
@@ -1068,415 +1028,226 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
           Expanded(
             child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                    vertical: 10,
-                  ),
-                  width: double.infinity,
-                  color: const Color(0xFF9B000A),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.menu, color: Colors.white),
-                        onPressed: () =>
-                            setState(() => _sidebarExpanded = true),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'PROPERTY MANAGEMENT SYSTEM',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 254, 254, 254),
-                        ),
-                      ),
-                      const Spacer(),
-                      Container(
-                        width: 300,
-                        alignment: Alignment.center,
-                        decoration: const BoxDecoration(
-                          border: Border(
-                            right: BorderSide(color: Colors.white, width: 2),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 🔴 Red Header
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF9B000A), // Deep red
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Color(0xFFFFD400), // Yellow bottom border
+                            width: 3,
                           ),
                         ),
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[100],
-                            foregroundColor: Colors.black87,
-                            elevation: 0,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          icon: const Icon(
-                            Icons.calendar_today,
-                            color: Colors.black54,
-                          ),
-                          label: Text(
-                            "Start Day: ${_currentStartDate.day} ${_monthAbbr(_currentStartDate.month)} ${_currentStartDate.year}",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          onPressed: () async {
-                            final selectedDate = await showDatePicker(
-                              context: context,
-                              initialDate: _currentStartDate,
-                              firstDate: DateTime(_selectedYear - 5),
-                              lastDate: DateTime(_selectedYear + 5),
-                            );
-                            if (selectedDate != null) {
-                              setState(() {
-                                _currentStartDate = selectedDate;
-                                _selectedYear = selectedDate.year;
-                                _selectedMonth = selectedDate.month;
-                              });
-                            }
-                          },
-                        ),
                       ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // PMS Logo
+                          Image.asset(
+                            'assets/images/pms-logo-white.png',
+                            height: 80,
+                            width: 80,
+                          ),
+                          const SizedBox(width: 16),
 
-                      DropdownButton<int>(
-                        value: _viewDays,
-                        dropdownColor: Colors.white,
-                        icon: const Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.white,
-                        ),
-                        underline: const SizedBox(),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        onChanged: (value) {
-                          setState(() {
-                            _viewDays = value!;
-                          });
-                        },
-                        items: const [
-                          DropdownMenuItem(value: 7, child: Text("7 Days")),
-                          DropdownMenuItem(value: 14, child: Text("14 Days")),
-                          DropdownMenuItem(value: 28, child: Text("28 Days")),
+                          // Text Block
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text(
+                                'PROPERTY MANAGEMENT SYSTEM',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Hello, Receptionist!',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
+                    ),
 
-                      Radio<Mode>(
-                        value: Mode.bookRooms,
-                        groupValue: _mode,
-                        activeColor: const Color(
-                          0xFFFFBD00,
-                        ), // yellow when selected
-                        fillColor: MaterialStateProperty.resolveWith<Color>((
-                          states,
-                        ) {
-                          if (states.contains(MaterialState.selected)) {
-                            return const Color(
-                              0xFFFFBD00,
-                            ); // yellow inner circle
-                          }
-                          return Colors.white; // white ring when unselected
-                        }),
-                        overlayColor: MaterialStateProperty.all(
-                          Colors.transparent,
-                        ),
-                        onChanged: (Mode? value) async {
-                          if (value == Mode.bookRooms) {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                insetPadding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                title: const Padding(
-                                  padding: EdgeInsets.only(top: 24.0),
-                                  child: Center(
-                                    child: Text(
-                                      'Switch to Booking Mode?',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                content: const Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "You're about to leave Housekeeping Mode.",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFF2E2D2D),
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Unsaved housekeeping status selections will be cleared.\nDo you want to continue?',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                actionsPadding: const EdgeInsets.only(
-                                  left: 24,
-                                  right: 24,
-                                  bottom: 24,
-                                ),
-                                actions: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 220,
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: const BorderSide(
-                                              color: Color(0xFF000000),
-                                              width: 1.2,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 18,
-                                            ),
-                                            minimumSize: const Size.fromHeight(
-                                              48,
-                                            ),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: const Text(
-                                            'Cancel',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 40),
-                                      SizedBox(
-                                        width: 220,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFFFFBD00,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 18,
-                                            ),
-                                            minimumSize: const Size.fromHeight(
-                                              48,
-                                            ),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: const Text(
-                                            'Switch to Booking',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                    // 🟡 Yellow Calendar Strip
+                    Container(
+                      color: const Color(0xFFFFD400), // Yellow background
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          const Text(
+                            'Calendar',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: 30,
+                            ),
+                          ),
+                          const Spacer(),
+
+                          // Start Date Button (red with date + calendar icon on right)
+                          ElevatedButton(
+                            onPressed: () async {
+                              final selectedDate = await showDatePicker(
+                                context: context,
+                                initialDate: _currentStartDate,
+                                firstDate: DateTime(_selectedYear - 5),
+                                lastDate: DateTime(_selectedYear + 5),
+                              );
+                              if (selectedDate != null) {
+                                setState(() {
+                                  _currentStartDate = selectedDate;
+                                  _selectedMonth = selectedDate.month;
+                                  _selectedYear = selectedDate.year;
+                                });
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFB00000), // Red
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 10,
                               ),
-                            );
-
-                            if (confirmed == true) {
-                              setState(() => _mode = Mode.bookRooms);
-                            }
-                          }
-                        },
-                      ),
-                      const Text(
-                        'Book Rooms',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(255, 254, 254, 254),
-                        ),
-                      ),
-                      const SizedBox(width: 24),
-
-                      Radio<Mode>(
-                        value: Mode.housekeeping,
-                        groupValue: _mode,
-                        activeColor: const Color(0xFFFFBD00),
-                        fillColor: MaterialStateProperty.resolveWith<Color>((
-                          states,
-                        ) {
-                          if (states.contains(MaterialState.selected)) {
-                            return const Color(0xFFFFBD00);
-                          }
-                          return Colors.white;
-                        }),
-                        overlayColor: MaterialStateProperty.all(
-                          Colors.transparent,
-                        ),
-                        onChanged: (Mode? newValue) async {
-                          if (newValue == Mode.housekeeping) {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              barrierDismissible: false,
-                              builder: (context) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
-                                insetPadding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                ),
-                                title: const Padding(
-                                  padding: EdgeInsets.only(top: 24.0),
-                                  child: Center(
-                                    child: Text(
-                                      'Switch to Housekeeping Mode?',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 28,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                content: const Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      "You're about to leave Booking Mode.",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Color(0xFF2E2D2D),
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      'Unsaved selections or guest details will be cleared.\nDo you want to continue?',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                actionsPadding: const EdgeInsets.only(
-                                  left: 24,
-                                  right: 24,
-                                  bottom: 24,
-                                ),
-                                actions: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        width: 220,
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            side: const BorderSide(
-                                              color: Color(0xFF000000),
-                                              width: 1.2,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 18,
-                                            ),
-                                            minimumSize: const Size.fromHeight(
-                                              48,
-                                            ),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(false),
-                                          child: const Text(
-                                            'Cancel',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 40),
-                                      SizedBox(
-                                        width: 220,
-                                        child: ElevatedButton(
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(
-                                              0xFFFFBD00,
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(30),
-                                            ),
-                                            padding: const EdgeInsets.symmetric(
-                                              vertical: 18,
-                                            ),
-                                            minimumSize: const Size.fromHeight(
-                                              48,
-                                            ),
-                                          ),
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(true),
-                                          child: const Text(
-                                            'Switch to Housekeeping',
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(6),
                               ),
-                            );
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  DateFormat(
+                                    'dd-MMM-yyyy',
+                                  ).format(_currentStartDate),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                const Icon(
+                                  Icons.calendar_month,
+                                  size: 18,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
 
-                            if (confirmed == true) {
-                              setState(() => _mode = Mode.housekeeping);
-                            }
-                          }
-                        },
-                      ),
-                      const Text(
-                        'Set Housekeeping Status',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: Color.fromARGB(255, 254, 254, 254),
-                        ),
-                      ),
+                          const SizedBox(width: 12),
 
-                      const SizedBox(width: 24),
-                    ],
-                  ),
+                          // View Mode Selector (Red box with < 28 days >)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFB00000), // Red
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.chevron_left,
+                                    color: Colors.white,
+                                  ),
+                                  iconSize: 20,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () {
+                                    setState(() {
+                                      _currentStartDate = _currentStartDate
+                                          .subtract(Duration(days: 1));
+                                    });
+                                  },
+                                ),
+                                const SizedBox(width: 6),
+                                GestureDetector(
+                                  onTap: () {
+                                    // Still interactive for dropdown
+                                    showMenu(
+                                      context: context,
+                                      position: const RelativeRect.fromLTRB(
+                                        100,
+                                        140,
+                                        1,
+                                        0,
+                                      ),
+
+                                      items: [
+                                        PopupMenuItem(
+                                          child: const Text("7 days"),
+                                          onTap: () =>
+                                              setState(() => _viewDays = 7),
+                                        ),
+                                        PopupMenuItem(
+                                          child: const Text("14 days"),
+                                          onTap: () =>
+                                              setState(() => _viewDays = 14),
+                                        ),
+                                        PopupMenuItem(
+                                          child: const Text("28 days"),
+                                          onTap: () =>
+                                              setState(() => _viewDays = 28),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  child: Text(
+                                    '$_viewDays days',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.chevron_right,
+                                    color: Colors.white,
+                                  ),
+                                  iconSize: 20,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () {
+                                    setState(() {
+                                      _currentStartDate = _currentStartDate.add(
+                                        Duration(days: 1),
+                                      );
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
 
                 Expanded(
@@ -1589,45 +1360,21 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                         ),
                       ),
 
-                      // ─── Fixed Arrows ───
+                      // ─── Fixed Spacer Container (no arrows) ───
                       Positioned(
                         top: 0,
                         left: 0,
                         width: roomColumnWidth,
                         height: cellHeight,
                         child: Container(
-                          color: const Color(0xFFFEF7FF),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.chevron_left),
-                                onPressed: () => setState(() {
-                                  _currentStartDate = _currentStartDate
-                                      .subtract(const Duration(days: 1));
-                                  if (_selectedDate.isBefore(
-                                    _currentStartDate,
-                                  )) {
-                                    _selectedDate = _currentStartDate;
-                                  }
-                                }),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFEF7FF),
+                            border: const Border(
+                              bottom: BorderSide(
+                                color: Color(0xFFFFD700), // Red bottom border
+                                width: 2.0,
                               ),
-                              const SizedBox(width: 8),
-                              IconButton(
-                                icon: const Icon(Icons.chevron_right),
-                                onPressed: () => setState(() {
-                                  _currentStartDate = _currentStartDate.add(
-                                    const Duration(days: 1),
-                                  );
-                                  final lastDate = _currentStartDate.add(
-                                    const Duration(days: 29),
-                                  );
-                                  if (_selectedDate.isAfter(lastDate)) {
-                                    _selectedDate = lastDate;
-                                  }
-                                }),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
