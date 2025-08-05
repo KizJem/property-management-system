@@ -5,6 +5,7 @@ import 'occupiedcell.dart';
 import 'reservecell.dart';
 import 'userlogin.dart';
 import 'roomdetails.dart';
+import 'booking.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -676,8 +677,31 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                 Expanded(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop();
-                                      // proceed based on action
+                                      Navigator.of(
+                                        context,
+                                      ).pop(); // close the confirm dialog first
+
+                                      // generate a simple booking ID like "0001" (you can replace with real logic)
+                                      final bookingId =
+                                          (DateTime.now()
+                                                      .millisecondsSinceEpoch %
+                                                  10000)
+                                              .toString()
+                                              .padLeft(4, '0');
+
+                                      // Navigate to BookingPage
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => BookingPage(
+                                            bookingId: bookingId,
+                                            roomTypeKey: roomType,
+                                            roomNumber: roomNumberOnly,
+                                            checkIn: startDt,
+                                            checkOut: endDt,
+                                          ),
+                                        ),
+                                      );
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: const Color(0xFFFFBD00),

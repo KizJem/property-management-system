@@ -30,7 +30,7 @@ final Map<String, RoomDetail> roomDetails = {
     imageAsset: 'assets/images/standard-single-room.jpg',
     price: '₱ 4,000',
     description:
-        'Basic yet functional, the Standard Single Room is perfect for one person. It includes a single or twin bed, private bathroom, air-conditioning or fan, and basic amenities. This is the most affordable room type and does not allow extra beds.',
+        'Basic yet functional, the Standard Single Room is perfect for one person.',
     features: const [
       RoomFeature(icon: Icons.bed, label: 'Twin or single bed'),
       RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
@@ -49,7 +49,7 @@ final Map<String, RoomDetail> roomDetails = {
     imageAsset: 'assets/images/superior-single-room.jpg',
     price: '₱ 5,000',
     description:
-        'A step above the standard, the Superior Single Room offers upgraded furnishings and better location. It includes a double or queen-size bed, private bathroom, and improved comfort. Ideal for solo travelers looking for a premium feel. No extra bed allowed.',
+        'A step above the standard, the Superior Single Room offers upgraded furnishings and better location.',
     features: const [
       RoomFeature(icon: Icons.bed, label: 'Double or queen-size bed'),
       RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
@@ -68,7 +68,7 @@ final Map<String, RoomDetail> roomDetails = {
     imageAsset: 'assets/images/standard-double-room.jpg',
     price: '₱ 5,000',
     description:
-        'Designed for two guests, the Standard Double Room offers essential amenities with either two double beds or one queen-size bed. It’s cost-efficient and comfortable with air-conditioning or fan and a private bathroom. One extra bed allowed.',
+        'Designed for two guests, the Standard Double Room offers essential amenities with either two double beds or one queen-size bed.',
     features: const [
       RoomFeature(icon: Icons.bed, label: '2 double or 1 queen-size bed'),
       RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
@@ -86,8 +86,7 @@ final Map<String, RoomDetail> roomDetails = {
     name: 'Deluxe Room',
     imageAsset: 'assets/images/deluxe-room.jpg',
     price: '₱ 6,000',
-    description:
-        'The Deluxe Room offers more space and upgraded interiors. Perfect for two guests, it features premium amenities, possibly a minibar, luxurious toiletries, and a better view. One extra bed is allowed.',
+    description: 'The Deluxe Room offers more space and upgraded interiors.',
     features: const [
       RoomFeature(icon: Icons.king_bed, label: '2 double or 1 queen-size bed'),
       RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
@@ -106,7 +105,7 @@ final Map<String, RoomDetail> roomDetails = {
     imageAsset: 'assets/images/family-room.jpg',
     price: '₱ 7,000',
     description:
-        'Perfect for families, this room includes multiple beds or bunk beds and a larger space. It offers family-friendly comfort and is suitable for up to five persons.',
+        'Perfect for families, this room includes multiple beds or bunk beds and a larger space.',
     features: const [
       RoomFeature(icon: Icons.family_restroom, label: 'Good for 5 persons'),
       RoomFeature(icon: Icons.bedroom_child, label: 'Multiple or bunk beds'),
@@ -125,7 +124,7 @@ final Map<String, RoomDetail> roomDetails = {
     imageAsset: 'assets/images/executive-room.jpg',
     price: '₱ 8,000',
     description:
-        'Tailored for professionals, the Executive Room features business-friendly amenities and upgraded room comforts. It accommodates two persons with a queen-size bed and one extra bed allowed.',
+        'Tailored for professionals, the Executive Room features business-friendly amenities and upgraded room comforts.',
     features: const [
       RoomFeature(icon: Icons.bed, label: 'Queen-size bed'),
       RoomFeature(icon: Icons.bathtub, label: 'Private bathroom'),
@@ -144,7 +143,7 @@ final Map<String, RoomDetail> roomDetails = {
     imageAsset: 'assets/images/suite-room.jpg',
     price: '₱ 10,000',
     description:
-        'The Suite Room features luxury furnishings, a king-size bed, and separate areas for living and sleeping. Often includes dining space or a kitchenette. Good for 2 persons with 1 extra bed allowed.',
+        'The Suite Room features luxury furnishings, a king-size bed, and separate areas for living and sleeping.',
     features: const [
       RoomFeature(icon: Icons.king_bed, label: 'King-size bed'),
       RoomFeature(icon: Icons.living, label: 'Living & sleeping areas'),
