@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'bookingdetails.dart';
 import 'roomdetails.dart';
+import 'guestdetails.dart';
 
 class BookingPage extends StatefulWidget {
   final String bookingId;
@@ -33,6 +35,7 @@ class _BookingPageState extends State<BookingPage> {
   late double totalTax;
   late double subTotal;
   late double total;
+  int _currentStep = 0;
 
   final currencyFormatter = NumberFormat.currency(
     locale: 'en_PH',
@@ -40,42 +43,34 @@ class _BookingPageState extends State<BookingPage> {
     decimalDigits: 0,
   );
 
-  String formattedDate(DateTime dt) {
-    return DateFormat('dd MMM yyyy').format(dt);
-  }
-
   @override
   void initState() {
     super.initState();
+
     detail = roomDetails[widget.roomTypeKey];
     nights = widget.checkOut.difference(widget.checkIn).inDays;
     if (nights <= 0) nights = 1;
 
-    if (detail != null) {
-      final rawDigits = detail!.price.replaceAll(RegExp(r'[^0-9]'), '');
-      roomRate = double.tryParse(rawDigits) ?? 0;
-    } else {
-      roomRate = 0;
-    }
+    final rawDigits = detail?.price.replaceAll(RegExp(r'[^0-9]'), '') ?? '0';
+    roomRate = double.tryParse(rawDigits) ?? 0;
 
     roomCharge = roomRate * nights;
-
-    // fixed tax per night for sample-like behavior
-    taxPerNight = 100;
+    taxPerNight = 100; // sample fixed tax
     totalTax = taxPerNight * nights;
-
     subTotal = roomCharge + totalTax;
     total = subTotal;
   }
 
+  String formattedDate(DateTime dt) => DateFormat('dd MMM yyyy').format(dt);
+
   @override
   Widget build(BuildContext context) {
     final timestamp = DateFormat('M/d/yy hh:mm a').format(DateTime.now());
+
     return Scaffold(
       backgroundColor: const Color(0xFFFEF7FF),
       body: SafeArea(
         child: Padding(
-          // top/bottom 20, left/right 10
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
           child: Center(
             child: ConstrainedBox(
@@ -95,7 +90,7 @@ class _BookingPageState extends State<BookingPage> {
                 ),
                 child: Column(
                   children: [
-                    // Red header inside card, rounded top corners
+                    // ─── Red header ───
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(12),
@@ -106,9 +101,7 @@ class _BookingPageState extends State<BookingPage> {
                           horizontal: 32,
                           vertical: 16,
                         ),
-                        width: double.infinity,
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             const SizedBox(width: 12),
                             Expanded(
@@ -160,7 +153,8 @@ class _BookingPageState extends State<BookingPage> {
                       ),
                     ),
 
-                    // Step indicator
+                    // ─── Stepper ───
+                    // ─── Stepper ───
                     Padding(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
@@ -168,168 +162,66 @@ class _BookingPageState extends State<BookingPage> {
                       ),
                       child: Row(
                         children: [
-                          _buildStepIcon(
-                            label: 'Booking Details',
-                            icon: Icons.assignment,
-                            active: true,
+                          GestureDetector(
+                            onTap: () => setState(() => _currentStep = 0),
+                            child: _buildStepIcon(
+                              index: 0,
+                              label: 'Booking Details',
+                              icon: Icons.assignment,
+                            ),
                           ),
                           _buildStepDivider(),
-                          _buildStepIcon(
-                            label: 'Booking Extras',
-                            icon: Icons.list_alt,
-                            active: false,
+                          GestureDetector(
+                            onTap: () => setState(() => _currentStep = 1),
+                            child: _buildStepIcon(
+                              index: 1,
+                              label: 'Guest Details',
+                              icon: Icons.person,
+                            ),
                           ),
                           _buildStepDivider(),
-                          _buildStepIcon(
-                            label: 'Guest Details',
-                            icon: Icons.person,
-                            active: false,
+                          GestureDetector(
+                            onTap: () => setState(() => _currentStep = 2),
+                            child: _buildStepIcon(
+                              index: 2,
+                              label: 'Booking Extras',
+                              icon: Icons.list_alt,
+                            ),
                           ),
                           _buildStepDivider(),
-                          _buildStepIcon(
-                            label: 'Payment Details',
-                            icon: Icons.credit_card,
-                            active: false,
+                          GestureDetector(
+                            onTap: () => setState(() => _currentStep = 3),
+                            child: _buildStepIcon(
+                              index: 3,
+                              label: 'Payment Details',
+                              icon: Icons.credit_card,
+                            ),
                           ),
                         ],
                       ),
                     ),
 
-                    // Main body content
+                    // ─── Body ───
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Left: Room image and features
+                            // ← left pane
                             Expanded(
                               flex: 3,
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border: Border.all(
-                                    color: Colors.grey.shade300,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
-                                          ),
-                                          child: detail != null
-                                              ? Image.asset(
-                                                  detail!.imageAsset,
-                                                  width: 200,
-                                                  height: 140,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Container(
-                                                  width: 200,
-                                                  height: 140,
-                                                  color: Colors.grey.shade200,
-                                                  child: const Center(
-                                                    child: Text('No Image'),
-                                                  ),
-                                                ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${widget.roomNumber} - ${detail?.name ?? widget.roomTypeKey}',
-                                                style: const TextStyle(
-                                                  fontSize: 22,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              if (detail?.description != null &&
-                                                  detail!
-                                                      .description
-                                                      .isNotEmpty) ...[
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  detail!.description,
-                                                  style: TextStyle(
-                                                    fontSize: 14,
-                                                    color: Colors.grey[700],
-                                                  ),
-                                                ),
-                                              ],
-                                              const SizedBox(height: 8),
-                                              const Text(
-                                                'Room Features',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Wrap(
-                                                spacing: 16,
-                                                runSpacing: 8,
-                                                children: [
-                                                  if (detail != null)
-                                                    ...detail!.features.map(
-                                                      (f) => SizedBox(
-                                                        width: 180,
-                                                        child: Row(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Icon(
-                                                              f.icon,
-                                                              size: 16,
-                                                              color: Colors
-                                                                  .grey
-                                                                  .shade700,
-                                                            ),
-                                                            const SizedBox(
-                                                              width: 6,
-                                                            ),
-                                                            Expanded(
-                                                              child: Text(
-                                                                f.label,
-                                                                style:
-                                                                    const TextStyle(
-                                                                      fontSize:
-                                                                          12,
-                                                                    ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                ],
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                              child: _currentStep == 1
+                                  ? const GuestDetails()
+                                  : BookingDetails(
+                                      detail: detail,
+                                      roomNumber: widget.roomNumber,
+                                      roomTypeKey: widget.roomTypeKey,
                                     ),
-                                    const SizedBox(height: 16),
-                                    const Divider(height: 1),
-                                    const SizedBox(height: 60),
-                                  ],
-                                ),
-                              ),
                             ),
-
                             const SizedBox(width: 24),
 
-                            // // Right: Booking summary
+                            // → right summary
                             SizedBox(
                               width: 350,
                               child: Column(
@@ -344,6 +236,7 @@ class _BookingPageState extends State<BookingPage> {
                                     ),
                                     child: Column(
                                       children: [
+                                        // — “Your Booking” header + button
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 16,
@@ -382,7 +275,7 @@ class _BookingPageState extends State<BookingPage> {
                                                 child: Row(
                                                   mainAxisSize:
                                                       MainAxisSize.min,
-                                                  children: [
+                                                  children: const [
                                                     Text(
                                                       'Book More',
                                                       style: TextStyle(
@@ -404,25 +297,26 @@ class _BookingPageState extends State<BookingPage> {
                                             ],
                                           ),
                                         ),
-                                        // Wrapped & bordered detail box
+
+                                        // — details box
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 16,
                                           ),
                                           child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                color: Colors.grey.shade400,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              color: Colors.white,
-                                            ),
                                             padding: const EdgeInsets.fromLTRB(
                                               20,
                                               10,
                                               20,
                                               20,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              border: Border.all(
+                                                color: Colors.grey.shade400,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                             ),
                                             child: Column(
                                               crossAxisAlignment:
@@ -450,20 +344,11 @@ class _BookingPageState extends State<BookingPage> {
                                                             .shade600,
                                                       ),
                                                       onPressed: () {
-                                                        if (widget.onRemove !=
-                                                            null)
-                                                          widget.onRemove!();
+                                                        widget.onRemove?.call();
                                                       },
                                                     ),
                                                   ],
                                                 ),
-
-                                                //   '${widget.roomNumber} - ${detail?.name ?? widget.roomTypeKey}',
-                                                //   style: const TextStyle(
-                                                //     fontSize: 16,
-                                                //     fontWeight: FontWeight.bold,
-                                                //   ),
-                                                // ),
                                                 const SizedBox(height: 6),
                                                 _buildTwoColumn(
                                                   left: 'Check In',
@@ -500,6 +385,8 @@ class _BookingPageState extends State<BookingPage> {
                                             ),
                                           ),
                                         ),
+
+                                        // — total & buttons
                                         Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                             16,
@@ -547,9 +434,7 @@ class _BookingPageState extends State<BookingPage> {
                                                     backgroundColor:
                                                         Colors.white,
                                                     side: const BorderSide(
-                                                      color: const Color(
-                                                        0xFF686461,
-                                                      ),
+                                                      color: Color(0xFF686461),
                                                     ),
                                                     shape: RoundedRectangleBorder(
                                                       borderRadius:
@@ -577,7 +462,10 @@ class _BookingPageState extends State<BookingPage> {
                                               Expanded(
                                                 child: ElevatedButton(
                                                   onPressed: () {
-                                                    // proceed to next step
+                                                    setState(() {
+                                                      if (_currentStep < 3)
+                                                        _currentStep++;
+                                                    });
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor:
@@ -630,35 +518,38 @@ class _BookingPageState extends State<BookingPage> {
   }
 
   Widget _buildStepIcon({
+    required int index,
     required String label,
     required IconData icon,
-    required bool active,
   }) {
+    final highlighted = index <= _currentStep;
+    final active = index == _currentStep;
+
     return Row(
       children: [
         Container(
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: active ? const Color(0xFFFFBD00) : Colors.grey.shade100,
+            color: highlighted ? const Color(0xFFFFBD00) : Colors.grey.shade100,
             shape: BoxShape.circle,
             border: Border.all(
-              color: active ? Colors.transparent : Colors.grey.shade400,
+              color: highlighted ? Colors.transparent : Colors.grey.shade400,
             ),
           ),
           child: Icon(
             icon,
             size: 18,
-            color: active ? Colors.white : Colors.grey.shade700,
+            color: highlighted ? Colors.white : Colors.grey.shade700,
           ),
         ),
         const SizedBox(width: 6),
         Text(
           label,
           style: TextStyle(
-            fontWeight: active ? FontWeight.bold : FontWeight.normal,
             fontSize: 12,
-            color: active ? Colors.black : Colors.grey.shade700,
+            fontWeight: active ? FontWeight.bold : FontWeight.normal,
+            color: highlighted ? Colors.black : Colors.grey.shade700,
           ),
         ),
       ],
@@ -671,34 +562,6 @@ class _BookingPageState extends State<BookingPage> {
       height: 1,
       color: Colors.grey.shade400,
       margin: const EdgeInsets.symmetric(horizontal: 8),
-    );
-  }
-
-  Widget _buildSummaryRow({
-    required String label,
-    required String value,
-    bool isBold = true,
-  }) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
-        ),
-        if (value.isNotEmpty)
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: isBold ? FontWeight.w600 : FontWeight.normal,
-            ),
-          ),
-      ],
     );
   }
 
