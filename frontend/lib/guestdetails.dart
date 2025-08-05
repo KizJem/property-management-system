@@ -168,22 +168,61 @@ class _GuestDetailsState extends State<GuestDetails> {
     );
   }
 
+  /// In lib/guestdetails.dart (inside your _GuestDetailsState class):
+
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
     required bool required,
   }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: required ? '$label *' : label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 12,
-          horizontal: 12,
+    // common values
+    const borderRadius = BorderRadius.all(Radius.circular(4));
+    final borderColor = Colors.grey.shade400;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // → Separate label row
+        Row(
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            ),
+            if (required) ...[
+              const SizedBox(width: 2),
+              const Text(
+                '*',
+                style: TextStyle(color: Colors.red, fontSize: 12),
+              ),
+            ],
+          ],
         ),
-      ),
+        const SizedBox(height: 4),
+
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            enabledBorder: OutlineInputBorder(
+              borderRadius: borderRadius,
+              borderSide: BorderSide(color: borderColor, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: borderRadius,
+              borderSide: BorderSide(color: borderColor, width: 2),
+            ),
+            border: OutlineInputBorder(
+              borderRadius: borderRadius,
+              borderSide: BorderSide(color: borderColor, width: 1),
+            ),
+            isDense: true,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 12,
+              horizontal: 12,
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

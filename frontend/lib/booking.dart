@@ -322,6 +322,7 @@ class _BookingPageState extends State<BookingPage> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
+                                                // ─── Header: Room title + remove button ───
                                                 Row(
                                                   children: [
                                                     Expanded(
@@ -343,13 +344,38 @@ class _BookingPageState extends State<BookingPage> {
                                                             .grey
                                                             .shade600,
                                                       ),
-                                                      onPressed: () {
-                                                        widget.onRemove?.call();
-                                                      },
+                                                      onPressed: () => widget
+                                                          .onRemove
+                                                          ?.call(),
                                                     ),
                                                   ],
                                                 ),
+                                                const SizedBox(height: 4),
+                                                Row(
+                                                  children: [
+                                                    const Text(
+                                                      'Room',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.black,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    const Expanded(
+                                                      child: Divider(
+                                                        color: Colors.black,
+                                                        thickness: 1,
+                                                        height: 1.5,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+
                                                 const SizedBox(height: 6),
+
+                                                // ─── Details rows ───
                                                 _buildTwoColumn(
                                                   left: 'Check In',
                                                   right: formattedDate(
@@ -375,11 +401,34 @@ class _BookingPageState extends State<BookingPage> {
                                                   right: currencyFormatter
                                                       .format(totalTax),
                                                 ),
+
                                                 const SizedBox(height: 4),
-                                                _buildTwoColumn(
-                                                  left: 'Sub Total',
-                                                  right: currencyFormatter
-                                                      .format(subTotal),
+
+                                                // ─── Sub Total bold ───
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    const Text(
+                                                      'Sub Total',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      currencyFormatter.format(
+                                                        subTotal,
+                                                      ),
+                                                      style: const TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ],
                                             ),
