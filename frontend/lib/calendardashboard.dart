@@ -1074,7 +1074,7 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                     vertical: 10,
                   ),
                   width: double.infinity,
-                  color: const Color(0xFF710100),
+                  color: const Color(0xFF9B000A),
                   child: Row(
                     children: [
                       IconButton(
@@ -1679,360 +1679,383 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
   }
 
   Widget _buildRoomColumn(String title) {
-  final roomList = widget.rooms[title] ?? [];
+    final roomList = widget.rooms[title] ?? [];
 
-  final headerBg = _mode == Mode.housekeeping
-      ? const Color(0xFF9B000A)
-      : const Color(0xFF9B000A);
+    final headerBg = _mode == Mode.housekeeping
+        ? const Color(0xFFD10E0E)
+        : const Color(0xFFD10E0E);
 
-  // Format title like "Standard Single"
-  List<String> _splitTitle(String title) {
-    final cleaned = title
-        .replaceAll("ROOMS", "")
-        .trim()
-        .split(' ')
-        .where((word) => word.isNotEmpty)
-        .map((word) =>
-            word[0].toUpperCase() + word.substring(1).toLowerCase())
-        .toList();
+    // Format title like "Standard Single"
+    List<String> _splitTitle(String title) {
+      final cleaned = title
+          .replaceAll("ROOMS", "")
+          .trim()
+          .split(' ')
+          .where((word) => word.isNotEmpty)
+          .map(
+            (word) => word[0].toUpperCase() + word.substring(1).toLowerCase(),
+          )
+          .toList();
 
-    if (cleaned.length == 1) {
-      return [cleaned.first, ''];
-    } else {
-      return [
-        cleaned.first,
-        cleaned.sublist(1).join(" "),
-      ];
+      if (cleaned.length == 1) {
+        return [cleaned.first, ''];
+      } else {
+        return [cleaned.first, cleaned.sublist(1).join(" ")];
+      }
     }
-  }
 
-  String extractRoomNumber(String raw) {
-    final match = RegExp(r'(\d+)').firstMatch(raw);
-    return match != null ? match.group(1)! : raw;
-  }
+    String extractRoomNumber(String raw) {
+      final match = RegExp(r'(\d+)').firstMatch(raw);
+      return match != null ? match.group(1)! : raw;
+    }
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Room Type Header (e.g., "Standard \nSingle")
-      Container(
-        width: roomColumnWidth,
-        height: 50,
-        color: headerBg,
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _splitTitle(title).first,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
-                    ),
-                  ),
-                  Text(
-                    _splitTitle(title).last,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
-                    ),
-                  ),
-                ],
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Room Type Header (e.g., "Standard \nSingle")
+        Container(
+          width: roomColumnWidth,
+          height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 6),
+          decoration: BoxDecoration(
+            color: headerBg,
+            border: const Border(
+              right: BorderSide(
+                color: const Color(0xFFFEF7FF),
+                width: 0.3,
+              ), // ➜ vertical white line
+              bottom: BorderSide(
+                color: const Color(0xFFFEF7FF),
+                width: 0.3,
+              ), // optional: bottom line
             ),
-            IconButton(
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
-              icon: Icon(
-                _expandedRoomTypes[title] == true
-                    ? Icons.arrow_drop_up
-                    : Icons.arrow_right,
-                color: Colors.white,
-                size: 20,
-              ),
-              onPressed: () {
-                setState(() {
-                  _expandedRoomTypes[title] =
-                      !(_expandedRoomTypes[title] ?? true);
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-
-      // Room Numbers
-      if (_expandedRoomTypes[title] == true)
-        ...roomList.asMap().entries.map((entry) {
-          final isLast = entry.key == roomList.length - 1;
-          final rawRoom = entry.value;
-          final roomNumber = extractRoomNumber(rawRoom);
-
-          return Container(
-            width: roomColumnWidth,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: isLast
-                    ? BorderSide.none
-                    : BorderSide(color: Colors.grey.shade300),
-              ),
-            ),
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.only(left: 12),
-            child: Text(
-              roomNumber,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-                color: Colors.black87,
-              ),
-            ),
-          );
-        }),
-    ],
-  );
-}
-
-
-Widget _buildDateRows(String title, List<DateTime> dates) {
-  const Radius cornerRadius = Radius.circular(10);
-  final roomList = widget.rooms[title] ?? [];
-
-  final placeholderBg = _mode == Mode.housekeeping
-      ? const Color(0xFF9B000A)
-      : const Color(0xFF9B000A);
-
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Red spacer to align with red room header
-      Row(
-        children: List.generate(
-          dates.length,
-          (_) => Container(
-            width: cellWidth,
-            height: headerCellHeight,
-            color: placeholderBg,
           ),
-        ),
-      ),
-
-      // Conditionally render room rows
-      if (_expandedRoomTypes[title] == true)
-        ...roomList.asMap().entries.map((entry) {
-          final isLastRoom = entry.key == roomList.length - 1;
-          final room = entry.value;
-
-          final bookingStart = _selectedStart[room];
-          final bookingEnd = _selectedEnd[room] ?? bookingStart;
-
-          return Row(
-            children: dates.asMap().entries.map((dateEntry) {
-              final i = dateEntry.key;
-
-            final hk = _housekeepingStatus[room]?[i];
-            final statusCode = hk?['status'];
-            Color? statusColor;
-            if (statusCode != null) {
-              final statusInfo = roomStatusMap[statusCode];
-              statusColor = statusInfo?['color'] as Color?;
-            }
-
-            final isBookingSelected =
-                _mode == Mode.bookRooms &&
-                bookingStart != null &&
-                bookingEnd != null &&
-                i >= bookingStart &&
-                i <= bookingEnd;
-
-            final selStart = _hkSelectedStart[room];
-            final selEnd = _hkSelectedEnd[room];
-            final isHKPreview =
-                _mode == Mode.housekeeping &&
-                selStart != null &&
-                selEnd != null &&
-                i >= selStart &&
-                i <= selEnd;
-
-            BorderRadius? bookingRadius;
-            if (isBookingSelected) {
-              if (bookingStart == bookingEnd) {
-                bookingRadius = BorderRadius.circular(8);
-              } else if (i == bookingStart) {
-                bookingRadius = const BorderRadius.horizontal(
-                  left: cornerRadius,
-                );
-              } else if (i == bookingEnd) {
-                bookingRadius = const BorderRadius.horizontal(
-                  right: cornerRadius,
-                );
-              }
-            }
-
-            int? hkRangeStart;
-            int? hkRangeEnd;
-
-            if (statusCode != null) {
-              hkRangeStart = i;
-              while (hkRangeStart! > 0) {
-                final prevStatus =
-                    _housekeepingStatus[room]?[hkRangeStart - 1]?['status'];
-                if (prevStatus == statusCode) {
-                  hkRangeStart = hkRangeStart - 1;
-                } else {
-                  break;
-                }
-              }
-
-              hkRangeEnd = i;
-              while (hkRangeEnd! < dates.length - 1) {
-                final nextStatus =
-                    _housekeepingStatus[room]?[hkRangeEnd + 1]?['status'];
-                if (nextStatus == statusCode) {
-                  hkRangeEnd = hkRangeEnd + 1;
-                } else {
-                  break;
-                }
-              }
-            }
-
-            final isInsideHKRange =
-                statusCode != null &&
-                hkRangeStart != null &&
-                hkRangeEnd != null &&
-                i >= hkRangeStart &&
-                i <= hkRangeEnd;
-
-            final isHKRangeStart = isInsideHKRange && i == hkRangeStart;
-            final isBookingRangeStart =
-                isBookingSelected && i == bookingStart;
-
-            return MouseRegion(
-              cursor: ((_mode == Mode.bookRooms &&
-                          (statusCode == null || statusCode == 'VR')) ||
-                      _mode == Mode.housekeeping)
-                  ? SystemMouseCursors.click
-                  : SystemMouseCursors.basic,
-              child: GestureDetector(
-                onTap: ((_mode == Mode.bookRooms &&
-                            (statusCode == null || statusCode == 'VR')) ||
-                        _mode == Mode.housekeeping)
-                    ? () => _onCellTap(title, room, i)
-                    : null,
-                child: Stack(
-                  clipBehavior: Clip.none,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Booking highlight (yellow block)
-                    if (isBookingRangeStart)
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: cellHeight,
-                        width: cellWidth * (bookingEnd! - bookingStart! + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.yellow[300],
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
+                    Text(
+                      _splitTitle(title).first,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
                       ),
-
-                    // Housekeeping preview (gray block)
-                    if (_mode == Mode.housekeeping &&
-                        selStart != null &&
-                        i == selStart &&
-                        (statusCode == null || statusCode != 'VR'))
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: cellHeight,
-                        width: cellWidth *
-                            ((selEnd ?? selStart) - selStart + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFD9D9D9),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                      ),
-
-                    // Housekeeping status block (non-VR)
-                    if (isHKRangeStart &&
-                        statusCode != null &&
-                        statusCode != 'VR')
-                      Positioned(
-                        left: 0,
-                        top: 0,
-                        height: cellHeight,
-                        width: cellWidth * (hkRangeEnd! - hkRangeStart! + 1),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: statusColor,
-                            borderRadius: const BorderRadius.horizontal(
-                              left: cornerRadius,
-                              right: cornerRadius,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            statusCode,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              letterSpacing: 2,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                      ),
-
-                    // Regular calendar cell
-                    Container(
-                      width: cellWidth,
-                      height: cellHeight,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        border: (isInsideHKRange && statusCode != 'VR') ||
-                                isBookingSelected ||
-                                (isHKPreview && statusCode != 'VR')
-                            ? null
-                            : Border(
-                                right: i == dates.length - 1
-                                    ? BorderSide.none
-                                    : BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                                bottom: isLastRoom
-                                    ? BorderSide.none
-                                    : BorderSide(
-                                        color: Colors.grey.shade300,
-                                      ),
-                              ),
-                        borderRadius: bookingRadius,
+                    ),
+                    Text(
+                      _splitTitle(title).last,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 11,
                       ),
                     ),
                   ],
                 ),
               ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: Icon(
+                  _expandedRoomTypes[title] == true
+                      ? Icons
+                            .arrow_drop_down // ▼ When expanded
+                      : Icons.arrow_right, // ▶ When collapsed
+                  color: Colors.white,
+                  size: 20, // Adjust size to match your image
+                ),
+                onPressed: () {
+                  setState(() {
+                    _expandedRoomTypes[title] =
+                        !(_expandedRoomTypes[title] ?? true);
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+
+        // Room Numbers
+        if (_expandedRoomTypes[title] == true)
+          ...roomList.asMap().entries.map((entry) {
+            final isLast = entry.key == roomList.length - 1;
+            final rawRoom = entry.value;
+            final roomNumber = extractRoomNumber(rawRoom);
+
+            return Container(
+              width: roomColumnWidth,
+              height: 50,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: isLast
+                      ? BorderSide.none
+                      : BorderSide(color: Colors.grey.shade300),
+                ),
+              ),
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 12),
+              child: Text(
+                roomNumber,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Colors.black87,
+                ),
+              ),
+            );
+          }),
+      ],
+    );
+  }
+
+  Widget _buildDateRows(String title, List<DateTime> dates) {
+    const Radius cornerRadius = Radius.circular(10);
+    final roomList = widget.rooms[title] ?? [];
+
+    final placeholderBg = _mode == Mode.housekeeping
+        ? const Color(0xFFD10E0E)
+        : const Color(0xFFD10E0E);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Red spacer to align with red room header
+        Container(
+          width: cellWidth * dates.length,
+          height: headerCellHeight,
+          decoration: BoxDecoration(
+            color: const Color(0xFFD10E0E),
+            border: Border(
+              right: BorderSide(
+                color: const Color(0xFFFEF7FF),
+                width: 0.3, // <-- super thin vertical lines
+              ),
+              bottom: const BorderSide(
+                color: const Color(0xFFFEF7FF),
+                width: 0.3, // optional
+              ),
+            ),
+          ),
+        ),
+
+        // Conditionally render room rows
+        if (_expandedRoomTypes[title] == true)
+          ...roomList.asMap().entries.map((entry) {
+            final isLastRoom = entry.key == roomList.length - 1;
+            final room = entry.value;
+
+            final bookingStart = _selectedStart[room];
+            final bookingEnd = _selectedEnd[room] ?? bookingStart;
+
+            return Row(
+              children: dates.asMap().entries.map((dateEntry) {
+                final i = dateEntry.key;
+
+                final hk = _housekeepingStatus[room]?[i];
+                final statusCode = hk?['status'];
+                Color? statusColor;
+                if (statusCode != null) {
+                  final statusInfo = roomStatusMap[statusCode];
+                  statusColor = statusInfo?['color'] as Color?;
+                }
+
+                final isBookingSelected =
+                    _mode == Mode.bookRooms &&
+                    bookingStart != null &&
+                    bookingEnd != null &&
+                    i >= bookingStart &&
+                    i <= bookingEnd;
+
+                final selStart = _hkSelectedStart[room];
+                final selEnd = _hkSelectedEnd[room];
+                final isHKPreview =
+                    _mode == Mode.housekeeping &&
+                    selStart != null &&
+                    selEnd != null &&
+                    i >= selStart &&
+                    i <= selEnd;
+
+                BorderRadius? bookingRadius;
+                if (isBookingSelected) {
+                  if (bookingStart == bookingEnd) {
+                    bookingRadius = BorderRadius.circular(8);
+                  } else if (i == bookingStart) {
+                    bookingRadius = const BorderRadius.horizontal(
+                      left: cornerRadius,
+                    );
+                  } else if (i == bookingEnd) {
+                    bookingRadius = const BorderRadius.horizontal(
+                      right: cornerRadius,
+                    );
+                  }
+                }
+
+                int? hkRangeStart;
+                int? hkRangeEnd;
+
+                if (statusCode != null) {
+                  hkRangeStart = i;
+                  while (hkRangeStart! > 0) {
+                    final prevStatus =
+                        _housekeepingStatus[room]?[hkRangeStart - 1]?['status'];
+                    if (prevStatus == statusCode) {
+                      hkRangeStart = hkRangeStart - 1;
+                    } else {
+                      break;
+                    }
+                  }
+
+                  hkRangeEnd = i;
+                  while (hkRangeEnd! < dates.length - 1) {
+                    final nextStatus =
+                        _housekeepingStatus[room]?[hkRangeEnd + 1]?['status'];
+                    if (nextStatus == statusCode) {
+                      hkRangeEnd = hkRangeEnd + 1;
+                    } else {
+                      break;
+                    }
+                  }
+                }
+
+                final isInsideHKRange =
+                    statusCode != null &&
+                    hkRangeStart != null &&
+                    hkRangeEnd != null &&
+                    i >= hkRangeStart &&
+                    i <= hkRangeEnd;
+
+                final isHKRangeStart = isInsideHKRange && i == hkRangeStart;
+                final isBookingRangeStart =
+                    isBookingSelected && i == bookingStart;
+
+                return MouseRegion(
+                  cursor:
+                      ((_mode == Mode.bookRooms &&
+                              (statusCode == null || statusCode == 'VR')) ||
+                          _mode == Mode.housekeeping)
+                      ? SystemMouseCursors.click
+                      : SystemMouseCursors.basic,
+                  child: GestureDetector(
+                    onTap:
+                        ((_mode == Mode.bookRooms &&
+                                (statusCode == null || statusCode == 'VR')) ||
+                            _mode == Mode.housekeeping)
+                        ? () => _onCellTap(title, room, i)
+                        : null,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        // Booking highlight (yellow block)
+                        if (isBookingRangeStart)
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            height: cellHeight,
+                            width:
+                                cellWidth * (bookingEnd! - bookingStart! + 1),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.yellow[300],
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                          ),
+
+                        // Housekeeping preview (gray block)
+                        if (_mode == Mode.housekeeping &&
+                            selStart != null &&
+                            i == selStart &&
+                            (statusCode == null || statusCode != 'VR'))
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            height: cellHeight,
+                            width:
+                                cellWidth *
+                                ((selEnd ?? selStart) - selStart + 1),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD9D9D9),
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                            ),
+                          ),
+
+                        // Housekeeping status block (non-VR)
+                        if (isHKRangeStart &&
+                            statusCode != null &&
+                            statusCode != 'VR')
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            height: cellHeight,
+                            width:
+                                cellWidth * (hkRangeEnd! - hkRangeStart! + 1),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: statusColor,
+                                borderRadius: const BorderRadius.horizontal(
+                                  left: cornerRadius,
+                                  right: cornerRadius,
+                                ),
+                              ),
+                              alignment: Alignment.center,
+                              child: Text(
+                                statusCode,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  letterSpacing: 2,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ),
+
+                        // Regular calendar cell
+                        // Regular calendar cell (render only if no red block)
+                        if (!(isInsideHKRange && statusCode != 'VR'))
+                          Container(
+                            width: cellWidth,
+                            height: cellHeight,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border:
+                                  isBookingSelected ||
+                                      (isHKPreview && statusCode != 'VR')
+                                  ? Border.all(color: Colors.transparent)
+                                  : Border(
+                                      right: i == dates.length - 1
+                                          ? BorderSide.none
+                                          : BorderSide(
+                                              color: Colors.grey.shade300,
+                                            ),
+                                      bottom: isLastRoom
+                                          ? BorderSide.none
+                                          : BorderSide(
+                                              color: Colors.grey.shade300,
+                                            ),
+                                    ),
+                              borderRadius: bookingRadius,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
             );
           }).toList(),
-        );
-      }).toList(),
-    ],
-  );
-}
-
+      ],
+    );
+  }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
