@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'bookingdetails.dart';
 import 'roomdetails.dart';
 import 'guestdetails.dart';
+import 'bookingextras.dart';
+import 'dart:async';
 
 class BookingPage extends StatefulWidget {
   final String bookingId;
@@ -27,6 +29,8 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
+  DateTime _now = DateTime.now();
+  Timer? _timer;
   late RoomDetail? detail;
   late int nights;
   late double roomRate;
@@ -47,6 +51,12 @@ class _BookingPageState extends State<BookingPage> {
   void initState() {
     super.initState();
 
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {
+        _now = DateTime.now();
+      });
+    });
+
     detail = roomDetails[widget.roomTypeKey];
     nights = widget.checkOut.difference(widget.checkIn).inDays;
     if (nights <= 0) nights = 1;
@@ -61,11 +71,17 @@ class _BookingPageState extends State<BookingPage> {
     total = subTotal;
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   String formattedDate(DateTime dt) => DateFormat('dd MMM yyyy').format(dt);
 
   @override
   Widget build(BuildContext context) {
-    final timestamp = DateFormat('M/d/yy hh:mm a').format(DateTime.now());
+    final timestamp = DateFormat('M/d/yy hh:mm:ss a').format(_now);
 
     return Scaffold(
       backgroundColor: const Color(0xFFFEF7FF),
@@ -138,16 +154,51 @@ class _BookingPageState extends State<BookingPage> {
                                     fontSize: 12,
                                   ),
                                 ),
-                                Text(
-                                  timestamp,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+
+                                // StreamBuilder that ticks every second:
+                                StreamBuilder<DateTime>(
+                                  stream: Stream.periodic(
+                                    const Duration(seconds: 1),
+                                    (_) => DateTime.now(),
                                   ),
+                                  builder: (context, snapshot) {
+                                    final now = snapshot.data ?? DateTime.now();
+                                    final ts = DateFormat(
+                                      'M/d/yy hh:mm:ss a',
+                                    ).format(now);
+                                    return Text(
+                                      ts,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             ),
+
+                            // Column(
+                            //   crossAxisAlignment: CrossAxisAlignment.end,
+                            //   children: [
+                            //     const Text(
+                            //       'Booking TimeStamp:',
+                            //       style: TextStyle(
+                            //         color: Colors.white70,
+                            //         fontSize: 12,
+                            //       ),
+                            //     ),
+                            //     Text(
+                            //       timestamp,
+                            //       style: const TextStyle(
+                            //         color: Colors.white,
+                            //         fontSize: 12,
+                            //         fontWeight: FontWeight.w600,
+                            //       ),
+                            //     ),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ),
@@ -211,13 +262,25 @@ class _BookingPageState extends State<BookingPage> {
                             // ← left pane
                             Expanded(
                               flex: 3,
-                              child: _currentStep == 1
-                                  ? const GuestDetails()
-                                  : BookingDetails(
+                              child: _currentStep == 0
+                                  ? BookingDetails(
                                       detail: detail,
                                       roomNumber: widget.roomNumber,
                                       roomTypeKey: widget.roomTypeKey,
-                                    ),
+                                    )
+                                  : _currentStep == 1
+                                  ? const GuestDetails()
+                                  : _currentStep == 2
+                                  ? BookingExtras(
+                                      rooms: [
+                                        RoomExtraData(
+                                          roomTitle:
+                                              '${widget.roomNumber} – ${detail?.name ?? widget.roomTypeKey}',
+                                          guestLabel: 'Guest 1',
+                                        ),
+                                      ],
+                                    )
+                                  : const SizedBox.shrink(),
                             ),
                             const SizedBox(width: 24),
 
