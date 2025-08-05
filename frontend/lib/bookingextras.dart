@@ -1,5 +1,3 @@
-// lib/bookingextras.dart
-
 import 'package:flutter/material.dart';
 
 /// Simple data model for one booked room’s extras
@@ -33,11 +31,6 @@ class _BookingExtrasState extends State<BookingExtras> {
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-        ),
         child: Column(
           children: widget.rooms.map((room) {
             return Column(

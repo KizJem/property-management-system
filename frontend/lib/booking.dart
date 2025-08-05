@@ -5,6 +5,7 @@ import 'roomdetails.dart';
 import 'guestdetails.dart';
 import 'bookingextras.dart';
 import 'dart:async';
+import 'paymentdetails.dart';
 
 class BookingPage extends StatefulWidget {
   final String bookingId;
@@ -178,33 +179,11 @@ class _BookingPageState extends State<BookingPage> {
                                 ),
                               ],
                             ),
-
-                            // Column(
-                            //   crossAxisAlignment: CrossAxisAlignment.end,
-                            //   children: [
-                            //     const Text(
-                            //       'Booking TimeStamp:',
-                            //       style: TextStyle(
-                            //         color: Colors.white70,
-                            //         fontSize: 12,
-                            //       ),
-                            //     ),
-                            //     Text(
-                            //       timestamp,
-                            //       style: const TextStyle(
-                            //         color: Colors.white,
-                            //         fontSize: 12,
-                            //         fontWeight: FontWeight.w600,
-                            //       ),
-                            //     ),
-                            //   ],
-                            // ),
                           ],
                         ),
                       ),
                     ),
 
-                    // ─── Stepper ───
                     // ─── Stepper ───
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -212,6 +191,8 @@ class _BookingPageState extends State<BookingPage> {
                         vertical: 16,
                       ),
                       child: Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment.center, // ← center it
                         children: [
                           GestureDetector(
                             onTap: () => setState(() => _currentStep = 0),
@@ -280,7 +261,8 @@ class _BookingPageState extends State<BookingPage> {
                                         ),
                                       ],
                                     )
-                                  : const SizedBox.shrink(),
+                                  // ← REPLACED SizedBox with our new widget:
+                                  : const PaymentDetails(),
                             ),
                             const SizedBox(width: 24),
 
@@ -320,7 +302,7 @@ class _BookingPageState extends State<BookingPage> {
                                                 onPressed: () {},
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: const Color(
-                                                    0xFFFFBD00,
+                                                    0xFFFFD700,
                                                   ),
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
@@ -581,7 +563,7 @@ class _BookingPageState extends State<BookingPage> {
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor:
-                                                        const Color(0xFFFFBD00),
+                                                        const Color(0xFFFFD700),
                                                     shape: RoundedRectangleBorder(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -617,7 +599,6 @@ class _BookingPageState extends State<BookingPage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(height: 24),
                   ],
                 ),

@@ -40,11 +40,6 @@ class _GuestDetailsState extends State<GuestDetails> {
     return SingleChildScrollView(
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade300),
-          borderRadius: BorderRadius.circular(8),
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
