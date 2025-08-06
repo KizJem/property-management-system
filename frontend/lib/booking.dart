@@ -30,7 +30,6 @@ class BookingPage extends StatefulWidget {
 }
 
 class _BookingPageState extends State<BookingPage> {
-  DateTime _now = DateTime.now();
   Timer? _timer;
   late RoomDetail? detail;
   late int nights;
@@ -51,9 +50,7 @@ class _BookingPageState extends State<BookingPage> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() => _now = DateTime.now());
-    });
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {});
 
     detail = roomDetails[widget.roomTypeKey];
     nights = widget.checkOut.difference(widget.checkIn).inDays;

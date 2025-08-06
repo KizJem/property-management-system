@@ -15,15 +15,38 @@ class _PaymentDetailsState extends State<PaymentDetails> {
   bool _isProviderHovered = false;
   PaymentMethod? _selectedMethod;
   String? _selectedProvider;
+
   final TextEditingController _refController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+
+  final TextEditingController _cardNameController = TextEditingController();
+  final TextEditingController _expiryController = TextEditingController();
+  final TextEditingController _cardNumberController = TextEditingController();
+  final TextEditingController _cvvController = TextEditingController();
+
+  final TextEditingController _changeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // default today’s date
+    _dateController.text = DateFormat('dd MMM yyyy').format(DateTime.now());
+  }
 
   @override
   void dispose() {
     _refController.dispose();
     _amountController.dispose();
     _dateController.dispose();
+
+    _cardNameController.dispose();
+    _expiryController.dispose();
+    _cardNumberController.dispose();
+    _cvvController.dispose();
+
+    _changeController.dispose();
+
     super.dispose();
   }
 
@@ -39,9 +62,23 @@ class _PaymentDetailsState extends State<PaymentDetails> {
     }
   }
 
+  Widget _requiredLabel(String text) {
+    return Text.rich(
+      TextSpan(
+        text: '$text ',
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+        children: [
+          const TextSpan(
+            text: '*',
+            style: TextStyle(color: Color(0xFFD10E0E)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final hoverColor = Colors.black;
     const double indent = 32.0 + 8.0;
 
     return SingleChildScrollView(
@@ -51,7 +88,7 @@ class _PaymentDetailsState extends State<PaymentDetails> {
         children: [
           // ─── E-Wallet Section ───
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Radio<PaymentMethod>(
                 value: PaymentMethod.ewallet,
@@ -60,11 +97,13 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                 onChanged: (val) {
                   setState(() {
                     _selectedMethod = val;
-                    // clear any previous e-wallet inputs when selecting E-Wallet
                     _selectedProvider = null;
                     _refController.clear();
                     _amountController.clear();
-                    _dateController.clear();
+                    // auto-fill today’s date here too
+                    _dateController.text = DateFormat(
+                      'dd MMM yyyy',
+                    ).format(DateTime.now());
                   });
                 },
               ),
@@ -87,29 +126,13 @@ class _PaymentDetailsState extends State<PaymentDetails> {
           const SizedBox(height: 12),
           if (_selectedMethod == PaymentMethod.ewallet) ...[
             // Labels row
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: indent),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Select Provider *',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  Expanded(child: _requiredLabel('Select Provider')),
                   SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      'Reference Number *',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
+                  Expanded(child: _requiredLabel('Reference Number')),
                 ],
               ),
             ),
@@ -200,7 +223,12 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                       controller: _refController,
                       decoration: const InputDecoration(
                         isDense: true,
-                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                       ),
                     ),
                   ),
@@ -211,21 +239,13 @@ class _PaymentDetailsState extends State<PaymentDetails> {
             const SizedBox(height: 12),
 
             // Amount/Date labels row
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(left: indent),
               child: Row(
                 children: [
-                  Expanded(
-                    child: Text(
-                      'Amount Paid *',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 16),
-                  Expanded(
+                  Expanded(child: _requiredLabel('Amount Paid')),
+                  const SizedBox(width: 16),
+                  const Expanded(
                     child: Text(
                       'Date Paid',
                       style: TextStyle(
@@ -251,7 +271,12 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                       keyboardType: TextInputType.number,
                       decoration: const InputDecoration(
                         isDense: true,
-                        border: OutlineInputBorder(),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
                       ),
                     ),
                   ),
@@ -260,24 +285,27 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                     child: TextFormField(
                       controller: _dateController,
                       readOnly: true,
-                      onTap: _pickDate,
                       decoration: InputDecoration(
                         isDense: true,
-                        border: const OutlineInputBorder(),
-                        suffixIcon: IconButton(
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: _pickDate,
+                        filled: true, // ← enable fill
+                        fillColor: Colors.grey.shade200,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
                         ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        suffixIcon: Icon(Icons.calendar_today),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
           ],
           const Divider(thickness: 1, height: 1),
+          const SizedBox(height: 10),
 
           // ─── Card Section ───
           Row(
@@ -313,9 +341,117 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
           ),
-          const SizedBox(height: 12),
-          const Divider(thickness: 1, height: 1),
+          const SizedBox(height: 16),
 
+          if (_selectedMethod == PaymentMethod.card) ...[
+            Padding(
+              padding: EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(child: _requiredLabel('Full Name on Card')),
+                  SizedBox(width: 16),
+                  Expanded(child: _requiredLabel('Expiry')),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Row 1 fields
+            Padding(
+              padding: const EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _cardNameController,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _expiryController,
+                      keyboardType: TextInputType.datetime,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        hintText: 'MM/YY',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Row 2 labels
+            Padding(
+              padding: EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(child: _requiredLabel('Card Number')),
+                  SizedBox(width: 16),
+                  Expanded(child: _requiredLabel('CVC/CVV')),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            // Row 2 fields
+            Padding(
+              padding: const EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _cardNumberController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _cvvController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+          const Divider(thickness: 1, height: 1),
+          const SizedBox(height: 10),
           // ─── Cash Section ───
           Row(
             children: [
@@ -326,11 +462,14 @@ class _PaymentDetailsState extends State<PaymentDetails> {
                 onChanged: (val) {
                   setState(() {
                     _selectedMethod = val;
-                    // clear e-wallet inputs when leaving
                     _selectedProvider = null;
                     _refController.clear();
                     _amountController.clear();
-                    _dateController.clear();
+                    _changeController.clear();
+                    // auto-fill today’s date:
+                    _dateController.text = DateFormat(
+                      'dd MMM yyyy',
+                    ).format(DateTime.now());
                   });
                 },
               ),
@@ -350,7 +489,119 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          if (_selectedMethod == PaymentMethod.cash) ...[
+            // ── Labels ──
+            Padding(
+              padding: EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(child: _requiredLabel('Amount Received')),
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    child: Text(
+                      'Change Given',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            // ── Fields ──
+            Padding(
+              padding: const EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _amountController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _changeController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            // ── Date Paid ──
+            const Padding(
+              padding: EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Date Paid',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: SizedBox(),
+                  ), // placeholder to match second column
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.only(left: indent),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      controller: _dateController,
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        isDense: true,
+                        filled: true, // ← enable fill
+                        fillColor: Colors.grey.shade200,
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black45),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        suffixIcon: Icon(Icons.calendar_today),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(child: SizedBox()),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           const Divider(thickness: 1, height: 1),
         ],
       ),
