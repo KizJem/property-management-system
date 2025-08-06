@@ -4,7 +4,6 @@ import 'calendardashboard.dart';
 import 'guestrecords.dart';
 import 'userlogin.dart';
 import 'landingpage.dart';
-import 'adminlogin.dart';
 
 void main() {
   runApp(const MyApp());

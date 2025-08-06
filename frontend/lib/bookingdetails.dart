@@ -68,30 +68,19 @@ class BookingDetails extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
+
+                    // ← This now loops over Strings
                     Wrap(
                       spacing: 16,
                       runSpacing: 8,
                       children: [
                         if (detail != null)
-                          for (final f in detail!.features)
+                          for (final feat in detail!.features)
                             SizedBox(
                               width: 180,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(
-                                    f.icon,
-                                    size: 16,
-                                    color: Colors.grey.shade700,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Expanded(
-                                    child: Text(
-                                      f.label,
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ),
-                                ],
+                              child: Text(
+                                feat,
+                                style: const TextStyle(fontSize: 12),
                               ),
                             ),
                       ],

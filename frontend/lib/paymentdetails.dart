@@ -50,18 +50,6 @@ class _PaymentDetailsState extends State<PaymentDetails> {
     super.dispose();
   }
 
-  Future<void> _pickDate() async {
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-    );
-    if (picked != null) {
-      _dateController.text = DateFormat('dd MMM yyyy').format(picked);
-    }
-  }
-
   Widget _requiredLabel(String text) {
     return Text.rich(
       TextSpan(

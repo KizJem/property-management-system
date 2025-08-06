@@ -34,8 +34,9 @@ class _RoomsViewState extends State<RoomsView> {
       text: room.price.replaceAll('₱ ', '').replaceAll(',', ''),
     );
     descriptionController = TextEditingController(text: room.description);
+
     featureControllers = room.features
-        .map((f) => TextEditingController(text: f.label))
+        .map((feat) => TextEditingController(text: feat))
         .toList();
   }
 
