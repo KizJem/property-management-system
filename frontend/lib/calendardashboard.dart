@@ -6,6 +6,8 @@ import 'occupiedcell.dart';
 import 'reservecell.dart';
 import 'roomdetails.dart';
 import 'userlogin.dart';
+import 'guestlogs.dart';
+import 'landingpage.dart';
 
 class CalendarDashboard extends StatefulWidget {
   final List<Map<String, String>> dates;
@@ -1032,58 +1034,197 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // 🔴 Red Header
+                    // HEADER CONTAINER
                     Container(
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF9B000A), // Deep red
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Color(0xFFFFD400), // Yellow bottom border
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 16,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // PMS Logo
-                          Image.asset(
-                            'assets/images/pms-logo-white.png',
-                            height: 80,
-                            width: 80,
-                          ),
-                          const SizedBox(width: 16),
+                      width: double.infinity,
+                      decoration: const BoxDecoration(color: Color(0xFF9B000A)),
 
-                          // Text Block
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Text(
-                                'PROPERTY MANAGEMENT SYSTEM',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: SizedBox(
+                        height: 120,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            // 🔴 Left section - Logo and system title
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Image.asset(
+                                  'assets/images/pms-logo-white.png',
+                                  height: 130,
+                                  width: 130,
+                                  fit: BoxFit.contain,
                                 ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Hello, Receptionist!',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
+                                const SizedBox(width: 12),
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 25),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: const [
+                                      Text(
+                                        'PROPERTY MANAGEMENT SYSTEM',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      SizedBox(height: 2),
+                                      Text(
+                                        'Hello, Receptionist!',
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins',
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
+                              ],
+                            ),
+
+                            // 🟡 Right section - Tabs and Logout
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                // Active Calendar tab
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 18,
+                                  ),
+                                  decoration: const BoxDecoration(
+                                    color: Color(0xFFFFD400),
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(10),
+                                      topRight: Radius.circular(10),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'Calendar',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF9B000A),
+                                    ),
+                                  ),
+                                ),
+
+                                // Guest Logs tab (inactive)
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      PageRouteBuilder(
+                                        pageBuilder:
+                                            (
+                                              context,
+                                              animation,
+                                              secondaryAnimation,
+                                            ) => const GuestLogsPage(),
+                                        transitionDuration: Duration.zero,
+                                        reverseTransitionDuration:
+                                            Duration.zero,
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 18,
+                                    ),
+                                    child: const Text(
+                                      'Guest Logs',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(width: 35),
+
+                                // Logout icon with confirmation
+                                GestureDetector(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text(
+                                          'Confirm Logout',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        content: const Text(
+                                          'Are you sure you want to log out?',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins',
+                                          ),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text(
+                                              'Cancel',
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                              Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const LandingPage(),
+                                                ),
+                                              );
+                                            },
+                                            child: const Text(
+                                              'Logout',
+                                              style: TextStyle(
+                                                fontFamily: 'Poppins',
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 18,
+                                      horizontal: 8,
+                                    ),
+                                    child: const Icon(
+                                      Icons.logout,
+                                      color: Colors.white,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -1192,8 +1333,8 @@ class _CalendarDashboardState extends State<CalendarDashboard> {
                                       context: context,
                                       position: const RelativeRect.fromLTRB(
                                         100,
-                                        140,
-                                        1,
+                                        170,
+                                        0,
                                         0,
                                       ),
 
