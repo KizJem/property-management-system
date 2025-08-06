@@ -214,7 +214,6 @@ class _BillingFormState extends State<BillingForm> {
     final TextEditingController tipController = TextEditingController(
       text: _tipAmount > 0 ? _tipAmount.toStringAsFixed(0) : '',
     );
-    final TextEditingController noteController = TextEditingController();
     double localTip = _tipAmount;
     showDialog(
       context: context,
@@ -527,24 +526,6 @@ class _BillingFormState extends State<BillingForm> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _headerCell(
-    String text, {
-    required int flex,
-    TextAlign align = TextAlign.left,
-  }) {
-    return Expanded(
-      flex: flex,
-      child: Text(
-        text,
-        textAlign: align,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Poppins',
-        ),
       ),
     );
   }

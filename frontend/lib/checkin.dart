@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'roomdetails.dart';
 
 class RoomFeature extends StatelessWidget {
   final IconData icon;
