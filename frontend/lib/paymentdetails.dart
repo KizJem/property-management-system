@@ -1,4 +1,4 @@
-// paymentdetails.dart
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -12,6 +12,7 @@ class PaymentDetails extends StatefulWidget {
 }
 
 class _PaymentDetailsState extends State<PaymentDetails> {
+  bool _isProviderHovered = false;
   PaymentMethod? _selectedMethod;
   String? _selectedProvider;
   final TextEditingController _refController = TextEditingController();
@@ -40,7 +41,8 @@ class _PaymentDetailsState extends State<PaymentDetails> {
 
   @override
   Widget build(BuildContext context) {
-    const double indent = 32.0 + 8.0; // radio width + spacing
+    final hoverColor = Colors.black;
+    const double indent = 32.0 + 8.0;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -75,9 +77,9 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: indent),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.only(left: indent),
+            child: Text(
               'Pay with GCash or Maya. Collect reference number for proof of payment.',
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
@@ -85,10 +87,10 @@ class _PaymentDetailsState extends State<PaymentDetails> {
           const SizedBox(height: 12),
           if (_selectedMethod == PaymentMethod.ewallet) ...[
             // Labels row
-            Padding(
-              padding: const EdgeInsets.only(left: indent),
+            const Padding(
+              padding: EdgeInsets.only(left: indent),
               child: Row(
-                children: const [
+                children: [
                   Expanded(
                     child: Text(
                       'Select Provider *',
@@ -119,21 +121,80 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               padding: const EdgeInsets.only(left: indent),
               child: Row(
                 children: [
+                  // ── Provider dropdown ──
                   Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedProvider,
-                      decoration: const InputDecoration(
-                        isDense: true,
-                        border: OutlineInputBorder(),
+                    child: MouseRegion(
+                      onEnter: (_) => setState(() => _isProviderHovered = true),
+                      onExit: (_) => setState(() => _isProviderHovered = false),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<String>(
+                          isExpanded: true,
+                          items: [
+                            DropdownMenuItem(
+                              value: 'GCash',
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/gcash.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'GCash',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: 'Maya',
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/maya.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  const Text(
+                                    'Maya',
+                                    style: TextStyle(fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          value: _selectedProvider,
+                          onChanged: (v) =>
+                              setState(() => _selectedProvider = v),
+                          buttonStyleData: ButtonStyleData(
+                            height: 40,
+                            padding: const EdgeInsets.only(right: 12),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: _isProviderHovered
+                                    ? Colors.black
+                                    : Colors.black45,
+                              ),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 200.0,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade400),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ),
                       ),
-                      items: const [
-                        DropdownMenuItem(value: 'GCash', child: Text('GCash')),
-                        DropdownMenuItem(value: 'Maya', child: Text('Maya')),
-                      ],
-                      onChanged: (v) => setState(() => _selectedProvider = v),
                     ),
                   ),
+
                   const SizedBox(width: 16),
+
+                  // ── Reference number field ──
                   Expanded(
                     child: TextFormField(
                       controller: _refController,
@@ -150,10 +211,10 @@ class _PaymentDetailsState extends State<PaymentDetails> {
             const SizedBox(height: 12),
 
             // Amount/Date labels row
-            Padding(
-              padding: const EdgeInsets.only(left: indent),
+            const Padding(
+              padding: EdgeInsets.only(left: indent),
               child: Row(
-                children: const [
+                children: [
                   Expanded(
                     child: Text(
                       'Amount Paid *',
@@ -245,9 +306,9 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: indent),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.only(left: indent),
+            child: Text(
               'Process payment using card. Enter card details.',
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),
@@ -282,9 +343,9 @@ class _PaymentDetailsState extends State<PaymentDetails> {
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: indent),
-            child: const Text(
+          const Padding(
+            padding: EdgeInsets.only(left: indent),
+            child: Text(
               'Collect cash payment. Enter amount received and give change if needed.',
               style: TextStyle(fontSize: 12, color: Colors.black87),
             ),

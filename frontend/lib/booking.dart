@@ -51,11 +51,8 @@ class _BookingPageState extends State<BookingPage> {
   @override
   void initState() {
     super.initState();
-
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() {
-        _now = DateTime.now();
-      });
+      setState(() => _now = DateTime.now());
     });
 
     detail = roomDetails[widget.roomTypeKey];
@@ -82,8 +79,6 @@ class _BookingPageState extends State<BookingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final timestamp = DateFormat('M/d/yy hh:mm:ss a').format(_now);
-
     return Scaffold(
       backgroundColor: const Color(0xFFFEF7FF),
       body: SafeArea(
@@ -155,8 +150,6 @@ class _BookingPageState extends State<BookingPage> {
                                     fontSize: 12,
                                   ),
                                 ),
-
-                                // StreamBuilder that ticks every second:
                                 StreamBuilder<DateTime>(
                                   stream: Stream.periodic(
                                     const Duration(seconds: 1),
@@ -191,8 +184,7 @@ class _BookingPageState extends State<BookingPage> {
                         vertical: 16,
                       ),
                       child: Row(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center, // ← center it
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           GestureDetector(
                             onTap: () => setState(() => _currentStep = 0),
@@ -261,7 +253,6 @@ class _BookingPageState extends State<BookingPage> {
                                         ),
                                       ],
                                     )
-                                  // ← REPLACED SizedBox with our new widget:
                                   : const PaymentDetails(),
                             ),
                             const SizedBox(width: 24),
@@ -343,7 +334,7 @@ class _BookingPageState extends State<BookingPage> {
                                           ),
                                         ),
 
-                                        // — details box
+                                        // — **Updated** summary box
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                             horizontal: 16,
@@ -367,7 +358,7 @@ class _BookingPageState extends State<BookingPage> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                // ─── Header: Room title + remove button ───
+                                                // Room title + remove
                                                 Row(
                                                   children: [
                                                     Expanded(
@@ -396,31 +387,8 @@ class _BookingPageState extends State<BookingPage> {
                                                   ],
                                                 ),
                                                 const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    const Text(
-                                                      'Room',
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: Colors.black,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    const Expanded(
-                                                      child: Divider(
-                                                        color: Colors.black,
-                                                        thickness: 1,
-                                                        height: 1.5,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
 
-                                                const SizedBox(height: 6),
-
-                                                // ─── Details rows ───
+                                                // Check-in / Check-out / Nights
                                                 _buildTwoColumn(
                                                   left: 'Check In',
                                                   right: formattedDate(
@@ -436,57 +404,159 @@ class _BookingPageState extends State<BookingPage> {
                                                 ),
                                                 const SizedBox(height: 4),
                                                 _buildTwoColumn(
-                                                  left: 'Room Charge',
-                                                  right: currencyFormatter
-                                                      .format(roomCharge),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                _buildTwoColumn(
-                                                  left: 'Tax',
-                                                  right: currencyFormatter
-                                                      .format(totalTax),
+                                                  left: 'Nights',
+                                                  right: '$nights',
                                                 ),
 
-                                                const SizedBox(height: 4),
-
-                                                // ─── Sub Total bold ───
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
+                                                const SizedBox(height: 8),
+                                                const Row(
                                                   children: [
-                                                    const Text(
-                                                      'Sub Total',
+                                                    Text(
+                                                      'Charges',
                                                       style: TextStyle(
                                                         fontSize: 14,
+                                                        color: Colors.black,
                                                         fontWeight:
                                                             FontWeight.bold,
                                                       ),
                                                     ),
-                                                    Text(
-                                                      currencyFormatter.format(
-                                                        subTotal,
-                                                      ),
-                                                      style: const TextStyle(
-                                                        fontSize: 14,
-                                                        fontWeight:
-                                                            FontWeight.bold,
+                                                    SizedBox(width: 8),
+                                                    Expanded(
+                                                      child: Divider(
+                                                        color: Colors.black,
+                                                        thickness: 1,
+                                                        height: 1.5,
                                                       ),
                                                     ),
                                                   ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                _buildDashedLine(),
+                                                const SizedBox(height: 4),
+                                                // Table header
+                                                Row(
+                                                  children: const [
+                                                    Expanded(
+                                                      flex: 3,
+                                                      child: Text(
+                                                        'Description',
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 1,
+                                                      child: Text(
+                                                        'Qty',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                        'Price',
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                        'Amount',
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                _buildDashedLine(),
+                                                const SizedBox(height: 4),
+                                                // Data row
+                                                Row(
+                                                  children: [
+                                                    const Expanded(
+                                                      flex: 3,
+                                                      child: Text(
+                                                        'Room Charge',
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const Expanded(
+                                                      flex: 1,
+                                                      child: Text(
+                                                        '1',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                        currencyFormatter
+                                                            .format(roomRate),
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      flex: 2,
+                                                      child: Text(
+                                                        currencyFormatter
+                                                            .format(roomCharge),
+                                                        textAlign:
+                                                            TextAlign.right,
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Divider(
+                                                  color: Colors.grey.shade400,
+                                                  thickness: 1,
                                                 ),
                                               ],
                                             ),
                                           ),
                                         ),
 
-                                        // — total & buttons
+                                        // — total & buttons (unchanged)
                                         Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                             16,
                                             12,
                                             16,
-                                            0,
+                                            16,
                                           ),
                                           child: Row(
                                             children: [
@@ -509,7 +579,6 @@ class _BookingPageState extends State<BookingPage> {
                                             ],
                                           ),
                                         ),
-                                        const SizedBox(height: 16),
                                         Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                             16,
@@ -537,8 +606,9 @@ class _BookingPageState extends State<BookingPage> {
                                                           ),
                                                     ),
                                                     padding:
-                                                        const EdgeInsets.symmetric(
-                                                          vertical: 16,
+                                                        const EdgeInsets.only(
+                                                          top: 16,
+                                                          bottom: 16,
                                                         ),
                                                   ),
                                                   child: const Text(
@@ -556,10 +626,11 @@ class _BookingPageState extends State<BookingPage> {
                                               Expanded(
                                                 child: ElevatedButton(
                                                   onPressed: () {
-                                                    setState(() {
-                                                      if (_currentStep < 3)
+                                                    if (_currentStep < 3) {
+                                                      setState(() {
                                                         _currentStep++;
-                                                    });
+                                                      });
+                                                    }
                                                   },
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor:
@@ -571,8 +642,9 @@ class _BookingPageState extends State<BookingPage> {
                                                           ),
                                                     ),
                                                     padding:
-                                                        const EdgeInsets.symmetric(
-                                                          vertical: 16,
+                                                        const EdgeInsets.only(
+                                                          top: 16,
+                                                          bottom: 16,
                                                         ),
                                                   ),
                                                   child: const Text(
@@ -599,6 +671,7 @@ class _BookingPageState extends State<BookingPage> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 24),
                   ],
                 ),
@@ -674,6 +747,24 @@ class _BookingPageState extends State<BookingPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildDashedLine({double dashWidth = 4, double dashSpacing = 4}) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final count = (constraints.maxWidth / (dashWidth + dashSpacing))
+            .floor();
+        return Flex(
+          direction: Axis.horizontal,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(
+            count,
+            (_) =>
+                Container(width: dashWidth, height: 1, color: Colors.black54),
+          ),
+        );
+      },
     );
   }
 }
