@@ -33,8 +33,8 @@ class _AdminPageState extends State<AdminPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Log Out?',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    'Log out',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 8),
                   const Text(
@@ -115,7 +115,7 @@ class _AdminPageState extends State<AdminPage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset('assets/images/PMS-white-logo.png', height: 60),
+                Image.asset('assets/images/pms-logo-white.png', height: 60),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -126,7 +126,7 @@ class _AdminPageState extends State<AdminPage> {
                         'PROPERTY MANAGEMENT SYSTEM',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 26,
+                          fontSize: 20,
                           fontWeight: FontWeight.w900,
                           color: Colors.white,
                         ),
@@ -136,7 +136,7 @@ class _AdminPageState extends State<AdminPage> {
                         'Hello, Admin!',
                         style: TextStyle(
                           fontFamily: 'Poppins',
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
                         ),
@@ -144,32 +144,12 @@ class _AdminPageState extends State<AdminPage> {
                     ],
                   ),
                 ),
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'logout') {
-                      _showLogoutConfirmation();
-                    }
+                IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white),
+                  tooltip: 'Log Out',
+                  onPressed: () {
+                    _showLogoutConfirmation();
                   },
-                  color: Colors.white,
-                  itemBuilder: (BuildContext context) => [
-                    const PopupMenuItem<String>(
-                      value: 'logout',
-                      child: Text('Log Out'),
-                    ),
-                  ],
-                  child: Row(
-                    children: const [
-                      Text(
-                        'Log Out',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Icon(Icons.arrow_drop_down, color: Colors.white),
-                    ],
-                  ),
                 ),
               ],
             ),
